@@ -1,0 +1,73 @@
+.xui-modal.xui-modal-style.xui-modal-manner-fade {
+	.xui-modal-masker {
+		background: rgba(0, 0, 0, 0.4);
+	}
+	.xui-modal-box {
+		background: rgba(0, 0, 0, 0);
+	}
+	.xui-modal-title {
+		display: none;
+	}
+	.xui-modal-close-icon {
+		position: absolute;
+		right: 0px;
+		top: -45px;
+		color: #fff;
+		i {
+			position: relative;
+			border: 1px solid @color-light;
+			border-radius: 100px;
+			padding: 2px;
+			cursor: pointer;
+			&:hover {
+				background: fade(@color-light, 50);
+			}
+			&:after {
+				content: "";
+				position: absolute;
+				width: 5px;
+				height: 5px;
+				background: lighten(@color-light, 30%);
+				border-radius: 10px;
+				bottom: -10px;
+				left: 50%;
+				transform: translate(-50%, 0);
+			}
+		}
+		&:before,
+		&:after {
+			content: "";
+			position: absolute;
+			width: 4px;
+			height: 4px;
+			background: lighten(@color-light, 30%);
+			border-radius: 20px;
+			bottom: -19px;
+			left: 50%;
+			transform: translate(-50%, 0);
+		}
+		&:after {
+			width: 3px;
+			height: 3px;
+			bottom: -25px;
+		}
+	}
+}
+
+.xui-modal.xui-modal-style.xui-modal-manner-dark {
+	.xui-modal-masker {
+		background: rgba(0, 0, 0, 0.4);
+	}
+	.xui-modal-header {
+		color: #fff;
+		border-bottom: 1px solid darken(@color-light, 30%);
+	}
+	.xui-modal-box {
+		border: 1px solid @color-light;
+		background: fade(@color-dark, 95%);
+		border-radius: 5px;
+	}
+	.xui-modal-content {
+		position: relative;
+	}
+}

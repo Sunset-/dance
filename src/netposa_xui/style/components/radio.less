@@ -1,0 +1,47 @@
+.xui-radio-group-style.xui-radio-group .xui-radio {
+
+}
+.xui-radio-group-style.xui-radio-manner-button .xui-radio {
+	display: inline-block;
+	margin: 2px 0px;
+}
+.xui-radio-group-style.xui-radio-group .xui-radio span {
+	font-size: 14px;
+	color: @font-white;
+}
+.xui-radio-group-style.xui-radio-group .xui-radio span:hover{
+	cursor: pointer;
+}
+.xui-radio-group-style.xui-radio-manner-button span:hover,
+.device-selector.xui-deviceselector-manner-button .item:hover,
+.device-selector.xui-deviceselector-manner-button .device-tip:hover{
+	background: #002941!important;
+	border: 1px solid @radio-border-color!important;
+	box-shadow: @radio-box-shadow!important;
+}
+.xui-radio-group-style.xui-radio-group .xui-radio input[type="radio"] + i,
+.xui-radio-group-style.xui-radio-group .xui-radio input[type="radio"]:checked + i {
+	width: 10px;
+	height: 10px;
+	border: 1px solid @radio-border-color;
+}
+.xui-radio-group-style.xui-radio-group .xui-radio input[type="radio"] + i:before {
+	background: @radio-background-color;
+}
+
+.xui-radio-group-style.xui-radio-group.xui-radio-manner-button .xui-radio.checked > span,
+.device-selector.xui-deviceselector-manner-button .item.checked {
+	font-size: 14px;
+	background: #002941;
+	border: 1px solid @radio-border-color;
+	box-shadow: @radio-box-shadow;
+	border-radius: 4px;
+}
+.xui-radio-group-style.xui-radio-group.xui-radio-manner-button .xui-radio > span,
+.device-selector.xui-deviceselector-manner-button .item,
+.device-selector.xui-deviceselector-manner-button .device-tip {
+	font-size: 14px;
+	background: #002941;
+	border: 1px solid #002941;
+	border-radius: 4px;
+}

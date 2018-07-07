@@ -1,0 +1,69 @@
+.xui-checkbox-group.xui-checkbox-style {
+	.xui-checkbox-small {
+		.xui-checkbox-label {
+			font-size: 14px;
+			color: #fff;
+			&:hover{
+				cursor: pointer;
+			}
+		}
+		.xui-checkbox-inner {
+			width: 10px;
+			height: 10px;
+			background-color: transparent;
+			border-color: @color-light;
+			&:after {
+				display: none;
+			}
+			&:before {
+				content: "";
+				display: block;
+				width: 6px;
+				height: 6px;
+				margin: 1px auto;
+				background: @color-light;
+				transform: scale(0.1);
+				-webkit-transform: scale(0.001);
+				transition: all 0.2s;
+			}
+		}
+	}
+	.xui-checkbox.is-checked .xui-checkbox-inner {
+		border-color: @color-light;
+		background-color: transparent;
+		&:before {
+			-webkit-transform: scale(1);
+		}
+	}
+	.xui-checkbox:last-child {
+		margin-right: 0px;
+	}
+}
+.xui-checkbox-group .xui-checkbox.is-checked .xui-checkbox-inner {
+	border-color: @radio-border-color!important;
+	background-color: transparent !important;
+}
+
+.xui-checkbox-group.xui-checkbox-style.xui-checkbox-manner-button {
+	.xui-checkbox-inner {
+		display: none;
+	}
+	.xui-checkbox-label {
+		font-size: 14px;
+		background: #002941;
+		border: 1px solid #002941;
+		border-radius: 4px;
+		color: #fff;
+		padding: 2px 5px;
+		cursor: pointer;
+	}
+	.xui-checkbox {
+		margin: 5px 5px 5px 0px;
+		&.is-checked {
+			.xui-checkbox-label {
+				border: 1px solid #35e7ff;
+				box-shadow: inset 0px 0px 10px 3px rgba(53, 231, 255, 0.6);
+			}
+		}
+	}
+}

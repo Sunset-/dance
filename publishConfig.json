@@ -1,0 +1,17 @@
+{
+	"project": "Gulp",
+	"buildDir" : "./publish",
+	"localserver": {
+		"host": "localhost",
+		"port": "8081"
+	},
+	"tinypngapi": "Tinypng API KEY(所申请的api key)",
+	"sftp": {
+		"host": "192.168.0.171",
+		"user": "root",
+		"pass": "123456",
+		"port": "22",
+		"key": "~/.ssh/sdfsfdsf",
+		"remotePath": "/home/mdp/ui/mdp"
+	}
+}
