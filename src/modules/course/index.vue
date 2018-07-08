@@ -1,59 +1,64 @@
 <!-- 课程管理 -->
 <template>
-    <div class="course">
-        <div class="item">
-            <i class=" title dance-type icon-type"></i>
-            <span class="line"></span>
-            <div class="content">
-                <span class="active">伦巴</span>
-                <span>恰恰</span>
-                <span>斗牛</span>
-                <span>桑巴</span>
-            </div>
-            <div class="operate">
-                <span class="add" @click="add"></span>
-                <span class="edit" @click="edit"></span>
-                <span class="del" @click="del"></span>
-            </div>
-        </div>
-        <div class="item">
-            <i class="title dance-step icon-step"></i>
-            <span class="line"></span>
-            <div class="content">
-                <span class="active">方步</span>
-                <span>左右移动</span>
-                <span>原地蹦哒</span>
-            </div>
-            <div class="operate">
-                <span class="add"></span>
-                <span class="edit"></span>
-                <span class="del"></span>
-            </div>
-        </div>
-        <div class="item">
-            <i class=" title dance-course icon-course"></i>
-            <span class="line"></span>
-            <div class="content">
-                <span class="active">初级</span>
-                <span>中级</span>
-                <span>高级</span>
-            </div>
-            <div class="operate">
-                <span class="add"></span>
-                <span class="edit"></span>
-                <span class="del"></span>
-            </div>
-        </div>
-        <div class="btn" @click="enterEdit">
-            <i></i>
-        </div>
-    </div>
+	<div class="course">
+		<div class="item">
+			<i class=" title dance-type icon-type"></i>
+			<span class="line"></span>
+			<div class="content">
+				<span class="active">伦巴</span>
+				<span>恰恰</span>
+				<span>斗牛</span>
+				<span>桑巴</span>
+			</div>
+			<div class="operate">
+				<span class="add" @click="add"></span>
+				<span class="edit" @click="edit"></span>
+				<span class="del" @click="del"></span>
+			</div>
+		</div>
+		<div class="item">
+			<i class="title dance-step icon-step"></i>
+			<span class="line"></span>
+			<div class="content">
+				<span class="active">方步</span>
+				<span>左右移动</span>
+				<span>原地蹦哒</span>
+			</div>
+			<div class="operate">
+				<span class="add" @click="add"></span>
+				<span class="edit" @click="edit"></span>
+				<span class="del" @click="del"></span>
+			</div>
+		</div>
+		<div class="item">
+			<i class=" title dance-course icon-course"></i>
+			<span class="line"></span>
+			<div class="content">
+				<span class="active">初级</span>
+				<span>中级</span>
+				<span>高级</span>
+			</div>
+			<div class="operate">
+				<span class="add" @click="add"></span>
+				<span class="edit" @click="edit"></span>
+				<span class="del" @click="del"></span>
+			</div>
+		</div>
+		<div class="btn" @click="enterEdit">
+			<i></i>
+		</div>
+		<delCourse ref="delmodal"></delCourse>
+	</div>
 </template>
 
 <script>
+import delCourse from "./del.vue";
 export default {
 	name: "course",
 	props: {},
+	components: {
+		delCourse
+	},
 	data() {
 		return {};
 	},
@@ -67,6 +72,7 @@ export default {
 		},
 		del() {
 			console.log("删除");
+			this.$refs.delmodal.open();
 		},
 		enterEdit() {
 			console.log("进入编辑");
