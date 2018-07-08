@@ -63,7 +63,7 @@ $header-height: 45pt;
 $sidebar-width: 114pt;
 
 .app-container {
-	width: 960pt;
+	width: 1920px;
 	margin: 0px auto;
 	height: 100%;
 	position: relative;
