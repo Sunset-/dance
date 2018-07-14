@@ -27,30 +27,38 @@ import Course from "modules/course/index.vue";
 import Directive from "modules/directive/index.vue";
 
 var router = new Router({
-	routes: [
-		{
-			path: "/",
-			component: Modules,
-			redirect: "/course",
-			children: [
-				{
-					name: "course",
-					path: "/course",
-					component: Course
-				},
-				{
-					name: "directive",
-					path: "/directive",
-					component: Directive
-				}
-			]
-		},
-		{
-			path: "/login",
-			component: Login
-		}
-	]
+    routes: [{
+            path: "/",
+            component: Modules,
+            redirect: "/course",
+            children: [{
+                    name: "course",
+                    path: "/course",
+                    component: Course
+                },
+                {
+                    name: "directive",
+                    path: "/directive",
+                    component: Directive
+                }
+            ]
+        },
+        {
+            path: "/login",
+            component: Login
+        }
+    ]
 });
 window.$router = router;
-
+$http({
+    url: "dance/jwt_auth",
+    type: "POST",
+    data: {
+        username: "test2",
+        password: "a12345678"
+    },
+    formdata: false
+}).then(userInfo => {
+    console.log(userInfo);
+})
 new Vue({ el: "#app", router, render: h => h(App) });

@@ -19,11 +19,14 @@ module.exports = {
             secure: false,
             changeOrigin: true
         },
-        "/vdtimg/*": {
-            target: "http://192.168.60.203/",
+        "/dance": {
+            target: "http://47.97.122.35:8008",
             // target: "http://172.16.164.143:8080/",
-            secure: false,
-            changeOrigin: true
+            // secure: false,
+            // changeOrigin: true,
+            pathRewrite: {
+                '^/dance': '/'
+            }
         },
         "/npgisdataservice/*": {
             target: "http://192.168.60.203",

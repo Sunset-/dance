@@ -7,11 +7,13 @@
               <xui-button @click="openModal" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
         </div>
         <directive-view ref="moduleRef" :type="currentType"></directive-view>
+		<del ref="delRef"></del>
     </div>
 </template>
 <script>
 import DIRECTIVECOLUMN from "./options/tableColumn.js";
-import directiveView from "./components/directiveView"
+import directiveView from "./components/directiveView";
+import del from "./components/del.vue"
 export default {
 	data() {
 		return {
@@ -93,7 +95,8 @@ export default {
 		};
     },
     components:{
-        directiveView
+        directiveView,
+		del
     },
 	methods:{
         openModal(){
