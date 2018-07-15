@@ -6,14 +6,15 @@
 		<div class="add-directive">
 			<xui-button @click="openModal" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>
-		<directive-view ref="moduleRef" :type="currentType"></directive-view>
-		<del ref="delRef"></del>
+		<directive-view ref="moduleRef"></directive-view>
+		<del-view ref="delRef"></del-view>
 	</div>
 </template>
 <script>
 import DIRECTIVECOLUMN from "./options/tableColumn.js";
 import directiveView from "./components/directiveView";
-import del from "./components/del.vue";
+import delView from "./components/del.vue";
+import STORE from "./store.js"
 export default {
 	data() {
 		return {
@@ -84,24 +85,25 @@ export default {
 							triggerWord: "暂停、等等、等下"
 						}
 					];
-					return {
-						data: data
-					};
-					// return RoleStore.loadRolesByType(this.currentType).then(res => {
-					// 	this.roleCount = res.list.length;
-					// 	return res;
-					// });
+					// return {
+					// 	data: data
+					// };
+					return STORE.getCommandsList().then(res => {
+						debugger
+						// this.roleCount = res.list.length;
+						return res;
+					});
 				}
 			}
 		};
 	},
 	components: {
 		directiveView,
-		del
+		delView
 	},
 	methods: {
 		openModal() {
-			this.$refs.moduleRef.open();
+			this.$refs.moduleRef.open("","add");
 		}
 	},
 	mounted() {}

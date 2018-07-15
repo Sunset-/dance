@@ -2,7 +2,7 @@
 	<div style="transform:translate(0,0)">
 		<xui-modal ref="modal" :options="options" @opened="tip('opened')" @closed="tip('closed')">
 			<template slot-scope="props" slot="content">
-				<div v-if="props.opened" style="width:560px;min-height: 330px;">
+				<div v-if="props.opened" style="width:570px;min-height: 330px;">
 					<div class="directive-form">
 						<div class="form-item" v-if="type=='edit'">
 							<div class="user-lable">指令ID</div>
@@ -39,7 +39,7 @@
 								<div class="parameter-list" v-show="showParams" >
 									<div v-for="(item,index) in parameterData" :key="index">
 										<span>{{item.name}}</span>
-										<xui-input v-model="item.item1.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item1.placeholder" :maxlength="item.item1.maxLength"></xui-input>
+										<xui-input v-model="item.item1.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item1.placeholder" :maxlength="item.item1.maxLength" style="width:100px"></xui-input>
 										<span v-if="item.name=='标题'" style="margin-left:26px">{{item.name2}}</span>
 										<xui-input v-model="item.item2.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item2.placeholder" :class="{'direct-class':item.name=='标题'}"></xui-input>
 										<xui-input v-model="item.item3.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item3.placeholder" v-if="item.name!='标题'"></xui-input>
@@ -110,9 +110,12 @@ function number(a) {
 	return false;
 }
 export default {
-	props: ["type"],
 	methods: {
-		open: function() {
+		open: function(parmas,type) {
+			this.type=type;
+			if(type=='add'){
+				this.reset();
+			}
 			this.$refs.modal.open();
 		},
 		tip: function(msg) {
@@ -186,7 +189,7 @@ export default {
 				{
 					name: "标题",
 					item1: { value: "", placeholder: "向右走步特",maxLength:6 },
-					name2: "任务方向",
+					name2: "人物方向",
 					item2: { value: "", placeholder: "0/180" }
 				}
 			];
@@ -203,15 +206,11 @@ export default {
 			} else {
 				this.modelDirectiveError.error = false;
 			}
-		},
-		'type':function(val){
-			if(val=='add'){
-
-			}
 		}
 	},
 	data() {
 		return {
+			type:"",
 			triggleData: [],
 			showParams: false,
 			modelDirectiveError:{
@@ -265,7 +264,7 @@ export default {
 				{
 					name: "标题",
 					item1: { value: "", placeholder: "向右走步特",maxLength:6 },
-					name2: "任务方向",
+					name2: "人物方向",
 					item2: { value: "", placeholder: "0/180" }
 				}
 			],
