@@ -50,15 +50,16 @@ var router = new Router({
     ]
 });
 window.$router = router;
-$http({
-    url: "dance/jwt_auth",
-    type: "POST",
-    data: {
-        username: "test2",
-        password: "a12345678"
-    },
-    formdata: false
-}).then(userInfo => {
-    console.log(userInfo);
-})
+//判断用户是否已登录
+router.beforeEach((to, from, next)=>{
+    if(to.path == '/login'){
+        next()
+    }else{
+    	if(!window.sessionStorage.getItem("user")){
+            next({path: '/login'})
+		}else {
+            next();
+		}
+    }
+});
 new Vue({ el: "#app", router, render: h => h(App) });
