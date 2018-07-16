@@ -96,10 +96,12 @@ export default {
 		},
 		//登录操作
         loginHandle(){
+			debugger
             if(!this.unserName || !this.pwd){
                 this.loginValueEmpty = true;
                 return;
 			}
+			debugger
             $http({
                 url: "dance/jwt_auth",
                 type: "POST",
@@ -109,7 +111,8 @@ export default {
                 }
             }).then(userInfo => {
                 if(userInfo){
-                    window.sessionStorage.setItem("user",userInfo.token);
+					window.sessionStorage.setItem("user",userInfo.token);
+					$tools.setCookie("Authorization",`JWT${userInfo.token}`);
                     this.loginLoading = true;
                     var time = window.setInterval(()=>{
                         this.loginTime--;

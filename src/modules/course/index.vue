@@ -1,81 +1,81 @@
 <!-- 课程管理 -->
 <template>
 	<div class="course">
-		<div class="item">
-			<i class=" title dance-type icon-type"></i>
-			<span class="line"></span>
-			<div class="content">
-				<span class="active">伦巴</span>
-				<span>恰恰</span>
-				<span>斗牛</span>
-				<span>桑巴</span>
+		<div v-show="!isShowEditCourse">
+			<div class="item">
+				<i class="title icon-level"></i>
+				<span class="line"></span>
+				<div class="content">
+					<span :class="{'active': activeLevel === item }" v-for="item in levelMenu" :key="item" @click="chooseCourse('level',item)">{{item}}</span>
+				</div>
+				<div class="operate">
+					<span class="add" @click="add('level')"></span>
+					<span class="edit" @click="edit('level')"></span>
+					<span class="del" @click="del('level')"></span>
+				</div>
 			</div>
-			<div class="operate">
-				<span class="add" @click="add"></span>
-				<span class="edit" @click="edit"></span>
-				<span class="del" @click="del"></span>
+			<div class="item">
+				<i class="title icon-course"></i>
+				<span class="line"></span>
+				<div class="content">
+					<span :class="[{'active': activeCourse === item},{'edit': activeCourse === item && activeEdit ==='course'}]" v-for="item in courseMenu" :key="item" @click="chooseCourse('course',item)">{{item}}</span>
+				</div>
+				<div class="operate">
+					<span class="add" @click="add('course')"></span>
+					<span class="edit" @click="edit('course')"></span>
+					<span class="del" @click="del('course')"></span>
+				</div>
 			</div>
+			<div class="btn" @click="enterEdit">
+				<i></i>
+			</div>
+
+			<delCourse ref="delmodal"></delCourse>
 		</div>
-		<div class="item">
-			<i class="title dance-step icon-step"></i>
-			<span class="line"></span>
-			<div class="content">
-				<span class="active">方步</span>
-				<span>左右移动</span>
-				<span>原地蹦哒</span>
-			</div>
-			<div class="operate">
-				<span class="add" @click="add"></span>
-				<span class="edit" @click="edit"></span>
-				<span class="del" @click="del"></span>
-			</div>
-		</div>
-		<div class="item">
-			<i class=" title dance-course icon-course"></i>
-			<span class="line"></span>
-			<div class="content">
-				<span class="active">初级</span>
-				<span>中级</span>
-				<span>高级</span>
-			</div>
-			<div class="operate">
-				<span class="add" @click="add"></span>
-				<span class="edit" @click="edit"></span>
-				<span class="del" @click="del"></span>
-			</div>
-		</div>
-		<div class="btn" @click="enterEdit">
-			<i></i>
-		</div>
-		<delCourse ref="delmodal"></delCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse"></editCourse>
 	</div>
 </template>
 
 <script>
 import delCourse from "./del.vue";
+import editCourse from "./edit.vue";
 export default {
 	name: "course",
 	props: {},
 	components: {
-		delCourse
+		delCourse,
+		editCourse
 	},
 	data() {
-		return {};
+		return {
+			isShowEditCourse: false,
+			levelMenu: ["金牌", "银牌", "铜牌"],
+			courseMenu: ["初级", "中级", "高级"],
+			activeLevel: "",
+			activeCourse: "",
+			activeEdit: ""
+		};
 	},
 	computed: {},
 	methods: {
-		add() {
-			console.log("添加");
+		chooseCourse(key, item) {
+			key === "level" ? (this.activeLevel = item) : (this.activeCourse = item);
 		},
-		edit() {
-			console.log("编辑");
+		add(key) {
+			console.log("添加", key);
 		},
-		del() {
-			console.log("删除");
+		edit(key) {
+			console.log("编辑", key);
+			// key === "level" ? (this.activeLevel = "") : (this.activeCourse = "");
+			this.activeEdit = key;
+		},
+		del(key, item) {
+			console.log("删除", key);
 			this.$refs.delmodal.open();
 		},
 		enterEdit() {
 			console.log("进入编辑");
+			this.isShowEditCourse = true;
 		}
 	},
 	created() {},
@@ -104,7 +104,7 @@ export default {
 		}
 		.title {
 			display: inline-block;
-			margin: 0px 20px 20px 44px;
+			margin: 10px 20px 20px 44px;
 			line-height: 123px;
 		}
 		i {
@@ -120,18 +120,11 @@ export default {
 				left: -5px;
 			}
 		}
-		.icon-type {
-			background-image: url("/assets/img/course/type.png");
+		.icon-level {
+			background-image: url("/assets/img/course/level.png");
 			&:after {
-				content: "舞种";
+				content: "等级";
 				color: #318ef4;
-			}
-		}
-		.icon-step {
-			background-image: url("/assets/img/course/step.png");
-			&:after {
-				content: "舞步";
-				color: #b149cf;
 			}
 		}
 		.icon-course {
@@ -147,12 +140,13 @@ export default {
 			display: inline-block;
 			background: rgba(204, 204, 204, 1);
 			position: relative;
-			top: 22px;
+			top: 10px;
 		}
 		.content {
 			display: inline-block;
 			margin-left: 50px;
 			font-size: 16px;
+			vertical-align: text-bottom;
 			span {
 				width: 107px;
 				height: 40px;
@@ -173,6 +167,12 @@ export default {
 				color: #fff;
 				background: #4081ff;
 				box-shadow: 0px 0px 24px #4081ff;
+			}
+			& > .edit {
+				color: #999999;
+				border-radius: 20px;
+				box-shadow: 0px 0px 0px;
+				background: rgba(246, 247, 251, 1);
 			}
 		}
 		.operate {
