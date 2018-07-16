@@ -3,7 +3,7 @@
 	<div class="course">
 		<div v-show="!isShowEditCourse">
 			<div class="item">
-				<i class=" title dance-type icon-type"></i>
+				<i class=" title dance-type icon-level"></i>
 				<span class="line"></span>
 				<div class="content">
 					<span class="active">伦巴</span>
@@ -17,20 +17,7 @@
 					<span class="del" @click="del"></span>
 				</div>
 			</div>
-			<div class="item">
-				<i class="title dance-step icon-step"></i>
-				<span class="line"></span>
-				<div class="content">
-					<span class="active">方步</span>
-					<span>左右移动</span>
-					<span>原地蹦哒</span>
-				</div>
-				<div class="operate">
-					<span class="add" @click="add"></span>
-					<span class="edit" @click="edit"></span>
-					<span class="del" @click="del"></span>
-				</div>
-			</div>
+
 			<div class="item">
 				<i class=" title dance-course icon-course"></i>
 				<span class="line"></span>
@@ -113,7 +100,7 @@ export default {
 		}
 		.title {
 			display: inline-block;
-			margin: 0px 20px 20px 44px;
+			margin: 10px 20px 20px 44px;
 			line-height: 123px;
 		}
 		i {
@@ -129,18 +116,11 @@ export default {
 				left: -5px;
 			}
 		}
-		.icon-type {
-			background-image: url("/assets/img/course/type.png");
+		.icon-level {
+			background-image: url("/assets/img/course/level.png");
 			&:after {
 				content: "舞种";
 				color: #318ef4;
-			}
-		}
-		.icon-step {
-			background-image: url("/assets/img/course/step.png");
-			&:after {
-				content: "舞步";
-				color: #b149cf;
 			}
 		}
 		.icon-course {
@@ -156,12 +136,13 @@ export default {
 			display: inline-block;
 			background: rgba(204, 204, 204, 1);
 			position: relative;
-			top: 22px;
+			top: 10px;
 		}
 		.content {
 			display: inline-block;
 			margin-left: 50px;
 			font-size: 16px;
+			vertical-align: text-bottom;
 			span {
 				width: 107px;
 				height: 40px;

@@ -60,7 +60,7 @@ export default {
 <style lang="scss">
 //头部高度
 $header-height: 45pt;
-$sidebar-width: 114pt;
+$sidebar-width: 227px;
 
 .app-container {
 	width: 1920px;

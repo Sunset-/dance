@@ -7,10 +7,7 @@
         </div>
         <div class="content">
             <div class="module">
-                <span class="active">动作示范示范</span>
-                <span>动作示范</span>
-                <span>动作示</span>
-                <span>动作示</span>
+                <span :class="{'active': activeModule === item}" v-for="item in moduleList" :key="item" @click="chooseModule(item)">{{item}}</span>
             </div>
             <!-- 模块操作 -->
             <div class="module-operation">
@@ -30,36 +27,142 @@
                 <span style="width:10%">任务方向</span>
                 <span style="width:10%"></span>
             </div>
+            <!--  -->
             <div class="table-content">
-                <div>
-                    <span style="width:5%">1</span>
-                    <span style="width:20%;text-align: left;">欢迎学习说的发生都发生的发的发发多少的风格多少的风格多少的风格</span>
-                    <span style="width:8%">100</span>
-                    <span style="width:8%">12</span>
-                    <span style="width:8%">14</span>
-                    <span style="width:8%">6</span>
-                    <span style="width:8%">3</span>
-                    <span style="width:10%">向前走转弯</span>
-                    <span style="width:10%">0</span>
+                <div class="step" v-for="(item,index) in moduleData" :key="index">
+                    <span style="width:5%">{{index+1}}</span>
+                    <span style="width:20%;text-align: left;">{{item.des}}</span>
+                    <span style="width:8%">{{item.actionID}}</span>
+                    <span style="width:8%">{{item.facdID}}</span>
+                    <span style="width:8%">{{item.sceneID}}</span>
+                    <span style="width:8%">{{item.comparisonID}}</span>
+                    <span style="width:8%">{{item.dynamicID}}</span>
+                    <span style="width:10%">{{item.title}}</span>
+                    <span style="width:10%">{{item.direction}}</span>
                     <span style="width:10%" class="content-operation">
-                        <i class="edit"></i>
+                        <i class="edit" @click="editStep(index,item)"></i>
                         <i class="del"></i>
                     </span>
-                </div>
-                <div>
-                    <span style="width:5%">1</span>
-                    <span style="width:20%;text-align: left;">欢迎学习说的发生都发生的发的发发多少的风格多少的风格多少的风格</span>
-                    <span style="width:8%">100</span>
-                    <span style="width:8%">12</span>
-                    <span style="width:8%">14</span>
-                    <span style="width:8%">6</span>
-                    <span style="width:8%">3</span>
-                    <span style="width:10%">向前走转弯</span>
-                    <span style="width:10%">0</span>
-                    <span style="width:10%" class="content-operation">
-                        <i class="edit"></i>
-                        <i class="del"></i>
-                    </span>
+                    <div class="module-edit" v-show="activeStepEdit === index">
+                        <div class="edit-content">
+                            <ul>
+                                <li>
+                                    <label>话术</label>
+                                </li>
+                                <li role="3">
+                                    <xui-input style="width:688px" placeholder="话术"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>动作</label>
+                                </li>
+                                <li>
+                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="id-input" placeholder="ID"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>表情</label>
+                                </li>
+                                <li>
+                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="id-input" placeholder="ID"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>镜头</label>
+                                </li>
+                                <li>
+                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="id-input" placeholder="ID"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>比对</label>
+                                </li>
+                                <li>
+                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="id-input" placeholder="ID"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>动效</label>
+                                </li>
+                                <li>
+                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="id-input" placeholder="ID"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
+                                </li>
+                                <li>
+                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li>
+                                    <label>标题</label>
+                                </li>
+                                <li>
+                                    <xui-input placeholder="标题" style="width:212px;margin-right: 106px;"></xui-input>
+                                </li>
+                                <li>
+                                    <label>人物方向</label>
+                                </li>
+                                <li>
+                                    <xui-input placeholder="0/180" style="width:270px"></xui-input>
+                                </li>
+                            </ul>
+                            <ul>
+                                <li style="margin-right: 35px;">
+                                    <span class="step-btn confirm" @click="confirmStep"></span>
+                                </li>
+                                <li>
+                                    <span class="step-btn cancel" @click="cancelStep"></span>
+                                </li>
+                            </ul>
+                            <!-- <xui-filter ref="filter" :options="filterOptions" @filter="onFilter"></xui-filter> -->
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="table-bottom" @click="addStep">
@@ -76,17 +179,55 @@ export default {
 	mixins: [],
 	props: {},
 	data() {
-		return {};
+		return {
+			moduleList: ["动作示范示范", "动作示范", "动作示"],
+			activeModule: "动作示范示范",
+			moduleData: [
+				{
+					des: "欢迎学习说的发生都发生的发的发发多少的风格多少的风格多少的风格",
+					actionID: "100",
+					facdID: "13",
+					sceneID: "9",
+					comparisonID: "11",
+					dynamicID: "15",
+					title: "向前走转弯",
+					direction: "1"
+				},
+				{
+					des: "欢迎学习说的发生都发生的发的发发",
+					actionID: "100",
+					facdID: "13",
+					sceneID: "9",
+					comparisonID: "11",
+					dynamicID: "15",
+					title: "向前走转弯",
+					direction: "1"
+				}
+			],
+			activeStepEdit: ""
+		};
 	},
 	computed: {},
 	watch: {},
 	filters: {},
 	methods: {
+		chooseModule(item) {
+			this.activeModule = item;
+		},
 		addModule() {},
 		editModule() {},
 		delModule() {},
 		addStep() {
 			console.log("addStep");
+		},
+		editStep(index, item) {
+			this.activeStepEdit = index;
+		},
+		delStep() {},
+		onFilter() {},
+		confirmStep() {},
+		cancelStep() {
+			this.activeStepEdit = "";
 		}
 	},
 	created() {},
@@ -189,9 +330,9 @@ export default {
 			}
 		}
 		.table-content {
-			div {
-                background: #fff;
-                cursor: pointer;
+			.step {
+				background: #fff;
+				cursor: pointer;
 				span {
 					line-height: 58px;
 					display: inline-block;
@@ -214,13 +355,13 @@ export default {
 					}
 					.edit {
 						margin-right: 35px;
-						background: linear-gradient(#2f7cef, #3298f7);
+						background: linear-gradient(#3298f7, #2f7cef);
 						&:after {
 							content: "编辑";
 						}
 					}
 					.del {
-						background: linear-gradient(#ff2156, #ff7539);
+						background: linear-gradient(#ff7539, #ff2156);
 						&:after {
 							content: "删除";
 						}
@@ -237,6 +378,75 @@ export default {
 			}
 			& > :nth-child(even) {
 				background: #eff2f6;
+			}
+		}
+		.module-edit {
+			width: 100%;
+			height: 606px;
+			background: rgba(230, 237, 247, 1);
+			text-align: center;
+			.edit-content {
+				width: 1001px;
+				height: 606px;
+				background: rgba(242, 246, 250, 1);
+				box-shadow: 0px 0px 84px rgba(139, 149, 163, 0.2);
+				display: inline-block;
+				ul {
+					margin: 33px 120px 0px 120px;
+					li {
+						display: inline-block;
+						label {
+							font-size: 16px;
+							color: #333333;
+							font-weight: 500;
+							display: block;
+							margin-right: 30px;
+						}
+						.el-input .el-input__inner {
+							height: 36px;
+							line-height: 36px;
+						}
+						.step-btn {
+							width: 98px;
+							height: 36px;
+							display: inline-block;
+							border-radius: 18px;
+							&:after {
+								content: "";
+								color: #fff;
+								display: block;
+								margin-top: -10px;
+							}
+						}
+						.default-input {
+							width: 212px;
+							margin-right: 20px;
+						}
+						.id-input {
+							width: 150px;
+							margin-right: 20px;
+						}
+						.timing-input {
+							width: 127px;
+							margin-right: 20px;
+						}
+						.offset-input {
+							width: 127px;
+						}
+						.confirm {
+							background: rgba(64, 129, 255, 1);
+							&:after {
+								content: "确定";
+							}
+						}
+						.cancel {
+							background: rgba(204, 204, 204, 1);
+							&:after {
+								content: "取消";
+							}
+						}
+					}
+				}
 			}
 		}
 		.table-bottom {
