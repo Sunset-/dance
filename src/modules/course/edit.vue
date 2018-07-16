@@ -45,111 +45,18 @@
                     </span>
                     <div class="module-edit" v-show="activeStepEdit === index">
                         <div class="edit-content">
-                            <ul>
+                            <ul v-for="item in editContent" :key="item">
                                 <li>
-                                    <label>话术</label>
+                                    <label>{{item.name}}</label>
                                 </li>
-                                <li role="3">
-                                    <xui-input style="width:688px" placeholder="话术"></xui-input>
+                                <li v-for="i in item.item" :key="i">
+                                    <xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
                                 </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>动作</label>
+                                <li v-if="item.name1">
+                                    <label>{{item.name1}}</label>
                                 </li>
-                                <li>
-                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="id-input" placeholder="ID"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>表情</label>
-                                </li>
-                                <li>
-                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="id-input" placeholder="ID"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>镜头</label>
-                                </li>
-                                <li>
-                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="id-input" placeholder="ID"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>比对</label>
-                                </li>
-                                <li>
-                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="id-input" placeholder="ID"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>动效</label>
-                                </li>
-                                <li>
-                                    <xui-input class="default-input" placeholder="初级示范"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="id-input" placeholder="ID"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="timing-input" placeholder="触发时机"></xui-input>
-                                </li>
-                                <li>
-                                    <xui-input class="offset-input" placeholder="偏移时间"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li>
-                                    <label>标题</label>
-                                </li>
-                                <li>
-                                    <xui-input placeholder="标题" style="width:212px;margin-right: 106px;"></xui-input>
-                                </li>
-                                <li>
-                                    <label>人物方向</label>
-                                </li>
-                                <li>
-                                    <xui-input placeholder="0/180" style="width:270px"></xui-input>
+                                <li v-if="item.item1" v-for="i in item.item1" :key="i">
+                                    <xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
                                 </li>
                             </ul>
                             <ul>
@@ -160,7 +67,6 @@
                                     <span class="step-btn cancel" @click="cancelStep"></span>
                                 </li>
                             </ul>
-                            <!-- <xui-filter ref="filter" :options="filterOptions" @filter="onFilter"></xui-filter> -->
                         </div>
                     </div>
                 </div>
@@ -204,7 +110,64 @@ export default {
 					direction: "1"
 				}
 			],
-			activeStepEdit: ""
+			activeStepEdit: "",
+			editContent: [
+				{
+					name: "话术",
+					item: [{ value: "", placeholder: "话术", class: "", style: "width:675px" }]
+				},
+				{
+					name: "动作",
+					item: [
+						{ value: "", placeholder: "初级示范", class: "default-input" },
+						{ value: "", placeholder: "ID", class: "id-input" },
+						{ value: "", placeholder: "触发时机", class: "timing-input" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+					]
+				},
+				{
+					name: "表情",
+					item: [
+						{ value: "", placeholder: "初级示范", class: "default-input" },
+						{ value: "", placeholder: "ID", class: "id-input" },
+						{ value: "", placeholder: "触发时机", class: "timing-input" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+					]
+				},
+				{
+					name: "镜头",
+					item: [
+						{ value: "", placeholder: "初级示范", class: "default-input" },
+						{ value: "", placeholder: "ID", class: "id-input" },
+						{ value: "", placeholder: "触发时机", class: "timing-input" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+					]
+				},
+				{
+					name: "比对",
+					item: [
+						{ value: "", placeholder: "初级示范", class: "default-input" },
+						{ value: "", placeholder: "ID", class: "id-input" },
+						{ value: "", placeholder: "触发时机", class: "timing-input" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+					]
+				},
+				{
+					name: "动效",
+					item: [
+						{ value: "", placeholder: "初级示范", class: "default-input" },
+						{ value: "", placeholder: "ID", class: "id-input" },
+						{ value: "", placeholder: "触发时机", class: "timing-input" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+					]
+				},
+				{
+					name: "标题",
+					item: [{ value: "", placeholder: "向右走步特", style: "width:212px;margin-right: 93px;" }],
+					name1: "人物方向",
+					item1: [{ value: "", placeholder: "0/180", style: "width:270px" }]
+				}
+			]
 		};
 	},
 	computed: {},

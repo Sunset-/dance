@@ -3,33 +3,27 @@
 	<div class="course">
 		<div v-show="!isShowEditCourse">
 			<div class="item">
-				<i class=" title dance-type icon-level"></i>
+				<i class="title icon-level"></i>
 				<span class="line"></span>
 				<div class="content">
-					<span class="active">伦巴</span>
-					<span>恰恰</span>
-					<span>斗牛</span>
-					<span>桑巴</span>
+					<span :class="{'active': activeLevel === item }" v-for="item in levelMenu" :key="item" @click="chooseCourse('level',item)">{{item}}</span>
 				</div>
 				<div class="operate">
-					<span class="add" @click="add"></span>
-					<span class="edit" @click="edit"></span>
-					<span class="del" @click="del"></span>
+					<span class="add" @click="add('level')"></span>
+					<span class="edit" @click="edit('level')"></span>
+					<span class="del" @click="del('level')"></span>
 				</div>
 			</div>
-
 			<div class="item">
-				<i class=" title dance-course icon-course"></i>
+				<i class="title icon-course"></i>
 				<span class="line"></span>
 				<div class="content">
-					<span class="active">初级</span>
-					<span>中级</span>
-					<span>高级</span>
+					<span :class="[{'active': activeCourse === item},{'edit': activeCourse === item && activeEdit ==='course'}]" v-for="item in courseMenu" :key="item" @click="chooseCourse('course',item)">{{item}}</span>
 				</div>
 				<div class="operate">
-					<span class="add" @click="add"></span>
-					<span class="edit" @click="edit"></span>
-					<span class="del" @click="del"></span>
+					<span class="add" @click="add('course')"></span>
+					<span class="edit" @click="edit('course')"></span>
+					<span class="del" @click="del('course')"></span>
 				</div>
 			</div>
 			<div class="btn" @click="enterEdit">
@@ -54,19 +48,29 @@ export default {
 	},
 	data() {
 		return {
-			isShowEditCourse: false
+			isShowEditCourse: false,
+			levelMenu: ["金牌", "银牌", "铜牌"],
+			courseMenu: ["初级", "中级", "高级"],
+			activeLevel: "",
+			activeCourse: "",
+			activeEdit: ""
 		};
 	},
 	computed: {},
 	methods: {
-		add() {
-			console.log("添加");
+		chooseCourse(key, item) {
+			key === "level" ? (this.activeLevel = item) : (this.activeCourse = item);
 		},
-		edit() {
-			console.log("编辑");
+		add(key) {
+			console.log("添加", key);
 		},
-		del() {
-			console.log("删除");
+		edit(key) {
+			console.log("编辑", key);
+			// key === "level" ? (this.activeLevel = "") : (this.activeCourse = "");
+			this.activeEdit = key;
+		},
+		del(key, item) {
+			console.log("删除", key);
 			this.$refs.delmodal.open();
 		},
 		enterEdit() {
@@ -119,7 +123,7 @@ export default {
 		.icon-level {
 			background-image: url("/assets/img/course/level.png");
 			&:after {
-				content: "舞种";
+				content: "等级";
 				color: #318ef4;
 			}
 		}
@@ -163,6 +167,12 @@ export default {
 				color: #fff;
 				background: #4081ff;
 				box-shadow: 0px 0px 24px #4081ff;
+			}
+			& > .edit {
+				color: #999999;
+				border-radius: 20px;
+				box-shadow: 0px 0px 0px;
+				background: rgba(246, 247, 251, 1);
 			}
 		}
 		.operate {
