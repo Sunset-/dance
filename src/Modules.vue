@@ -3,6 +3,20 @@
 	<div class="app-container">
 		<header class="app-header">
 			<span>后台管理系统</span>
+			<div class="login-user-info">
+				<span>张三</span>
+				<span @click="handlePanel"></span>
+			</div>
+			<div class="edit-user">
+				<div class="handle-change-password">
+					<img src="/assets/img/login/edit-password.png"/>
+					<div @click="changePassword">修改密码</div>
+				</div>
+				<div class="handle-quit">
+					<img src="/assets/img/login/quit.png"/>
+					<div>退出</div>
+				</div>
+			</div>
 		</header>
 		<div class="app-content">
 			<div class="app-sidebar">
@@ -12,6 +26,32 @@
 			</div>
 			<div class="app-major">
 				<router-view></router-view>
+			</div>
+		</div>
+		<div class="pwd-dialog-layer" v-if="showDialog">
+			<div class="pwd-dialog">
+				<img class="close-password-dialog" src="/assets/img/login/click-close.png" alt="" @click="close">
+				<div class="edit-password-title">
+					<div class="edit-password-title-name">修改密码</div>
+					<div class="edit-password-title-line"></div>
+				</div>
+				<div>
+					<img src="/assets/img/login/login-password.png" alt="">
+					<input type="password" class="edit-password" placeholder="请输入当前密码" v-model="currentPwd">
+					<div class="empty-pwd" v-if="!currentPwd&&passwordEmpty">输入不能为空</div>
+				</div>
+				<div>
+					<img src="/assets/img/login/login-password.png" alt="">
+					<input type="password" class="edit-password" placeholder="请输入当新密码" v-model="newPwd">
+					<div class="empty-pwd" v-if="!newPwd&&passwordEmpty">新密码不能为空</div>
+				</div>
+				<div>
+					<img src="/assets/img/login/login-confim-password.png" alt="">
+					<input type="password" class="edit-password" placeholder="请再次输入新密码" v-model="confirmNewPwd">
+					<div class="empty-pwd" v-if="!confirmNewPwd&&passwordEmpty">确认密码不能为空</div>
+					<div class="empty-pwd" v-if="passwordSome">两次输入密码不一致</div>
+				</div>
+				<div class="edit-confirm-password" @click="confirm">确认</div>
 			</div>
 		</div>
 	</div>
@@ -31,16 +71,24 @@ export default {
 				}
 			],
 			currentUser: null,
-			headerMenus: [
-				{
-					title: "修改密码",
-					operate: () => {}
-				},
-				{
-					title: "安全退出",
-					operate() {}
-				}
-			]
+			showPanel: false,	//显示修改、退出操作板
+			showDialog: false,	//显示修改密码弹框
+            currentPwd: '',	//当前密码
+            newPwd: '',	//当前新密码
+            confirmNewPwd: '',	//确认新密码
+            passwordEmpty: false,		//点击确认检验密码是否填值了
+			passwordSome: false,	//校验新密码是否一致
+
+			// headerMenus: [
+			// 	{
+			// 		title: "修改密码",
+			// 		operate: () => {}
+			// 	},
+			// 	{
+			// 		title: "安全退出",
+			// 		operate() {}
+			// 	}
+			// ]
 		};
 	},
 	methods: {
@@ -52,9 +100,42 @@ export default {
 		},
 		changeSideWidth(leftWidth) {
 			this.$refs.container.changeSideWidth(leftWidth);
+		},
+        handlePanel(){
+            this.showPanel = true;
+		},
+		//修改密码
+        changePassword(){
+			this.showDialog = true;
+		},
+		//关闭弹窗
+        close(){
+            this.showDialog = false;
+		},
+		//确认修改密码
+        confirm(){
+			if(!this.currentPwd || !this.newPwd || !this.confirmNewPwd){
+                this.passwordEmpty = true;
+			    return
+			}
+			if(this.newPwd != this.confirmNewPwd){
+                this.passwordSome = true;
+			    return
+			}
+            $http({
+                url: "dance/modify_pwd",
+                type: "POST",
+                data: {
+                    old_password: this.currentPwd,
+                    password1: this.newPwd,
+                    password2: this.confirmNewPwd
+                }
+            }).then(data=>{
+                console.log(data);
+			});
+
 		}
 	},
-	ready() {}
 };
 </script>
 <style lang="scss">
@@ -74,6 +155,47 @@ $sidebar-width: 114pt;
 		font-size: 13pt;
 		padding: 0px 15px;
 		box-shadow: 0px 0px 12pt rgba(#8c8c8c, 0.2);
+		position: relative;
+		.login-user-info{
+			float: right;
+			span:nth-child(1){
+
+			}
+			span:nth-child(2){
+				border-top: 10px solid #000;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;
+				border-bottom: 10px solid transparent;
+				display: inline-block;
+				cursor: pointer;
+			}
+		}
+		.edit-user{
+			width: 120px;
+			height: 100px;
+			background: #fff;
+			color: rgba(110,110,110,0.22);
+			position: absolute;
+			top: 0;
+			right: 0;
+			display: inline-block;
+			img{
+				width: 20px;
+				height: 20px;
+				float: left;
+			}
+			.handle-change-password{
+				width: 60px;
+				height: 20px;
+				color: #333;
+			}
+			.handle-quit{
+				width: 60px;
+				height: 20px;
+				color: #333;
+				float: left;
+			}
+		}
 	}
 	.app-content {
 		position: absolute;
@@ -97,7 +219,87 @@ $sidebar-width: 114pt;
 			right: 0px;
 		}
 	}
-
+	.pwd-dialog-layer{
+		width: 100%;
+		height: 100%;
+		background: rgba(170, 170, 170, 0.25);
+		position: absolute;
+		top: 0;
+		.pwd-dialog{
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+			background: #fff;
+			width: 460px;
+			height: 580px;
+			padding: 20px 50px;
+			text-align: center;
+			.close-password-dialog{
+				float: right;
+				width: 15px;
+				height: 15px;
+				cursor: pointer;
+			}
+			&>div{
+				width: 460px;
+				height: 80px;
+				padding: 20px 0px;
+				img{
+					width: 80px;
+					height: 80px;
+					float: left;
+				}
+				.edit-password{
+					width: 330px;
+					height: 78px;
+					float: left;
+					background: #eff2f5;
+					border: none;
+					outline: none;
+					padding-left: 45px;
+					font-size: 20px;
+				}
+				.empty-pwd{
+					color: red;
+					text-align: left;
+					margin-left: 130px;
+					padding-top: 5px;
+					clear: both;
+				}
+			}
+			.edit-password-title{
+				padding-top: 20px;
+				padding-bottom: 0;
+				.edit-password-title-name{
+					font-size: 30px;
+					color: #333333;
+				}
+				.edit-password-title-line{
+					width: 60px;
+					height: 3px;
+					background-color: #cfdbe7;
+					margin: 15px auto;
+				}
+			}
+			.edit-confirm-password{
+				height: 20px;
+				line-height: 20px;
+				background: linear-gradient(#2F7CEF, #3298F7);
+				margin-top: 20px;
+				border-radius: 40px;
+				color: #ffffff;
+				box-shadow:0 0 20px rgba(50,152,247,0.45);
+				font-size: 24px;
+				cursor: pointer;
+				&:hover{
+					background: #3298F7
+				}
+			}
+		}
+	}
 	.app-menu {
 		width: 100%;
 		li {
