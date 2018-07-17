@@ -25,7 +25,6 @@
 						<span :class="[{'active': activeCourse.name === item.name}]" v-show="!item.edit" @click.stop="chooseCourse('course',item)">{{item.name}}</span>
 						<xui-input class="edit" v-show="activeCourse.name === item.name && activeCourse.edit" v-model="item.name"></xui-input>
 					</div>
-
 				</div>
 				<div class="operate">
 					<span class="add" @click.stop="add('course')"></span>
@@ -36,7 +35,6 @@
 			<div class="btn" @click.stop="enterEdit">
 				<i></i>
 			</div>
-
 			<delCourse ref="delmodal" @closed="closed"></delCourse>
 		</div>
 		<editCourse re="editCourse" v-if="isShowEditCourse"></editCourse>
@@ -97,7 +95,6 @@ export default {
 				if (e && e.keyCode == 13) {
 					self.$set(self.activeLevel, "edit", false);
 					self.$set(self.activeCourse, "edit", false);
-
 				}
 			};
 		},
@@ -125,14 +122,25 @@ export default {
 			});
 		},
 		add(key) {
-			console.log("添加", key);
+			if (key === "level") {
+				let tempLevel = {
+					name: "",
+					edit: true
+				};
+				this.levelMenu.push(tempLevel);
+				this.activeLevel = tempLevel;
+			} else {
+				let tempCourse = {
+					level: this.activeLevel.id,
+					name: "",
+					edit: true
+				};
+				this.courseMenu.push(tempCourse);
+				this.activeCourse = tempCourse;
+			}
 		},
 		edit(key) {
-			if (key === "level") {
-				this.$set(this.activeLevel, "edit", true);
-			} else {
-				this.$set(this.activeCourse, "edit", true);
-			}
+			key === "level" ? this.$set(this.activeLevel, "edit", true) : this.$set(this.activeCourse, "edit", true);
 		},
 		del(key, item) {
 			let param = {};
