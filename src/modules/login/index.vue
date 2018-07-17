@@ -110,7 +110,7 @@ export default {
             }).then(userInfo => {
                 if(userInfo){
 					window.sessionStorage.setItem("user",userInfo.token);
-					$tools.setCookie("Authorization",`JWT${userInfo.token}`);
+					$tools.setCookie("Authorization",`JWT ${userInfo.token}`);
                     this.loginLoading = true;
                     var time = window.setInterval(()=>{
                         this.loginTime--;
