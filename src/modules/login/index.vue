@@ -96,12 +96,10 @@ export default {
 		},
 		//登录操作
         loginHandle(){
-			debugger
             if(!this.unserName || !this.pwd){
                 this.loginValueEmpty = true;
                 return;
 			}
-			debugger
             $http({
                 url: "dance/jwt_auth",
                 type: "POST",
@@ -196,13 +194,13 @@ export default {
 		position: relative;
 		.login-content{
 			position: absolute;
-			top: 15%;
+			top: 10%;
 			left: 15%;
 			width: 70%;
 			height: 60%;
 			text-align: center;
 			.login-title{
-				width: 80%;
+				width: 580px;
 				height: 80px;
 				margin: 0px auto;
 				padding: 40px 0;
@@ -218,7 +216,7 @@ export default {
 				}
 			}
 			.login-user{
-				width: 80%;
+				width: 580px;
 				height: 80px;
 				margin: 0px auto;
 				padding: 20px 0;
@@ -228,7 +226,7 @@ export default {
 					float: left;
 				}
 				.login-user-name{
-					width: 390px;
+					width: 432px;
 					height: 78px;
 					float: left;
 					background: #eff2f5;
@@ -243,7 +241,7 @@ export default {
 				}
 			}
 			.login-password{
-				width: 80%;
+				width: 580px;
 				height: 80px;
 				margin: 0px auto;
 				padding: 20px 0;
@@ -253,7 +251,7 @@ export default {
 					float: left;
 				}
 				.login-password-name{
-					width: 390px;
+					width: 432px;
 					height: 78px;
 					float: left;
 					background: #eff2f5;
@@ -270,17 +268,15 @@ export default {
 			.login-confirm-user-error{
 				font-size: 20px;
 				color: #DC3030;
-				width: 80%;
-				padding-left: 25px;
+				width: 580px;
 			}
 			.login-confirm-password-error{
 				font-size: 20px;
 				color: #DC3030;
-				width: 80%;
-				padding-left: 10px;
+				width: 580px;
 			}
 			.login-forget-password{
-				width: 80%;
+				width: 580px;
 				height: 80px;
 				line-height: 40px;
 				margin: 0 auto;
@@ -295,7 +291,7 @@ export default {
 				}
 			}
 			.login-btn{
-				width: 80%;
+				width: 580px;
 				height: 80px;
 				line-height: 80px;
 				background: linear-gradient(#2F7CEF, #3298F7);
@@ -314,7 +310,7 @@ export default {
 	.login-bottom{
 		position: absolute;
 		width: 55%;
-		height: 35%;
+		height: 30%;
 		right: 0;
 		bottom: 0;
 		img{

@@ -2,12 +2,16 @@
 <template>
 	<div class="app-container">
 		<header class="app-header">
-			<span>后台管理系统</span>
-			<div class="login-user-info">
-				<span>张三</span>
-				<span @click="handlePanel"></span>
+			<div class="header-logo">
+				<img src="/assets/img/login/mark-logo.png"/>
+				<div class="header-logo-title">后台管理系统</div>
 			</div>
-			<div class="edit-user">
+			<div class="login-user-info">
+				<img src="/assets/img/login/head-img.png" alt="">
+				<span>张三</span>
+				<span @mouseover="handlePanel"></span>
+			</div>
+			<div class="edit-user" v-if="showPanel">
 				<div class="handle-change-password">
 					<img src="/assets/img/login/edit-password.png"/>
 					<div @click="changePassword">修改密码</div>
@@ -102,7 +106,7 @@ export default {
 			this.$refs.container.changeSideWidth(leftWidth);
 		},
         handlePanel(){
-            this.showPanel = true;
+            this.showPanel = !this.showPanel;
 		},
 		//修改密码
         changePassword(){
@@ -140,7 +144,7 @@ export default {
 </script>
 <style lang="scss">
 //头部高度
-$header-height: 45pt;
+$header-height: 89px;
 $sidebar-width: 227px;
 
 .app-container {
@@ -152,48 +156,96 @@ $sidebar-width: 227px;
 		height: $header-height;
 		line-height: $header-height;
 		color: #333333;
+		background: #fff;
 		font-size: 13pt;
 		padding: 0px 15px;
-		box-shadow: 0px 0px 12pt rgba(#8c8c8c, 0.2);
+		box-shadow: 0px 0px 480px rgba(#8c8c8c, 0.15);
 		position: relative;
+		.header-logo{
+			position: absolute;
+			width: 240px;
+			height: 80px;
+			top: 20px;
+			left: 50px;
+			img{
+				float: left;
+				width: 40px;
+				height: 40px;
+			}
+			.header-logo-title{
+				float: left;
+				margin-left: 15px;
+				font-size: 26px;
+				color: #333;
+				height: 40px;
+				line-height: 40px;
+				width: 160px;
+				font-family: "FZCQJW--GB1-0";
+			}
+		}
 		.login-user-info{
-			float: right;
-			span:nth-child(1){
-
+			position: absolute;
+			right: 0;
+			top: 20px;
+			width: 150px;
+			height: 80px;
+			img{
+				width: 40px;
+				height: 40px;
+				float: left;
 			}
 			span:nth-child(2){
+				display: inline-block;
+				width: 40px;
+				height: 40px;
+				line-height: 40px;
+				float: left;
+				color: #333;
+				margin-left: 10px;
+			}
+			span:nth-child(3){
 				border-top: 10px solid #000;
 				border-left: 10px solid transparent;
 				border-right: 10px solid transparent;
 				border-bottom: 10px solid transparent;
 				display: inline-block;
 				cursor: pointer;
+				float: left;
+				margin-top: 12px;
 			}
 		}
 		.edit-user{
 			width: 120px;
 			height: 100px;
 			background: #fff;
-			color: rgba(110,110,110,0.22);
 			position: absolute;
-			top: 0;
-			right: 0;
 			display: inline-block;
-			img{
-				width: 20px;
-				height: 20px;
-				float: left;
-			}
-			.handle-change-password{
-				width: 60px;
-				height: 20px;
+			top: 90px;
+			right: 30px;
+			z-index: 10;
+			.handle-change-password, .handle-quit{
 				color: #333;
-			}
-			.handle-quit{
-				width: 60px;
-				height: 20px;
-				color: #333;
+				font-size: 14px;
 				float: left;
+				width: 100%;
+				height: 40px;
+				padding: 10px;
+				cursor: pointer;
+				&:hover{
+					color: #3298F7;
+				}
+				img{
+					width: 20px;
+					height: 20px;
+					float: left;
+				}
+				div{
+					float: left;
+					height: 20px;
+					line-height: 20px;
+					width: 60px;
+					margin-left: 10px;
+				}
 			}
 		}
 	}
