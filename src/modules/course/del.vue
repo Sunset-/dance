@@ -1,20 +1,20 @@
 <!-- 删除 -->
 <template>
-    <div>
-        <xui-modal ref="modal" title="" @closed="closed">
-            <template slot-scope="props">
-                <div class="modal-content">
-                    <h3>是否确认删除该舞种</h3>
-                    <h6>删除后该舞种内所有数据也会删除</h6>
-                    <i></i>
-                </div>
-            </template>
-            <div slot="footer" class="footer">
-                <span class="item cancel" @click="cancel"></span>
-                <span class="item confirm" @click="confirm"></span>
-            </div>
-        </xui-modal>
-    </div>
+	<div>
+		<xui-modal ref="modal" title="" @closed="closed">
+			<template slot-scope="props">
+				<div class="modal-content">
+					<h3>是否确认删除该{{currentData.message}}</h3>
+					<h6 v-show="currentData.opType === 'level'">删除后该{{currentData.message}}内所有数据也会删除</h6>
+					<i></i>
+				</div>
+			</template>
+			<div slot="footer" class="footer">
+				<span class="item cancel" @click="cancel"></span>
+				<span class="item confirm" @click="confirm"></span>
+			</div>
+		</xui-modal>
+	</div>
 </template>
 
 <script>
@@ -27,26 +27,24 @@ export default {
 	props: {},
 	data() {
 		return {
-			type:"",
-			data:{},
+			currentData: {}
 		};
 	},
 	computed: {},
 	watch: {},
 	filters: {},
 	methods: {
-		open(type,data) {
-			this.type = type;
-			this.data = data;
+		open(data) {
+			this.currentData = data;
 			this.$refs.modal.open();
 		},
 		cancel() {
 			this.$refs.modal.close();
 		},
 		confirm() {
-			this.type === "level" ? store.delLevelById(this.data.id) : store.delCourseById(this.data.id);
+			this.currentData.opType === "level" ? store.delLevelById(this.currentData.id) : store.delCourseById(this.currentData.id);
 			this.$refs.modal.close();
-			this.$emit("closed",true);
+			this.$emit("closed", true);
 		},
 		closed() {}
 	},
@@ -61,8 +59,8 @@ export default {
 	h3 {
 		font-size: 20px;
 		color: #8b94a6;
-        font-family: MicrosoftYaHei-Bold;
-        font-weight: bold;
+		font-family: MicrosoftYaHei-Bold;
+		font-weight: bold;
 		position: absolute;
 		top: 35px;
 		left: 118px;

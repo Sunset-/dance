@@ -34,8 +34,8 @@ module.exports = {
 	 * 更新课程
 	 * @param {*} id
 	 */
-	updateCourseById(id) {
-		return $http({ url: `${URLS.courseHandle}/${id}`, type: "PATCH" }).then(res => {
+	updateCourseById(id, model) {
+		return $http({ url: `${URLS.courseHandle}/${id}`, type: "PATCH", data: model }).then(res => {
 			return res;
 		});
 	},
@@ -44,7 +44,7 @@ module.exports = {
 	 * @param {*} id
 	 */
 	delCourseById(id) {
-        debugger
+		debugger;
 		return $http({ url: `${URLS.courseHandle}/${id}`, type: "DELETE" }).then(res => {
 			return res;
 		});
@@ -77,8 +77,8 @@ module.exports = {
 	 * 更新课程
 	 * @param {*} id
 	 */
-	updateLevelById(id) {
-		return $http({ url: `${URLS.levelHandle}/${id}`, type: "PATCH" }).then(res => {
+	updateLevelById(id, model) {
+		return $http({ url: `${URLS.levelHandle}/${id}`, type: "PATCH", data: model }).then(res => {
 			return res;
 		});
 	},

@@ -2,40 +2,42 @@
 <template>
 	<div class="course" id="course">
 		<div v-show="!isShowEditCourse">
+			<!-- 等级 -->
 			<div class="item">
 				<i class="title icon-level"></i>
 				<span class="line"></span>
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
-						<span :class="[{'active': activeLevel.name === item.name }]" v-show="!item.edit" @click.stop="chooseCourse('level',item)">{{item.name}}</span>
+						<span :class="[{'active': activeLevel.name === item.name }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
 						<xui-input v-show="activeLevel.name === item.name && activeLevel.edit" v-model="item.name"></xui-input>
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" @click.stop="add('level')"></span>
-					<span class="edit" @click.stop="edit('level')"></span>
-					<span class="del" @click.stop="del('level')"></span>
+					<span class="add" @click="add('level')"></span>
+					<span class="edit" v-show="activeLevel.name" @click="edit('level')"></span>
+					<span class="del" v-show="activeLevel.name" @click="del('level')"></span>
 				</div>
 			</div>
+			<!-- 课程 -->
 			<div class="item">
 				<i class="title icon-course"></i>
 				<span class="line"></span>
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
-						<span :class="[{'active': activeCourse.name === item.name}]" v-show="!item.edit" @click.stop="chooseCourse('course',item)">{{item.name}}</span>
+						<span :class="[{'active': activeCourse.name === item.name}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
 						<xui-input class="edit" v-show="activeCourse.name === item.name && activeCourse.edit" v-model="item.name"></xui-input>
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" @click.stop="add('course')"></span>
-					<span class="edit" @click.stop="edit('course')"></span>
-					<span class="del" @click.stop="del('course')"></span>
+					<span class="add" v-show="activeLevel.name " @click="add('course')"></span>
+					<span class="edit" v-show="activeLevel.name && activeCourse.name" @click="edit('course')"></span>
+					<span class="del" v-show="activeLevel.name && activeCourse.name" @click="del('course')"></span>
 				</div>
 			</div>
-			<div class="btn" @click.stop="enterEdit">
+			<div class="btn" @click="enterEdit">
 				<i></i>
 			</div>
-			<delCourse ref="delmodal" @closed="closed"></delCourse>
+			<delCourse ref="delmodal" @closed="init"></delCourse>
 		</div>
 		<editCourse re="editCourse" v-if="isShowEditCourse"></editCourse>
 	</div>
@@ -59,7 +61,11 @@ export default {
 			levelMenu: [],
 			courseMenu: [],
 			activeLevel: {},
-			activeCourse: {}
+			activeCourse: {},
+			activeOperation: {
+				key: "",
+				type: ""
+			}
 		};
 	},
 	computed: {},
@@ -84,19 +90,6 @@ export default {
 				this.allCourseMenu = this.courseMenu = posts[0];
 			});
 			this.LoadPageEvent();
-		},
-		/**
-		 * 加载页面事件
-		 */
-		LoadPageEvent() {
-			let self = this;
-			document.onkeydown = function(event) {
-				let e = event || window.event || arguments.callee.caller.arguments[0];
-				if (e && e.keyCode == 13) {
-					self.$set(self.activeLevel, "edit", false);
-					self.$set(self.activeCourse, "edit", false);
-				}
-			};
 		},
 		/**
 		 * 课程选择
@@ -138,25 +131,87 @@ export default {
 				this.courseMenu.push(tempCourse);
 				this.activeCourse = tempCourse;
 			}
+			this.activeOperation = {
+				key: key,
+				type: "add"
+			};
 		},
 		edit(key) {
 			key === "level" ? this.$set(this.activeLevel, "edit", true) : this.$set(this.activeCourse, "edit", true);
+			this.activeOperation = {
+				key: key,
+				type: "edit"
+			};
 		},
 		del(key, item) {
 			let param = {};
-			key === "level" ? (param = this.activeLevel) : (param = this.activeCourse);
-			this.$refs.delmodal.open(key, param);
+			if (key === "level") {
+				param = this.activeLevel;
+				param.message = "等级";
+				param.opType = "level";
+			} else {
+				param = this.activeCourse;
+				param.message = "课程";
+				param.opType = "course";
+			}
+			this.$refs.delmodal.open(param);
 		},
 		enterEdit() {
 			console.log("进入编辑");
 			this.isShowEditCourse = true;
 		},
-		closed() {
-			this.init();
+		/**
+		 * 加载页面事件
+		 */
+		LoadPageEvent() {
+			let self = this;
+			document.onkeydown = function(event) {
+				let e = event || window.event || arguments.callee.caller.arguments[0];
+				if (e && e.keyCode == 13) {
+					self.$set(self.activeLevel, "edit", false);
+					self.$set(self.activeCourse, "edit", false);
+					switch (self.activeOperation.type) {
+						case "add":
+							self.activeOperation.key === "level"
+								? self.addLevel(self.activeLevel)
+								: self.addCourse(self.activeCourse);
+							break;
+						case "edit":
+							self.activeOperation.key === "level"
+								? self.updateLevel(self.activeLevel)
+								: self.updateCourse(self.activeCourse);
+							break;
+						default:
+							break;
+					}
+				}
+			};
 		},
-		removeEdit() {
-			console.log(123);
-			this.$set(this.activeLevel, "edit", false);
+		addLevel(model) {
+			store.addLevel({
+				name: model.name,
+				add_time: Sunset.Dates.format(new Date())
+			});
+		},
+		updateLevel(model) {
+			store.updateLevelById(model.id, {
+				name: model.name,
+				add_time: Sunset.Dates.format(new Date())
+			});
+		},
+		addCourse(model) {
+			store.addCourse({
+				name: model.name,
+				level: model.level,
+				add_time: Sunset.Dates.format(new Date())
+			});
+		},
+		updateCourse(model) {
+			store.updateCourseById(model.id, {
+				name: model.name,
+				level: model.level,
+				add_time: Sunset.Dates.format(new Date())
+			});
 		}
 	},
 	created() {},
