@@ -6,7 +6,7 @@
 				<i class="title icon-level"></i>
 				<span class="line"></span>
 				<div class="content">
-					<span :class="{'active': activeLevel === item }" v-for="item in levelMenu" :key="item" @click="chooseCourse('level',item)">{{item}}</span>
+					<span :class="[{'active': activeLevel.name === item.name },{'edit': activeLevel.name === item.name && activeEdit ==='level'}]" v-for="item in levelMenu" :key="item.id" @click="chooseCourse('level',item)">{{item.name}}</span>
 				</div>
 				<div class="operate">
 					<span class="add" @click="add('level')"></span>
@@ -18,7 +18,7 @@
 				<i class="title icon-course"></i>
 				<span class="line"></span>
 				<div class="content">
-					<span :class="[{'active': activeCourse === item},{'edit': activeCourse === item && activeEdit ==='course'}]" v-for="item in courseMenu" :key="item" @click="chooseCourse('course',item)">{{item}}</span>
+					<span :class="[{'active': activeCourse.name === item.name},{'edit': activeCourse.name === item.name && activeEdit ==='course'}]" v-for="item in courseMenu" :key="item.id" @click="chooseCourse('course',item)">{{item.name}}</span>
 				</div>
 				<div class="operate">
 					<span class="add" @click="add('course')"></span>
@@ -30,7 +30,7 @@
 				<i></i>
 			</div>
 
-			<delCourse ref="delmodal"></delCourse>
+			<delCourse ref="delmodal" @closed="closed"></delCourse>
 		</div>
 		<editCourse re="editCourse" v-if="isShowEditCourse"></editCourse>
 	</div>
@@ -39,6 +39,7 @@
 <script>
 import delCourse from "./del.vue";
 import editCourse from "./edit.vue";
+import store from "./store.js";
 export default {
 	name: "course",
 	props: {},
@@ -49,37 +50,60 @@ export default {
 	data() {
 		return {
 			isShowEditCourse: false,
-			levelMenu: ["金牌", "银牌", "铜牌"],
-			courseMenu: ["初级", "中级", "高级"],
-			activeLevel: "",
-			activeCourse: "",
+			levelMenu: [],
+			courseMenu: [],
+			activeLevel: {},
+			activeCourse: {},
 			activeEdit: ""
 		};
 	},
 	computed: {},
 	methods: {
+		init() {
+			const proCourse = new Promise((resolve, reject) => {
+				store.getCourseList().then(res => {
+					resolve(res);
+				});
+			});
+			const proLevel = new Promise((resolve, reject) => {
+				store.getLevelList().then(res => {
+					resolve(res);
+				});
+			});
+			Promise.all([proCourse, proLevel]).then(posts => {
+				this.courseMenu = posts[0];
+				this.levelMenu = posts[1];
+			});
+		},
 		chooseCourse(key, item) {
 			key === "level" ? (this.activeLevel = item) : (this.activeCourse = item);
+			console.log(this.activeCourse)
 		},
 		add(key) {
 			console.log("添加", key);
 		},
 		edit(key) {
 			console.log("编辑", key);
-			// key === "level" ? (this.activeLevel = "") : (this.activeCourse = "");
 			this.activeEdit = key;
 		},
 		del(key, item) {
-			console.log("删除", key);
-			this.$refs.delmodal.open();
+			let param = {};
+			key === "level" ? (param = this.activeLevel ) : (param = this.activeCourse );
+			console.log("删除", key,param);
+			this.$refs.delmodal.open(key,param);
 		},
 		enterEdit() {
 			console.log("进入编辑");
 			this.isShowEditCourse = true;
+		},
+		closed(){
+			this.init();
 		}
 	},
 	created() {},
-	mounted() {}
+	mounted() {
+		this.init();
+	}
 };
 </script>
 <style lang='less'>
@@ -108,8 +132,8 @@ export default {
 			line-height: 123px;
 		}
 		i {
-			width: 71px;
-			height: 71px;
+			width: 72px;
+			height: 72px;
 			background-repeat: no-repeat;
 			&:after {
 				margin-left: 18px;
@@ -117,7 +141,7 @@ export default {
 				font-weight: bold;
 				position: relative;
 				top: 20px;
-				left: -5px;
+				left: 0px;
 			}
 		}
 		.icon-level {

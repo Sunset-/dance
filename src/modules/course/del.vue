@@ -18,26 +18,35 @@
 </template>
 
 <script>
+import store from "./store.js";
+
 export default {
 	name: "delcourse",
 	components: {},
 	mixins: [],
 	props: {},
 	data() {
-		return {};
+		return {
+			type:"",
+			data:{},
+		};
 	},
 	computed: {},
 	watch: {},
 	filters: {},
 	methods: {
-		open() {
+		open(type,data) {
+			this.type = type;
+			this.data = data;
 			this.$refs.modal.open();
 		},
 		cancel() {
 			this.$refs.modal.close();
 		},
 		confirm() {
+			this.type === "level" ? store.delLevelById(this.data.id) : store.delCourseById(this.data.id);
 			this.$refs.modal.close();
+			this.$emit("closed",true);
 		},
 		closed() {}
 	},
