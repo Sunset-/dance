@@ -2,7 +2,7 @@
 <template>
 	<div class="course" id="course">
 		<div v-show="!isShowEditCourse">
-			<!-- 等级 -->
+			<!-- 等级列表 -->
 			<div class="item">
 				<i class="title icon-level"></i>
 				<span class="line"></span>
@@ -18,7 +18,7 @@
 					<span class="del" v-show="activeLevel.name" @click="del('level')"></span>
 				</div>
 			</div>
-			<!-- 课程 -->
+			<!-- 课程列表-->
 			<div class="item">
 				<i class="title icon-course"></i>
 				<span class="line"></span>
@@ -34,12 +34,14 @@
 					<span class="del" v-show="activeLevel.name && activeCourse.name" @click="del('course')"></span>
 				</div>
 			</div>
-			<div class="btn" @click="enterEdit">
+			<div class="btn" :class="{'allow': activeLevel.name && activeCourse.name}" @click="enterEdit">
 				<i></i>
 			</div>
+			<!-- 删除组件 -->
 			<delCourse ref="delmodal" @closed="init"></delCourse>
 		</div>
-		<editCourse re="editCourse" v-if="isShowEditCourse"></editCourse>
+		<!-- 课程编辑组件 -->
+		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData"></editCourse>
 	</div>
 </template>
 
@@ -65,11 +67,15 @@ export default {
 			activeOperation: {
 				key: "",
 				type: ""
-			}
+			},
+			currentData: {}
 		};
 	},
 	computed: {},
 	methods: {
+		/**
+		 * 初始化家加载等级、课程
+		 */
 		init() {
 			const proLevel = new Promise((resolve, reject) => {
 				store.getLevelList().then(res => {
@@ -114,6 +120,9 @@ export default {
 				}
 			});
 		},
+		/**
+		 * 添加开始
+		 */
 		add(key) {
 			if (key === "level") {
 				let tempLevel = {
@@ -136,6 +145,9 @@ export default {
 				type: "add"
 			};
 		},
+		/**
+		 * 编辑开始
+		 */
 		edit(key) {
 			key === "level" ? this.$set(this.activeLevel, "edit", true) : this.$set(this.activeCourse, "edit", true);
 			this.activeOperation = {
@@ -143,6 +155,9 @@ export default {
 				type: "edit"
 			};
 		},
+		/**
+		 * 删除
+		 */
 		del(key, item) {
 			let param = {};
 			if (key === "level") {
@@ -158,6 +173,10 @@ export default {
 		},
 		enterEdit() {
 			console.log("进入编辑");
+			this.currentData = {
+				level: this.activeLevel,
+				course: this.activeCourse
+			};
 			this.isShowEditCourse = true;
 		},
 		/**
@@ -187,18 +206,27 @@ export default {
 				}
 			};
 		},
+		/**
+		 * 添加等级
+		 */
 		addLevel(model) {
 			store.addLevel({
 				name: model.name,
 				add_time: Sunset.Dates.format(new Date())
 			});
 		},
+		/**
+		 * 修改等级
+		 */
 		updateLevel(model) {
 			store.updateLevelById(model.id, {
 				name: model.name,
 				add_time: Sunset.Dates.format(new Date())
 			});
 		},
+		/**
+		 * 添加课程
+		 */
 		addCourse(model) {
 			store.addCourse({
 				name: model.name,
@@ -206,6 +234,9 @@ export default {
 				add_time: Sunset.Dates.format(new Date())
 			});
 		},
+		/**
+		 * 修改课程
+		 */
 		updateCourse(model) {
 			store.updateCourseById(model.id, {
 				name: model.name,
@@ -368,9 +399,8 @@ export default {
 	.btn {
 		width: 216px;
 		height: 40px;
-		background: rgba(64, 129, 255, 1);
+		background: #999;
 		border-radius: 20px;
-		box-shadow: 0px 0px 24px rgba(64, 129, 255, 1);
 		margin: 51px auto;
 		cursor: pointer;
 		i {
@@ -391,6 +421,10 @@ export default {
 				margin-left: 30px;
 			}
 		}
+	}
+	.allow {
+		background: rgba(64, 129, 255, 1);
+		box-shadow: 0px 0px 24px rgba(64, 129, 255, 1);
 	}
 }
 </style>

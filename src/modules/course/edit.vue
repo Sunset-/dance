@@ -1,81 +1,81 @@
 <!-- 课程编辑 -->
 <template>
-    <div class="edit-Course">
-        <div class="nav">
-            <i/>
-            <h3>伦巴 > 方法 > 中级</h3>
-        </div>
-        <div class="content">
-            <div class="module">
-                <span :class="{'active': activeModule === item}" v-for="item in moduleList" :key="item" @click="chooseModule(item)">{{item}}</span>
-            </div>
-            <!-- 模块操作 -->
-            <div class="module-operation">
-                <span class="add" @click="addModule"></span>
-                <span class="edit" @click="editModule"></span>
-                <span class="del" @click="delModule"></span>
-            </div>
-            <div class="table-header">
-                <span style="width:5%">序号</span>
-                <span style="width:20%">话术</span>
-                <span style="width:8%">动作ID</span>
-                <span style="width:8%">表情ID</span>
-                <span style="width:8%">镜头ID</span>
-                <span style="width:8%">比对ID</span>
-                <span style="width:8%">动效ID</span>
-                <span style="width:10%">标题</span>
-                <span style="width:10%">任务方向</span>
-                <span style="width:10%"></span>
-            </div>
-            <!--  -->
-            <div class="table-content">
-                <div class="step" v-for="(item,index) in moduleData" :key="index">
-                    <span style="width:5%">{{index+1}}</span>
-                    <span style="width:20%;text-align: left;">{{item.des}}</span>
-                    <span style="width:8%">{{item.actionID}}</span>
-                    <span style="width:8%">{{item.facdID}}</span>
-                    <span style="width:8%">{{item.sceneID}}</span>
-                    <span style="width:8%">{{item.comparisonID}}</span>
-                    <span style="width:8%">{{item.dynamicID}}</span>
-                    <span style="width:10%">{{item.title}}</span>
-                    <span style="width:10%">{{item.direction}}</span>
-                    <span style="width:10%" class="content-operation">
-                        <i class="edit" @click="editStep(index,item)"></i>
-                        <i class="del"></i>
-                    </span>
-                    <div class="module-edit" v-show="activeStepEdit === index">
-                        <div class="edit-content">
-                            <ul v-for="item in editContent" :key="item">
-                                <li>
-                                    <label>{{item.name}}</label>
-                                </li>
-                                <li v-for="i in item.item" :key="i">
-                                    <xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
-                                </li>
-                                <li v-if="item.name1">
-                                    <label>{{item.name1}}</label>
-                                </li>
-                                <li v-if="item.item1" v-for="i in item.item1" :key="i">
-                                    <xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
-                                </li>
-                            </ul>
-                            <ul>
-                                <li style="margin-right: 35px;">
-                                    <span class="step-btn confirm" @click="confirmStep"></span>
-                                </li>
-                                <li>
-                                    <span class="step-btn cancel" @click="cancelStep"></span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="table-bottom" @click="addStep">
-                <span class="submit"></span>
-            </div>
-        </div>
-    </div>
+	<div class="edit-Course">
+		<div class="nav">
+			<i/>
+			<h3>{{currentData.level.name}} > {{currentData.course.name}}</h3>
+		</div>
+		<div class="content">
+			<div class="module">
+				<span :class="{'active': activeModule === item}" v-for="item in moduleList" :key="item" @click="chooseModule(item)">{{item}}</span>
+			</div>
+			<!-- 模块操作 -->
+			<div class="module-operation">
+				<span class="add" @click="addModule"></span>
+				<span class="edit" @click="editModule"></span>
+				<span class="del" @click="delModule"></span>
+			</div>
+			<div class="table-header">
+				<span style="width:5%">序号</span>
+				<span style="width:20%">话术</span>
+				<span style="width:8%">动作ID</span>
+				<span style="width:8%">表情ID</span>
+				<span style="width:8%">镜头ID</span>
+				<span style="width:8%">比对ID</span>
+				<span style="width:8%">动效ID</span>
+				<span style="width:10%">标题</span>
+				<span style="width:10%">任务方向</span>
+				<span style="width:10%"></span>
+			</div>
+			<!--  -->
+			<div class="table-content">
+				<div class="step" v-for="(item,index) in moduleData" :key="index">
+					<span style="width:5%">{{index+1}}</span>
+					<span style="width:20%;text-align: left;">{{item.des}}</span>
+					<span style="width:8%">{{item.actionID}}</span>
+					<span style="width:8%">{{item.facdID}}</span>
+					<span style="width:8%">{{item.sceneID}}</span>
+					<span style="width:8%">{{item.comparisonID}}</span>
+					<span style="width:8%">{{item.dynamicID}}</span>
+					<span style="width:10%">{{item.title}}</span>
+					<span style="width:10%">{{item.direction}}</span>
+					<span style="width:10%" class="content-operation">
+						<i class="edit" @click="editStep(index,item)"></i>
+						<i class="del"></i>
+					</span>
+					<div class="module-edit" v-show="activeStepEdit === index">
+						<div class="edit-content">
+							<ul v-for="item in editContent" :key="item">
+								<li>
+									<label>{{item.name}}</label>
+								</li>
+								<li v-for="i in item.item" :key="i">
+									<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+								</li>
+								<li v-if="item.name1">
+									<label>{{item.name1}}</label>
+								</li>
+								<li v-if="item.item1" v-for="i in item.item1" :key="i">
+									<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+								</li>
+							</ul>
+							<ul>
+								<li style="margin-right: 35px;">
+									<span class="step-btn confirm" @click="confirmStep"></span>
+								</li>
+								<li>
+									<span class="step-btn cancel" @click="cancelStep"></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="table-bottom" @click="addStep">
+				<span class="submit"></span>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script>
@@ -83,7 +83,14 @@ export default {
 	name: "editCourse",
 	components: {},
 	mixins: [],
-	props: {},
+	props: {
+		currentData: {
+			type: Object,
+			default(params) {
+				return {};
+			}
+		}
+	},
 	data() {
 		return {
 			moduleList: ["动作示范示范", "动作示范", "动作示"],
