@@ -1,4 +1,3 @@
-
 <template>
 	<div class="app-container">
 		<header class="app-header">
@@ -6,19 +5,21 @@
 				<img src="/assets/img/login/mark-logo.png" />
 				<div class="header-logo-title">后台管理系统</div>
 			</div>
-			<div class="login-user-info">
-				<img src="/assets/img/login/head-img.png" alt="">
-				<span>张三</span>
-				<span @mouseover="handlePanel"></span>
-			</div>
-			<div class="edit-user" v-if="showPanel">
-				<div class="handle-change-password">
-					<img src="/assets/img/login/edit-password.png" />
-					<div @click="changePassword">修改密码</div>
+			<div class="header-right" @mouseleave="hideHandel">
+				<div class="login-user-info">
+					<img src="/assets/img/login/head-img.png" alt="">
+					<span>{{currentUser}}</span>
+					<span @mouseover="showHandel"></span>
 				</div>
-				<div class="handle-quit">
-					<img src="/assets/img/login/quit.png" />
-					<div>退出</div>
+				<div class="edit-user" v-if="showPanel">
+					<div class="handle-change-password">
+						<img src="/assets/img/login/edit-password.png" />
+						<div @click="changePassword">修改密码</div>
+					</div>
+					<div class="handle-quit">
+						<img src="/assets/img/login/quit.png" />
+						<div @click="quite">退出</div>
+					</div>
 				</div>
 			</div>
 		</header>
@@ -47,11 +48,13 @@
 					<img src="/assets/img/login/login-password.png" alt="">
 					<input type="password" class="edit-password" placeholder="请输入当前密码" v-model="currentPwd">
 					<div class="empty-pwd" v-if="!currentPwd&&passwordEmpty">输入不能为空</div>
+					<div class="empty-pwd" v-if="currentNoExist">当前密码输入错误</div>
 				</div>
 				<div>
 					<img src="/assets/img/login/login-password.png" alt="">
-					<input type="password" class="edit-password" placeholder="请输入当新密码" v-model="newPwd">
+					<input type="password" class="edit-password" placeholder="请输入新密码" v-model="newPwd">
 					<div class="empty-pwd" v-if="!newPwd&&passwordEmpty">新密码不能为空</div>
+					<div class="empty-pwd" v-if="passwordRule">密码可由数字、字母、特殊符号任意组成，且最少8个字符，最多20个字符</div>
 				</div>
 				<div>
 					<img src="/assets/img/login/login-confim-password.png" alt="">
@@ -60,6 +63,13 @@
 					<div class="empty-pwd" v-if="passwordSome">两次输入密码不一致</div>
 				</div>
 				<div class="edit-confirm-password" @click="confirm">确认</div>
+			</div>
+		</div>
+		<div class="change-success-layer" v-if="changeSuccess">
+			<div class="change-success-dialog">
+				<div>修改成功</div>
+				<div>{{changeTime}}秒回后自动跳转</div>
+				<img src="/assets/img/login/login-loading.png" />
 			</div>
 		</div>
 	</div>
@@ -79,25 +89,18 @@ export default {
 					name: "directive"
 				}
 			],
-			currentUser: null,
+			currentUser: window.sessionStorage.getItem("username"),
 			showPanel: false, //显示修改、退出操作板
 			showDialog: false, //显示修改密码弹框
 			currentPwd: "", //当前密码
 			newPwd: "", //当前新密码
 			confirmNewPwd: "", //确认新密码
 			passwordEmpty: false, //点击确认检验密码是否填值了
-			passwordSome: false //校验新密码是否一致
-
-			// headerMenus: [
-			// 	{
-			// 		title: "修改密码",
-			// 		operate: () => {}
-			// 	},
-			// 	{
-			// 		title: "安全退出",
-			// 		operate() {}
-			// 	}
-			// ]
+			passwordSome: false, //校验新密码是否一致
+			passwordRule: false, //密码规则校验
+			currentNoExist: false, //当前密码是否不存在
+			changeSuccess: false, //修改密码成功
+			changeTime: 2 //成功跳转时间
 		};
 	},
 	methods: {
@@ -110,38 +113,80 @@ export default {
 		changeSideWidth(leftWidth) {
 			this.$refs.container.changeSideWidth(leftWidth);
 		},
-		handlePanel() {
-			this.showPanel = !this.showPanel;
+		//显示用户操作
+		showHandel() {
+			this.showPanel = true;
+		},
+		hideHandel() {
+			this.showPanel = false;
 		},
 		//修改密码
 		changePassword() {
 			this.showDialog = true;
 		},
-		//关闭弹窗
+		//关闭弹窗,清空数据
 		close() {
 			this.showDialog = false;
+			this.currentPwd = "";
+			this.newPwd = "";
+			this.confirmNewPwd = "";
 		},
 		//确认修改密码
 		confirm() {
+			//不能为空
 			if (!this.currentPwd || !this.newPwd || !this.confirmNewPwd) {
 				this.passwordEmpty = true;
 				return;
 			}
+			//规则要符合，最少8个字符，最多20个字符；数字、字母、符号;
+			var passwordPatten = new RegExp(/^[a-zA-Z0-9\W_]{8,20}$/);
+			if (!passwordPatten.test(this.newPwd)) {
+				this.passwordRule = true;
+				return;
+			} else {
+				this.passwordRule = false;
+			}
+			//新密码和确认密码要一致
 			if (this.newPwd != this.confirmNewPwd) {
 				this.passwordSome = true;
 				return;
+			} else {
+				this.passwordSome = false;
 			}
 			$http({
 				url: "dance/modify_pwd",
 				type: "POST",
 				data: {
+					// email: window.sessionStorage.getItem("username"),
+					email: "test2@uzoo.cn",
 					old_password: this.currentPwd,
 					password1: this.newPwd,
 					password2: this.confirmNewPwd
 				}
 			}).then(data => {
-				console.log(data);
+				if ((data && data.old_password) || (data && data.msg == "The old password error.")) {
+					this.currentNoExist = true;
+					return;
+				}
+				if (data && data.msg == "The new password has effective.") {
+					this.changeSuccess = true;
+					var time = window.setInterval(() => {
+						this.changeTime--;
+						if (this.changeTime == 0) {
+							window.clearInterval(time);
+							window.sessionStorage.removeItem("user");
+							window.sessionStorage.removeItem("username");
+							$router.push({ path: "/login" });
+						}
+					}, 1000);
+				}
 			});
+		},
+		//退出系统
+		quite() {
+			window.sessionStorage.removeItem("user");
+			window.sessionStorage.removeItem("username");
+			$router.push({ path: "/login" });
 		}
 	}
 };
@@ -188,69 +233,76 @@ $sidebar-mini-width: 74px;
 				font-family: "FZCQJW--GB1-0";
 			}
 		}
-		.login-user-info {
-			position: absolute;
-			right: 0;
-			top: 20px;
-			width: 150px;
-			height: 80px;
-			img {
-				width: 40px;
-				height: 40px;
-				float: left;
-			}
-			span:nth-child(2) {
-				display: inline-block;
-				width: 40px;
-				height: 40px;
-				line-height: 40px;
-				float: left;
-				color: #333;
-				margin-left: 10px;
-			}
-			span:nth-child(3) {
-				border-top: 10px solid #000;
-				border-left: 10px solid transparent;
-				border-right: 10px solid transparent;
-				border-bottom: 10px solid transparent;
-				display: inline-block;
-				cursor: pointer;
-				float: left;
-				margin-top: 12px;
-			}
-		}
-		.edit-user {
-			width: 120px;
-			height: 100px;
-			background: #fff;
-			position: absolute;
-			display: inline-block;
-			top: 90px;
-			right: 30px;
+		.header-right {
+			float: right;
+			position: relative;
+			height: 200px;
+			width: 160px;
 			z-index: 10;
-			.handle-change-password,
-			.handle-quit {
-				color: #333;
-				font-size: 14px;
-				float: left;
-				width: 100%;
-				height: 40px;
-				padding: 10px;
-				cursor: pointer;
-				&:hover {
-					color: #3298f7;
-				}
+			.login-user-info {
+				position: absolute;
+				right: 0;
+				top: 20px;
+				width: 150px;
+				height: 80px;
 				img {
-					width: 20px;
-					height: 20px;
+					width: 40px;
+					height: 40px;
 					float: left;
 				}
-				div {
+				span:nth-child(2) {
+					display: inline-block;
+					width: 40px;
+					height: 40px;
+					line-height: 40px;
 					float: left;
-					height: 20px;
-					line-height: 20px;
-					width: 60px;
+					color: #333;
 					margin-left: 10px;
+				}
+				span:nth-child(3) {
+					border-top: 10px solid #000;
+					border-left: 10px solid transparent;
+					border-right: 10px solid transparent;
+					border-bottom: 10px solid transparent;
+					display: inline-block;
+					cursor: pointer;
+					float: left;
+					margin-top: 15px;
+					margin-left: 5px;
+				}
+			}
+			.edit-user {
+				width: 120px;
+				height: 100px;
+				background: #fff;
+				position: absolute;
+				display: inline-block;
+				top: 85px;
+				right: 30px;
+				.handle-change-password,
+				.handle-quit {
+					color: #333;
+					font-size: 14px;
+					float: left;
+					width: 100%;
+					height: 40px;
+					padding: 10px;
+					cursor: pointer;
+					&:hover {
+						color: #3298f7;
+					}
+					img {
+						width: 20px;
+						height: 20px;
+						float: left;
+					}
+					div {
+						float: left;
+						height: 20px;
+						line-height: 20px;
+						width: 60px;
+						margin-left: 10px;
+					}
 				}
 			}
 		}
@@ -362,6 +414,44 @@ $sidebar-mini-width: 74px;
 			}
 		}
 	}
+	.change-success-layer {
+		width: 100%;
+		height: 100%;
+		background: rgba(170, 170, 170, 0.25);
+		position: absolute;
+		top: 0;
+		z-index: 100;
+	}
+	.change-success-dialog {
+		width: 520px;
+		height: 300px;
+		background: #fff;
+		position: absolute;
+		top: -100px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: auto;
+		z-index: 5;
+		text-align: center;
+		div:nth-child(1) {
+			font-size: 30px;
+			font-weight: bold;
+			color: #8b94a6;
+			padding-top: 40px;
+		}
+		div:nth-child(2) {
+			font-size: 22px;
+			color: #b1b9c8;
+			padding-top: 30px;
+		}
+		img {
+			width: 100px;
+			height: 100px;
+			padding-top: 30px;
+		}
+	}
+
 	.app-menu-toggle {
 		height: 40px;
 		background-color: rgba(48, 102, 206, 1);
