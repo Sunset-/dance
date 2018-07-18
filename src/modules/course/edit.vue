@@ -269,7 +269,9 @@ export default {
 		confirmStep() {
 			console.log(this.editSteps);
 		},
-		cancelStep(item) {}
+		cancelStep(item) {
+			this.activeStepEdit = "";
+		}
 	},
 	created() {},
 	mounted() {
