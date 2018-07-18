@@ -100,7 +100,7 @@ export default {
                 this.loginValueEmpty = true;
                 return;
 			}
-            $http({
+			$http({
                 url: "dance/jwt_auth",
                 type: "POST",
                 data: {
@@ -110,6 +110,7 @@ export default {
             }).then(userInfo => {
                 if(userInfo){
 					window.sessionStorage.setItem("user",userInfo.token);
+					window.sessionStorage.setItem("username",this.unserName);
 					$tools.setCookie("Authorization",`JWT ${userInfo.token}`);
                     this.loginLoading = true;
                     var time = window.setInterval(()=>{
