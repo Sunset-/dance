@@ -31,7 +31,7 @@
 			<div class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
-					<span style="width:20%;text-align: left;">{{item.text}}</span>
+					<span style="width:20%;text-align: center;">{{item.text}}</span>
 					<span style="width:8%">{{item.motion && item.motion.name}}</span>
 					<span style="width:8%">{{item.expression && item.expression.name}}</span>
 					<span style="width:8%">{{item.camera && item.camera.name}}</span>
@@ -45,7 +45,7 @@
 					</span>
 					<div class="module-edit" v-show="activeStepEdit === index">
 						<div class="edit-content">
-							<ul v-for="(val,key) in editSteps" :key="key">
+							<ul v-for="(val,key) in editSteps">
 								<div v-if="key !== 'special'">
 									<li>
 										<label>{{val.name}}</label>
@@ -70,6 +70,39 @@
 								</li>
 								<li>
 									<span class="step-btn cancel" @click="cancelStep(item)"></span>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- 当小节为空时,添加第一条步骤 -->
+				<div class="step">
+					<div class="module-edit" v-show="isShowfirstSteps">
+						<div class="edit-content">
+							<ul v-for="(val,key) in editSteps">
+								<div v-if="key !== 'special'">
+									<li>
+										<label>{{val.name}}</label>
+									</li>
+									<li v-for="step in val.item">
+										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style"></xui-input>
+									</li>
+								</div>
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+									<li>
+										<label>{{s.name}}</label>
+									</li>
+									<li v-for="i in s.item">
+										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+									</li>
+								</div>
+							</ul>
+							<ul>
+								<li style="margin-right: 35px;">
+									<span class="step-btn confirm" @click="confirmStep()"></span>
+								</li>
+								<li>
+									<span class="step-btn cancel" @click="cancelStep()"></span>
 								</li>
 							</ul>
 						</div>
@@ -164,7 +197,8 @@ export default {
 						item: [{ value: "", placeholder: "0/180", style: "width:270px" }]
 					}
 				}
-			}
+			},
+			isShowfirstSteps: false
 		};
 	},
 	computed: {},
@@ -212,11 +246,18 @@ export default {
 		},
 		//添加步骤
 		addStep() {
-			let newStep = this.stepList[this.stepList.length - 1];
+			let newStep = {};
 			newStep.section_id = this.activeSection.id;
-			store.addSteps(newStep).then(res => {
-				this.init();
-			});
+			if (this.stepList.length > 0) {
+				newStep = this.stepList[this.stepList.length - 1];
+				newStep.section_id = this.activeSection.id;
+				store.addSteps(newStep).then(res => {
+					this.getSection();
+				});
+				this.isShowfirstSteps = false;
+			} else {
+				this.isShowfirstSteps = true;
+			}
 		},
 		//步骤编辑
 		editStep(index, item) {
@@ -226,7 +267,7 @@ export default {
 		//步骤删除
 		delStep(item) {
 			store.delSteps(item.id).then(res => {
-				this.init();
+				this.getSection();
 			});
 		},
 		filterEditSteps(currentStep) {
@@ -264,13 +305,87 @@ export default {
 					}
 				}
 			}
+			this.editSteps.id = currentStep.id;
 		},
-		onFilter() {},
+		//编辑小节
 		confirmStep() {
 			console.log(this.editSteps);
+			let newStep = {
+				id: 0,
+				section_id: this.activeSection.id
+			};
+			for (const key in this.editSteps) {
+				if (this.editSteps.hasOwnProperty(key)) {
+					const element = this.editSteps[key];
+					console.log(element);
+					switch (key) {
+						case "motion":
+						case "expression":
+						case "camera":
+						case "compare":
+						case "effect":
+							if (element !== null) {
+								let obj = {
+									id: 0,
+									name: element.item[0].value,
+									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
+									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
+									offset: parseInt(element.item[3].value === "" ? 0 : element.item[3].value),
+									end: 0,
+									wait: false
+								};
+								newStep[key] = obj;
+							} else {
+								newStep[key] = null;
+							}
+							break;
+						case "special":
+							if (element.hint !== null) {
+								let obj = {
+									id: 0,
+									name: element.hint.item[0].value,
+									action: 0,
+									begin: 0,
+									offset: 0,
+									end: 0,
+									wait: false
+								};
+								newStep["hint"] = obj;
+							} else {
+								newStep["hint"] = null;
+							}
+							if (element.person_dir !== null) {
+								newStep["person_dir"] = parseInt(
+									element.person_dir.item[0].value === "" ? 0 : element.person_dir.item[0].value
+								);
+							} else {
+								newStep["person_dir"] = 0;
+							}
+							break;
+						case "text":
+							newStep["text"] = element.item[0].value;
+							break;
+						default:
+							break;
+					}
+				}
+			}
+			if (this.editSteps.id) {
+				store.updateSteps(this.editSteps.id, newStep).then(res => {
+					this.isShowfirstSteps = false;
+					this.activeStepEdit = "";
+					this.getSection();
+				});
+			} else {
+				store.addSteps(newStep).then(res => {
+					this.isShowfirstSteps = false;
+					this.getSection();
+				});
+			}
 		},
 		cancelStep(item) {
 			this.activeStepEdit = "";
+			this.isShowfirstSteps = false;
 		}
 	},
 	created() {},
