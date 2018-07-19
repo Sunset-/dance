@@ -20,7 +20,7 @@ module.exports = {
     /**
      * 新增指令
      */
-    getCommandsSave(data) {
+    postCommandsSave(data) {
         return $http({
             url: URLS.commandsUrl,
             type: "POST",
@@ -30,9 +30,9 @@ module.exports = {
         });
     },
     //指令类型列表
-    getCommandsTypesList(id) {
+    getCommandsTypesList() {
         return $http({
-            url: URLS[commandsIdUrl] + '/' + id,
+            url: URLS.commandsIdUrl,
             type: "GET",
         }).then(res => {
             return res;
@@ -41,7 +41,7 @@ module.exports = {
     //删除类型指令
     getCommandsItemDelete(id) {
         return $http({
-            url: URLS[commandsIdUrl] + '/' + id,
+            url: URLS.commandsIdUrl + '/' + id,
             type: "DELETE",
         }).then(res => {
             return res;
@@ -50,7 +50,7 @@ module.exports = {
     //查询指令类型
     getCommandsSearch(id) {
         return $http({
-            url: URLS[commandsIdUrl] + '/' + id,
+            url: URLS.commandsIdUrl + '/' + id,
             type: "get",
         }).then(res => {
             return res;
@@ -59,7 +59,7 @@ module.exports = {
     //修复指令类型
     getCommandsTypeUpdate(id) {
         return $http({
-            url: URLS[commandsIdUrl] + '/' + id,
+            url: URLS.commandsIdUrl + '/' + id,
             type: "PATCH",
         }).then(res => {
             return res;
@@ -68,7 +68,7 @@ module.exports = {
     //获取指令匹配类型
     getCommandsMatch() {
         return $http({
-            url: URLS[commandsMatch],
+            url: URLS.commandsMatch,
             type: "GET",
         }).then(res => {
             return res;
@@ -78,7 +78,7 @@ module.exports = {
     //指令详情
     getCommandsDetail(id) {
         return $http({
-            url: URLS[commandsUrl] + '/' + id,
+            url: URLS.commandsUrl + '/' + id,
             type: "GET",
         }).then(res => {
             return res;
@@ -87,7 +87,7 @@ module.exports = {
     //删除指令
     getCommandsDelete(id) {
         return $http({
-            url: URLS[commandsUrl] + '/' + id,
+            url: URLS.commandsUrl + '/' + id,
             type: "DELETE",
         }).then(res => {
             return res;
@@ -96,7 +96,7 @@ module.exports = {
     //修复指令类型
     getCommandsUpdate(id) {
         return $http({
-            url: URLS[commandsIdUrl] + '/' + id,
+            url: URLS.commandsIdUrl + '/' + id,
             type: "PATCH",
         }).then(res => {
             return res;

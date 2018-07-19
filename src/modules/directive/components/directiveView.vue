@@ -19,9 +19,9 @@
 						<div class="form-item">
 							<div class="user-lable">指令匹配</div>
 							<div class="user-operate">
-								<xui-select v-model="modelDirective.match1" :options="matchOptions1"></xui-select>
-								<xui-select v-model="modelDirective.match2" :options="matchOptions2"></xui-select>
-								<xui-select v-model="modelDirective.match3" :options="matchOptions3"></xui-select>
+								<xui-select v-model="modelDirective.level_id" :options="matchOptions1"></xui-select>
+								<xui-select v-model="modelDirective.curriculum_id" :options="matchOptions2"></xui-select>
+								<xui-select v-model="modelDirective.section_id" :options="matchOptions3"></xui-select>
 							</div>
 						</div>
 						<div class="form-item">
@@ -109,17 +109,37 @@ function number(a) {
 	}
 	return false;
 }
+import STORE from "../store.js"
 export default {
 	methods: {
 		open: function(parmas,type) {
 			this.type=type;
+			
 			if(type=='add'){
 				this.reset();
+				this.initDirectiveType();
+				this.initDirectiveMatch();
 			}
 			this.$refs.modal.open();
 		},
 		tip: function(msg) {
 			console.log(msg);
+		},
+		initDirectiveType(){
+			STORE.getCommandsTypesList().then(res=>{
+				var list = res.map(item=>{
+						var c={};
+						c.text=item.name,
+						c.value= item.id;
+						return c;
+				})
+				this.typeOptions.data=list;
+			})
+		},
+		initDirectiveMatch(){
+			STORE.getCommandsMatch().then(res=>{				
+				this.matchOptions1.data=res;
+			})
 		},
 		addList() {
 			if(this.triggleData.length>0){
@@ -148,14 +168,35 @@ export default {
 				this.modelDirectiveContextError.error = false;
 			}
 		},
+		//保存指令
+		saveDirctive(){
+			var parms={
+				id:"",
+				name:this.modelDirective.name,
+				dance_id:"",
+				dance_name:"",
+				cmd_type_id:this.modelDirective.type,
+				curriculum_id:this.modelDirective.curriculum_id,
+				section_id:this.modelDirective.section_id,
+				trigger_words:this.triggleData
+			}
+			STORE.postCommandsSave(parms).then(res=>{
+				if(res){
+					$tip("新增成功","success");
+					this.$refs.modal.close();
+					this.$emit("refresh",true)
+				}
+			})
+		},
+		//新增时重置弹框
 		reset(){
 			this.triggleData=[];
 			this.modelDirective={
 				name: "",
-				type: "0",
-				match1: "0",
-				match2: "0",
-				match3: "0"
+				type: 1,
+				level_id: "0",
+				curriculum_id: "0",
+				section_id: "0"
 			};
 			this.parameterData=[
 				{
@@ -206,6 +247,17 @@ export default {
 			} else {
 				this.modelDirectiveError.error = false;
 			}
+		},
+		"modelDirective.type": function(val) {
+			if(val==2){
+				this.matchOptions1.disabled=false;
+				this.matchOptions2.disabled=false;
+				this.matchOptions3.disabled=false;
+			}else{
+				this.matchOptions1.disabled=true;
+				this.matchOptions2.disabled=true;
+				this.matchOptions3.disabled=true;
+			}
 		}
 	},
 	data() {
@@ -227,7 +279,7 @@ export default {
 			},
 			modelDirective: {
 				name: "",
-				type: "0",
+				type: 1,
 				match1: "0",
 				match2: "0",
 				match3: "0"
@@ -272,6 +324,7 @@ export default {
 				multiple: false,
 				clearable: true,
 				filter: false,
+				disabled:true,
 				style: "width:90px;",
 				data: [
 					{
@@ -284,6 +337,7 @@ export default {
 				multiple: false,
 				clearable: true,
 				filter: false,
+				disabled:true,
 				style: "width:90px;",
 				data: [
 					{
@@ -296,6 +350,7 @@ export default {
 				multiple: false,
 				clearable: true,
 				filter: false,
+				disabled:true,
 				style: "width:90px;",
 				data: [
 					{
@@ -311,11 +366,11 @@ export default {
 				data: [
 					{
 						text: "控制指令",
-						value: "0"
+						value: "1"
 					},
 					{
 						text: "选择指令",
-						value: "1"
+						value: "2"
 					}
 				]
 			},
@@ -336,7 +391,9 @@ export default {
 						style:
 							"background:#4081FF;color:#fff;border-radius:20px;margin-right:20px;padding:15px 30px;line-height:0px",
 						// color: "success",
-						operate() {}
+						operate:()=>{
+							this.saveDirctive();
+						}
 					},
 					{
 						label: "取消",

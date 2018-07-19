@@ -6,8 +6,8 @@
 		<div class="add-directive">
 			<xui-button @click="openModal" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>
-		<directive-view ref="moduleRef"></directive-view>
-		<del-view ref="delRef"></del-view>
+		<directive-view ref="moduleRef" @refresh="refresh"></directive-view>
+		<del-view ref="delRef" @refresh="refresh"></del-view>
 	</div>
 </template>
 <script>
@@ -89,9 +89,18 @@ export default {
 					// 	data: data
 					// };
 					return STORE.getCommandsList().then(res => {
+						if(!res || res.length==0){
+							return {
+								data:"",
+							    length:0
+							}
+						}
 						debugger
 						// this.roleCount = res.list.length;
-						return res;
+						return {
+							data:res,
+							length:res.length
+						};
 					});
 				}
 			}
@@ -104,6 +113,11 @@ export default {
 	methods: {
 		openModal() {
 			this.$refs.moduleRef.open("","add");
+		},
+		refresh(flag){
+			if(flag){
+				this.$refs.dTableRef.refresh();
+			}
 		}
 	},
 	mounted() {}
