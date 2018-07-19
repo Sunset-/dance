@@ -7,13 +7,13 @@
 		</div>
 		<div class="content">
 			<div class="module">
-				<span :class="{'active': activeModule === item}" v-for="item in moduleList" :key="item" @click="chooseModule(item)">{{item}}</span>
+				<span :class="{'active': activeSection.name === item.name}" v-for="item in sectionList" :key="item.id" @click="chooseSection(item)">{{item.name}}</span>
 			</div>
 			<!-- 模块操作 -->
 			<div class="module-operation">
-				<span class="add" @click="addModule"></span>
-				<span class="edit" @click="editModule"></span>
-				<span class="del" @click="delModule"></span>
+				<span class="add" @click="addSection"></span>
+				<span class="edit" @click="editSection"></span>
+				<span class="del" @click="delSection"></span>
 			</div>
 			<div class="table-header">
 				<span style="width:5%">序号</span>
@@ -29,42 +29,47 @@
 			</div>
 			<!--  -->
 			<div class="table-content">
-				<div class="step" v-for="(item,index) in moduleData" :key="index">
+				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
-					<span style="width:20%;text-align: left;">{{item.des}}</span>
-					<span style="width:8%">{{item.actionID}}</span>
-					<span style="width:8%">{{item.facdID}}</span>
-					<span style="width:8%">{{item.sceneID}}</span>
-					<span style="width:8%">{{item.comparisonID}}</span>
-					<span style="width:8%">{{item.dynamicID}}</span>
-					<span style="width:10%">{{item.title}}</span>
-					<span style="width:10%">{{item.direction}}</span>
+					<span style="width:20%;text-align: left;">{{item.text}}</span>
+					<span style="width:8%">{{item.motion && item.motion.name}}</span>
+					<span style="width:8%">{{item.expression && item.expression.name}}</span>
+					<span style="width:8%">{{item.camera && item.camera.name}}</span>
+					<span style="width:8%">{{item.compare && item.compare.name}}</span>
+					<span style="width:8%">{{item.effect && item.effect.name}}</span>
+					<span style="width:10%">{{item.hint && item.hint.text}}</span>
+					<span style="width:10%">{{item.person_dir && item.person_dir}}</span>
 					<span style="width:10%" class="content-operation">
 						<i class="edit" @click="editStep(index,item)"></i>
-						<i class="del"></i>
+						<i class="del" @click="delStep(item)"></i>
 					</span>
 					<div class="module-edit" v-show="activeStepEdit === index">
 						<div class="edit-content">
-							<ul v-for="item in editContent" :key="item">
-								<li>
-									<label>{{item.name}}</label>
-								</li>
-								<li v-for="i in item.item" :key="i">
-									<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
-								</li>
-								<li v-if="item.name1">
-									<label>{{item.name1}}</label>
-								</li>
-								<li v-if="item.item1" v-for="i in item.item1" :key="i">
-									<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
-								</li>
+							<ul v-for="(val,key) in editSteps" :key="key">
+								<div v-if="key !== 'special'">
+									<li>
+										<label>{{val.name}}</label>
+									</li>
+									<li v-for="step in val.item">
+										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style"></xui-input>
+									</li>
+								</div>
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+									<li>
+										<label>{{s.name}}</label>
+									</li>
+									<li v-for="i in s.item">
+										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+									</li>
+								</div>
+
 							</ul>
 							<ul>
 								<li style="margin-right: 35px;">
 									<span class="step-btn confirm" @click="confirmStep"></span>
 								</li>
 								<li>
-									<span class="step-btn cancel" @click="cancelStep"></span>
+									<span class="step-btn cancel" @click="cancelStep(item)"></span>
 								</li>
 							</ul>
 						</div>
@@ -79,6 +84,7 @@
 </template>
 
 <script>
+import store from "./store.js";
 export default {
 	name: "editCourse",
 	components: {},
@@ -93,37 +99,17 @@ export default {
 	},
 	data() {
 		return {
-			moduleList: ["动作示范示范", "动作示范", "动作示"],
-			activeModule: "动作示范示范",
-			moduleData: [
-				{
-					des: "欢迎学习说的发生都发生的发的发发多少的风格多少的风格多少的风格",
-					actionID: "100",
-					facdID: "13",
-					sceneID: "9",
-					comparisonID: "11",
-					dynamicID: "15",
-					title: "向前走转弯",
-					direction: "1"
-				},
-				{
-					des: "欢迎学习说的发生都发生的发的发发",
-					actionID: "100",
-					facdID: "13",
-					sceneID: "9",
-					comparisonID: "11",
-					dynamicID: "15",
-					title: "向前走转弯",
-					direction: "1"
-				}
-			],
+			sectionList: [],
+			activeSection: {},
+			stepList: [],
 			activeStepEdit: "",
-			editContent: [
-				{
+			editSteps: {
+				text: {
 					name: "话术",
+					key: "text",
 					item: [{ value: "", placeholder: "话术", class: "", style: "width:675px" }]
 				},
-				{
+				motion: {
 					name: "动作",
 					item: [
 						{ value: "", placeholder: "初级示范", class: "default-input" },
@@ -132,7 +118,7 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input" }
 					]
 				},
-				{
+				expression: {
 					name: "表情",
 					item: [
 						{ value: "", placeholder: "初级示范", class: "default-input" },
@@ -141,7 +127,7 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input" }
 					]
 				},
-				{
+				camera: {
 					name: "镜头",
 					item: [
 						{ value: "", placeholder: "初级示范", class: "default-input" },
@@ -150,7 +136,7 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input" }
 					]
 				},
-				{
+				compare: {
 					name: "比对",
 					item: [
 						{ value: "", placeholder: "初级示范", class: "default-input" },
@@ -159,7 +145,7 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input" }
 					]
 				},
-				{
+				effect: {
 					name: "动效",
 					item: [
 						{ value: "", placeholder: "初级示范", class: "default-input" },
@@ -168,40 +154,129 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input" }
 					]
 				},
-				{
-					name: "标题",
-					item: [{ value: "", placeholder: "向右走步特", style: "width:212px;margin-right: 93px;" }],
-					name1: "人物方向",
-					item1: [{ value: "", placeholder: "0/180", style: "width:270px" }]
+				special: {
+					hint: {
+						name: "标题",
+						item: [{ value: "", placeholder: "向右走步特", style: "width:212px;margin-right: 93px;" }]
+					},
+					person_dir: {
+						name: "人物方向",
+						item: [{ value: "", placeholder: "0/180", style: "width:270px" }]
+					}
 				}
-			]
+			}
 		};
 	},
 	computed: {},
 	watch: {},
 	filters: {},
 	methods: {
-		chooseModule(item) {
-			this.activeModule = item;
+		chooseSection(item) {
+			this.activeSection = item;
+			this.getStepBySectionId();
 		},
-		addModule() {},
-		editModule() {},
-		delModule() {},
+		//获取小节
+		getSection() {
+			let course = this.currentData.course;
+			store
+				.getSectionsByCourseId({
+					name: "",
+					curriculum_id: "",
+					curriculum_name: ""
+				})
+				.then(res => {
+					this.sectionList = res;
+					this.activeSection = this.sectionList[0];
+					this.getStepBySectionId();
+				});
+		},
+		//新增小节
+		addSection() {},
+		//编辑小节
+		editSection() {},
+		//删除小节
+		delSection() {
+			store.delSection(this.activeSection.id).then(() => {
+				this.getSection();
+			});
+		},
+		//获取步骤数据
+		getStepBySectionId() {
+			store
+				.getStepBySectionId({
+					section_id: this.activeSection.id
+				})
+				.then(res => {
+					this.stepList = res;
+				});
+		},
+		//添加步骤
 		addStep() {
-			console.log("addStep");
+			let newStep = this.stepList[this.stepList.length - 1];
+			newStep.section_id = this.activeSection.id;
+			store.addSteps(newStep).then(res => {
+				this.init();
+			});
 		},
+		//步骤编辑
 		editStep(index, item) {
 			this.activeStepEdit = index;
+			this.filterEditSteps(item);
 		},
-		delStep() {},
+		//步骤删除
+		delStep(item) {
+			store.delSteps(item.id).then(res => {
+				this.init();
+			});
+		},
+		filterEditSteps(currentStep) {
+			for (const key in currentStep) {
+				if (currentStep.hasOwnProperty(key)) {
+					const element = currentStep[key];
+					switch (key) {
+						case "motion":
+						case "expression":
+						case "camera":
+						case "compare":
+						case "effect":
+							if (element !== null) {
+								this.editSteps[key].item[0].value = element.name;
+								this.editSteps[key].item[1].value = element.action;
+								this.editSteps[key].item[2].value = element.begin;
+								this.editSteps[key].item[3].value = element.offset;
+							}
+							break;
+						case "hint":
+							if (element !== null) {
+								this.editSteps["special"][key].item[0].value = element.text;
+							}
+							break;
+						case "person_dir":
+							if (element !== null) {
+								this.editSteps["special"][key].item[0].value = element;
+							}
+							break;
+						case "text":
+							this.editSteps[key].item[0].value = element;
+							break;
+						default:
+							break;
+					}
+				}
+			}
+		},
 		onFilter() {},
-		confirmStep() {},
-		cancelStep() {
+		confirmStep() {
+			console.log(this.editSteps);
+		},
+		cancelStep(item) {
 			this.activeStepEdit = "";
 		}
 	},
 	created() {},
-	mounted() {},
+	mounted() {
+		this.getSection();
+	},
 	beforeDestory() {}
 };
 </script>
