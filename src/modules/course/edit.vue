@@ -7,7 +7,11 @@
 		</div>
 		<div class="content">
 			<div class="module">
-				<span :class="{'active': activeSection.name === item.name}" v-for="item in sectionList" :key="item.id" @click="chooseSection(item)">{{item.name}}</span>
+				<div v-for="item in sectionList" :key="item.id">
+					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
+					<span v-show="activeSection.name === item.name && activeSection.edit "></span>
+					<xui-input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name"></xui-input>
+				</div>
 			</div>
 			<!-- 模块操作 -->
 			<div class="module-operation">
@@ -27,7 +31,7 @@
 				<span style="width:10%">任务方向</span>
 				<span style="width:10%"></span>
 			</div>
-			<!--  -->
+			<!-- 步骤内容 -->
 			<div class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
@@ -198,7 +202,8 @@ export default {
 					}
 				}
 			},
-			isShowfirstSteps: false
+			isShowfirstSteps: false,
+			activeOperation: ""
 		};
 	},
 	computed: {},
@@ -215,23 +220,81 @@ export default {
 			store
 				.getSectionsByCourseId({
 					name: "",
-					curriculum_id: "",
+					curriculum_id: course.id,
 					curriculum_name: ""
 				})
 				.then(res => {
-					this.sectionList = res;
+					this.sectionList = res.map(val => {
+						val.edit = false;
+						return val;
+					});
 					this.activeSection = this.sectionList[0];
 					this.getStepBySectionId();
 				});
 		},
 		//新增小节
-		addSection() {},
+		addSection() {
+			let tempSection = {
+				name: "",
+				curriculum: this.currentData.course.id,
+				edit: true
+			};
+			this.sectionList.push(tempSection);
+			this.activeSection = tempSection;
+			this.activeOperation = "add";
+		},
 		//编辑小节
-		editSection() {},
+		editSection() {
+			this.activeSection.edit = true;
+			this.activeOperation = "edit";
+		},
 		//删除小节
 		delSection() {
 			store.delSection(this.activeSection.id).then(() => {
 				this.getSection();
+			});
+		},
+		/**
+		 * 加载页面事件
+		 */
+		loadPageEvent() {
+			let self = this;
+			document.onkeydown = function(event) {
+				let e = event || window.event || arguments.callee.caller.arguments[0];
+				if (e && e.keyCode == 13) {
+					debugger
+					self.$set(self.activeSection, "edit", false);
+					switch (self.activeOperation) {
+						case "add":
+							self.addSections(self.activeSection);
+							break;
+						case "edit":
+							self.updateSection(self.activeSection.id, self.activeSection);
+							break;
+						default:
+							break;
+					}
+				}
+			};
+		},
+		/**
+		 * 添加小节
+		 */
+		addSections(model) {
+			store.addSections({
+				curriculum: model.curriculum,
+				name: model.name,
+				add_time: Sunset.Dates.format(new Date())
+			});
+		},
+		/**
+		 * 修改小节
+		 */
+		updateSection(sectionId, model) {
+			store.updateSection(model.id, {
+				curriculum: model.curriculum,
+				name: model.name,
+				add_time: Sunset.Dates.format(new Date())
 			});
 		},
 		//获取步骤数据
@@ -259,7 +322,7 @@ export default {
 				this.isShowfirstSteps = true;
 			}
 		},
-		//步骤编辑
+		//步骤编辑开始
 		editStep(index, item) {
 			this.activeStepEdit = index;
 			this.filterEditSteps(item);
@@ -307,7 +370,7 @@ export default {
 			}
 			this.editSteps.id = currentStep.id;
 		},
-		//编辑小节
+		//编辑步骤
 		confirmStep() {
 			console.log(this.editSteps);
 			let newStep = {
@@ -383,6 +446,7 @@ export default {
 				});
 			}
 		},
+		//取消步骤
 		cancelStep(item) {
 			this.activeStepEdit = "";
 			this.isShowfirstSteps = false;
@@ -391,6 +455,7 @@ export default {
 	created() {},
 	mounted() {
 		this.getSection();
+		this.loadPageEvent();
 	},
 	beforeDestory() {}
 };
@@ -429,6 +494,14 @@ export default {
 			width: 100%;
 			height: 132px;
 			text-align: center;
+			& > div {
+				display: inline-block;
+				vertical-align: text-top;
+			}
+			.sectionInput {
+				top: -65px;
+				width: 98px;
+			}
 			span {
 				width: 98px;
 				height: 98px;
@@ -444,7 +517,7 @@ export default {
 				font-weight: bold;
 				cursor: pointer;
 			}
-			& > .active {
+			& > div > .active {
 				background: linear-gradient(#2f7cef, #5baffd);
 				&:after {
 					content: "";
@@ -456,6 +529,15 @@ export default {
 					margin-left: -10px;
 					margin-top: -2px;
 				}
+			}
+			.el-input .el-input__inner {
+				color: #ffffff;
+				box-shadow: 0px 0px 0px;
+				background: #c7c7c7;
+				border: 0px;
+				font-size: 14px;
+				font-weight: bold;
+				text-align: center;
 			}
 		}
 		.module-operation {

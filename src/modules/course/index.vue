@@ -95,7 +95,7 @@ export default {
 				//默认课程全部展示
 				this.allCourseMenu = this.courseMenu = posts[0];
 			});
-			this.LoadPageEvent();
+			this.loadPageEvent();
 		},
 		/**
 		 * 课程选择
@@ -182,7 +182,7 @@ export default {
 		/**
 		 * 加载页面事件
 		 */
-		LoadPageEvent() {
+		loadPageEvent() {
 			let self = this;
 			document.onkeydown = function(event) {
 				let e = event || window.event || arguments.callee.caller.arguments[0];
