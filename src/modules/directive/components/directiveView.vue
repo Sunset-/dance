@@ -26,7 +26,7 @@
 						</div>
 						<div class="form-item">
 							<div class="user-lable">指令名称</div>
-							<div class="user-operate" :class="{'error':modelDirectiveError.error}">
+							<div class="user-operate cp" :class="{'error':modelDirectiveError.error}">
 								<xui-input v-model="modelDirective.name" :options="inputOnptions"></xui-input>
 								<p class="error-tips" v-show="modelDirectiveError.error">{{modelDirectiveError.tips}}</p>
 							</div>
@@ -241,6 +241,12 @@ export default {
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
+			if (this.modelDirective.name=="") {
+				this.modelDirectiveError.error = true;
+				this.modelDirectiveError.tips="指令名称不能为空";
+			} else {
+				this.modelDirectiveError.error = false;
+			}
 			STORE.postCommandsSave(this.modelDirective.id ? "put" : "post", params).then(res => {
 				if (res) {
 					var tips = "新增成功";
@@ -393,6 +399,7 @@ export default {
 		"modelDirective.name": function(val) {
 			if (val) {
 				if (specilWorldTest(val)) {
+					this.modelDirectiveError.tips="指令出现特殊字符";
 					this.modelDirectiveError.error = true;
 				} else {
 					this.modelDirectiveError.error = false;
@@ -414,7 +421,6 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-			debugger;
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 				this.modelDirective.level_id = "0";
@@ -617,7 +623,9 @@ export default {
 .directive-form .error-parameter.triggle-list {
 	border: 1px solid #e22929;
 }
-
+.cp.error .el-input__inner{
+	border: 1px solid #e22929;
+}
 .directive-form {
 	overflow: hidden;
 	padding: 20px 30px;
