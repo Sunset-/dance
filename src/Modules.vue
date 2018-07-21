@@ -11,18 +11,19 @@
 					<span>{{currentUser}}</span>
 					<span @mouseover="showHandel"></span>
 				</div>
-				<div class="edit-user" v-if="showPanel">
-					<div class="handle-change-password">
-						<img src="/assets/img/login/edit-password.png" />
-						<div @click="changePassword">修改密码</div>
-					</div>
-					<div class="handle-quit">
-						<img src="/assets/img/login/quit.png" />
-						<div @click="quite">退出</div>
-					</div>
-				</div>
 			</div>
 		</header>
+		<!--用户操作栏-->
+		<div class="edit-user" v-if="showPanel" @mouseover="showHandel">
+			<div class="handle-change-password">
+				<img src="/assets/img/login/edit-password.png" />
+				<div @click="changePassword">修改密码</div>
+			</div>
+			<div class="handle-quit">
+				<img src="/assets/img/login/quit.png" />
+				<div @click="quite">退出</div>
+			</div>
+		</div>
 		<div class="app-content">
 			<div :class="['app-sidebar',miniMenu?'mini':'']">
 				<div class="app-menu-toggle" @click="miniMenu=!miniMenu"></div>
@@ -157,8 +158,7 @@ export default {
 				url: "dance/modify_pwd",
 				type: "POST",
 				data: {
-					// email: window.sessionStorage.getItem("username"),
-					email: "test2@uzoo.cn",
+					email: window.sessionStorage.getItem("username"),
 					old_password: this.currentPwd,
 					password1: this.newPwd,
 					password2: this.confirmNewPwd
@@ -237,7 +237,7 @@ $sidebar-mini-width: 74px;
 		.header-right {
 			float: right;
 			position: relative;
-			height: 200px;
+			height: 89px;
 			width: 160px;
 			z-index: 10;
 			.login-user-info {
@@ -272,39 +272,40 @@ $sidebar-mini-width: 74px;
 					margin-left: 5px;
 				}
 			}
-			.edit-user {
-				width: 120px;
-				height: 100px;
-				background: #fff;
-				position: absolute;
-				display: inline-block;
-				top: 85px;
-				right: 30px;
-				.handle-change-password,
-				.handle-quit {
-					color: #333;
-					font-size: 14px;
-					float: left;
-					width: 100%;
-					height: 40px;
-					padding: 10px;
-					cursor: pointer;
-					&:hover {
-						color: #3298f7;
-					}
-					img {
-						width: 20px;
-						height: 20px;
-						float: left;
-					}
-					div {
-						float: left;
-						height: 20px;
-						line-height: 20px;
-						width: 60px;
-						margin-left: 10px;
-					}
-				}
+		}
+	}
+	.edit-user {
+		width: 120px;
+		height: 100px;
+		background: #fff;
+		position: absolute;
+		display: inline-block;
+		top: 80px;
+		right: 30px;
+		z-index: 10;
+		.handle-change-password,
+		.handle-quit {
+			color: #333;
+			font-size: 14px;
+			float: left;
+			width: 100%;
+			height: 40px;
+			padding: 10px;
+			cursor: pointer;
+			&:hover {
+				color: #3298f7;
+			}
+			img {
+				width: 20px;
+				height: 20px;
+				float: left;
+			}
+			div {
+				float: left;
+				height: 20px;
+				line-height: 20px;
+				width: 60px;
+				margin-left: 10px;
 			}
 		}
 	}

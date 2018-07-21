@@ -44,7 +44,7 @@ export default (window.$http = function(options) {
     return axios(config).then(res => {
         var result = res.data;
         if (result.code) {
-            if (result.code == 200 || result.code == "310000") {
+            if (result.code == 200 || result.code == "310000" || res.status == 200) {
                 return result.data === void 0 ? result : result.data;
             } else if (result.code === 401) {
                 $tip("登录超时");

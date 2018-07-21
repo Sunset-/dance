@@ -10,35 +10,27 @@
 				</div>
 			</div>
 		</div>
-		<!--登录页-->
+		<!--忘记密码页-->
 		<div class="login-right">
 			<div class="login-content">
 				<div class="login-title">
-					<div class="login-title-name">登录</div>
+					<div class="login-title-name">忘记密码</div>
 					<div class="login-title-line"></div>
 				</div>
 				<div class="login-user">
-					<div :class="{'login-error': loginError}">
-						<img src="/assets/img/login/login-user.png" v-if="!loginError"/>
-						<img src="/assets/img/login/login-user-error.png" v-if="loginError"/>
-						<input @keydown="hideTip" type="text" v-model="unserName" class="login-user-name" placeholder="请输入图灵机器人的工作邮箱">
-					</div>
+					<img src="/assets/img/login/login-password.png"/>
+					<input type="password" v-model="newPwd" @keydown="hideTip" class="login-user-name" placeholder="请输入新密码">
 				</div>
-				<div class="login-confirm-user-error" v-if="!unserName&&loginValueEmpty&&!loginError ||!unserName&&forgetValueEmpty">邮箱地址不能为空</div>
-				<div class="login-confirm-user-error" v-if="loginError||forgetUser">工作邮箱地址错误</div>
+				<div class="login-confirm-password-error" v-if="!newPwd&&passwordEmpty">新密码不能为空</div>
 				<div class="login-password">
-					<div :class="{'login-error': loginError}">
-						<img src="/assets/img/login/login-password.png" v-if="!loginError"/>
-						<img src="/assets/img/login/login-password-error.png" v-if="loginError"/>
-						<input type="password" v-model="pwd" class="login-password-name" placeholder="请输入登录密码" @keyup.13="loginHandle">
-					</div>
+					<img src="/assets/img/login/login-confim-password.png"/>
+					<input type="password" v-model="confirmNewPwd" @keydown="hideTip" class="login-password-name" placeholder="请再次输入新密码">
 				</div>
-				<div class="login-confirm-password-error" v-if="!pwd&&loginValueEmpty&&!loginError&&!forgetUser">密码不能为空</div>
-				<div class="login-confirm-password-error" v-if="loginError">密码输入错误</div>
-				<div class="login-forget-password">
-					<span @click="handleStatus">忘记密码</span>
-				</div>
-				<div class="login-btn" @click="loginHandle">登录</div>
+				<div class="login-confirm-password-error" v-if="!confirmNewPwd&&passwordEmpty">确认密码不能为空</div>
+				<div class="login-confirm-password-error" v-if="passwordSome">两次输入密码不一致</div>
+				<div class="login-confirm-password-error" v-if="passwordRule">密码可最少8个字符，最多20个字符</div>
+				<div class="login-forget-password"></div>
+				<div class="login-btn" @click="confirmHandle">确认</div>
 			</div>
 		</div>
 		<div class="login-bottom">
@@ -46,7 +38,7 @@
 		</div>
 		<div class="login-success-layer" v-if="loginLoading">
 			<div class="login-success-dialog">
-				<div>登录成功</div>
+				<div>修改成功</div>
 				<div>{{loginTime}}秒回后自动跳转</div>
 				<img src="/assets/img/login/login-loading.png"/>
 			</div>
@@ -58,81 +50,58 @@
 export default {
 	data() {
 		return {
-            unserName:	'',
-            pwd: '',
-			loginValueEmpty: false,		//点击登录检验是否填值了
-			loginLoading: false,	//登录成功加载
-			loginError: false,	//登录验证错误
-			loginTime: 2,
-			forgetUser: false,		//忘记密码时校验用户名
-			forgetValueEmpty: false,	//忘记密码时检验用户名是否填了
+            newPwd: '',		//新密码
+			confirmNewPwd: '',	//确认新密码
+            passwordEmpty: false,	//检验密码是否为空
+            passwordSome: false, //校验新密码是否一致
+            passwordRule: false, //密码规则校验
+            loginLoading: false,	//重置密码成功加载
+            loginTime: 2,
 		};
 	},
 	methods: {
 	    //输入内容时不显示错误提示
         hideTip(){
-            this.loginError = false;
-            this.forgetUser = false;
+            this.passwordSome = false;
+            this.passwordRule = false;
 		},
-	    //显示忘记密码页
-        handleStatus(status){
-            if(!this.unserName){
-                this.forgetValueEmpty =  true;
+		//确认修改密码操作
+        confirmHandle(){
+			//不能为空
+			if (!this.newPwd || !this.confirmNewPwd) {
+				this.passwordEmpty = true;
 				return;
 			}
-            $http({
-                url: "dance/forget_pwd",
-                type: "GET",
-				data: {
-                    email: this.unserName,
-                    reset_url: window.location.href
-				}
-            }).then(res=>{
-                if(res && res.msg && res.msg.email && res.msg.email[0] == '请输入合法的邮件地址。'){
-                    this.forgetUser = true;
-					return;
-				}
-				if(res && res.msg == "The email has been sent." || res && res.msg=="ok"){
-					$tip(`重置密码验证链接已发送，请前往${this.unserName}邮箱验证`,"warning")
-				}
-            }).catch(error=>{
-                console.log(error);
-            });
-		},
-		//登录操作
-        loginHandle(){
-            if(!this.unserName || !this.pwd){
-                this.loginValueEmpty = true;
+            //新密码和确认密码要一致
+            if (this.newPwd != this.confirmNewPwd) {
+                this.passwordSome = true;
                 return;
+            }
+			//规则要符合，最少8个字符，最多20个字符；数字、字母、符号;
+			var passwordPatten = new RegExp(/^[a-zA-Z0-9\W_]{8,20}$/);
+			if (!passwordPatten.test(this.newPwd)) {
+				this.passwordRule = true;
+				return;
 			}
 			$http({
-                url: "dance/jwt_auth",
-                type: "POST",
-                data: {
-                    username: this.unserName,
-                    password: this.pwd
-                }
-            }).then(userInfo => {
-                if(userInfo){
-					window.sessionStorage.setItem("user",userInfo.token);
-					window.sessionStorage.setItem("username",this.unserName);
-					$tools.setCookie("Authorization",`JWT ${userInfo.token}`);
+				url: "dance/reset_pwd/"+window.localStorage.getItem("verify_code"),
+				type: "POST",
+				data: {
+					password1: this.newPwd,
+					password2: this.confirmNewPwd
+				}
+			}).then(res => {
+				if(res){
                     this.loginLoading = true;
                     var time = window.setInterval(()=>{
                         this.loginTime--;
                         if(this.loginTime==0){
                             window.clearInterval(time);
-                            $router.push({path:"/course"});
+                            $router.push({path:"/login"});
                         }
                     },1000);
 				}
-            }).catch(error=>{
-                if(error){
-                    this.loginError = true;
-                    this.unserName = '';
-                    this.pwd = '';
-				}
-			})
+			});
 		}
 	}
 };
