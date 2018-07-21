@@ -1,6 +1,7 @@
 <!-- 课程管理 -->
 <template>
 	<div class="course" id="course">
+		<div class="xui-pop" style="width:200px;background:red;" data-content="<div>欢迎学习伦巴的基本步动作，来，让我们一起跳起来</div>">12323</div>
 		<div v-show="!isShowEditCourse">
 			<!-- 等级列表 -->
 			<div class="item">

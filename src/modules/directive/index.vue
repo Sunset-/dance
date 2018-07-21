@@ -4,10 +4,10 @@
 
 		</xui-table>
 		<div class="add-directive">
-			<xui-button @click="openModal" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
+			<xui-button @click="openModal('add','')" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>
 		<directive-view ref="moduleRef" @refresh="refresh"></directive-view>
-		<del-view ref="delRef" @refresh="refresh"></del-view>
+		<del-view ref="delRef" @confirm="deleConfirm" ></del-view>
 	</div>
 </template>
 <script>
@@ -35,7 +35,7 @@ export default {
 									// 	return this.flag;
 									// },
 									operate: record => {
-										this.openModal();
+										this.openModal('edit',record);
 										// this.orgEventRecive("edit", record.id);
 									}
 								},
@@ -48,7 +48,7 @@ export default {
 									// 	return this.flag;
 									// },
 									operate: record => {
-										this.$refs.delRef.open();
+										this.$refs.delRef.open(record.id);
 										// this.deleteOrgEvent(record);
 									}
 								}
@@ -95,7 +95,6 @@ export default {
 							    length:0
 							}
 						}
-						debugger
 						// this.roleCount = res.list.length;
 						return {
 							data:res,
@@ -111,12 +110,26 @@ export default {
 		delView
 	},
 	methods: {
-		openModal() {
-			this.$refs.moduleRef.open("","add");
+		openModal(type,record) {
+			this.$refs.moduleRef.open(type,record);
 		},
 		refresh(flag){
 			if(flag){
 				this.$refs.dTableRef.refresh();
+			}
+		},
+		deleConfirm(id){
+			if(id){
+				STORE.getCommandsDelete(id).then(res=>{
+					if(res.msg=="ok"){
+						$tip(res.msg,"success");
+						this.$refs.delRef.cancel();
+						this.refresh(true);
+						return
+					}
+					$tip(res.msg,"warning");
+					
+				})
 			}
 		}
 	},
@@ -128,8 +141,19 @@ export default {
 .xui-style-table .xui-datatable-table tr th {
 	border: 0px solid #000;
 }
+.xui-style-table .xui-datatable-table thead tr{
+	background: #EEEEEE;
+	height: 32px;
+	line-height: 32px;
+}
+.xui-datatable .xui-datatable-table tbody tr:nth-child(odd){
+	background: #fff;
+}
 .xui-style-table .xui-datatable-table tr:hover button {
 	opacity: 1 !important;
+}
+.xui-style-table .xui-datatable-table tbody tr:hover{
+	background: #EFF2F6;
 }
 .el-icon-add {
 	background: url("/assets/directive/icon/icon-add.png");

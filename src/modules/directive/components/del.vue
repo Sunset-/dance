@@ -17,26 +17,31 @@
 </template>
 
 <script>
+
 export default {
 	name: "delcourse",
 	components: {},
 	mixins: [],
 	props: {},
 	data() {
-		return {};
+		return {
+			currentId:""
+		};
 	},
 	computed: {},
 	watch: {},
 	filters: {},
 	methods: {
-		open() {
+		open(id) {
+			this.currentId=id;
 			this.$refs.modal.open();
 		},
 		cancel() {
 			this.$refs.modal.close();
 		},
 		confirm() {
-			this.$refs.modal.close();
+			this.$emit("confirm",this.currentId)
+			// this.$refs.modal.close();
 		},
 		closed() {}
 	},
