@@ -9,7 +9,15 @@ module.exports = [{
     {
         title: "指令类型",
         name: "type",
-        align: "center"
+        align: "center",
+        format(v) {
+            if (v == 1) {
+                return "控制指令";
+            } else {
+                return "选择指令";
+            }
+
+        }
     },
     {
         title: "指令名称",
@@ -18,15 +26,27 @@ module.exports = [{
     },
     {
         title: "触发提示",
-        name: "trigger",
+        name: "step_item",
         align: "center",
-        style: "text-align:center;width:200px"
+        style: "text-align:center;width:200px",
+        format(v) {
+            if (v) {
+                return v.text;
+            }
+
+        }
     },
     {
         title: "触发词",
-        name: "triggerWord",
+        name: "trigger_words",
         align: "center",
-        style: "text-align:center;width:200px"
+        style: "text-align:center;width:200px",
+        format(v) {
+            if (v) {
+                return v.map(item => { return item.word || item.name }).toString();
+            }
+
+        }
 
     }
 ]
