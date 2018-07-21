@@ -26,7 +26,7 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input class="input edit" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus/>
+						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus/>
 					</div>
 				</div>
 				<div class="operate">
@@ -78,31 +78,43 @@ export default {
 		 */
 		init() {
 			store.getLevelList().then(res => {
-				this.levelMenu = res.map(val => {
-					val.edit = false;
-					return val;
-				});
-				this.activeLevel = [];
-				if (this.levelMenu && this.levelMenu.length > 0) {
-					this.activeLevel = this.levelMenu[0];
-					this.getCourseList(this.levelMenu[0].id);
+				if (res && res.length > 0) {
+					this.levelMenu = res.map(val => {
+						val.edit = false;
+						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
+							this.activeLevel = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeLevel) === "{}") {
+						this.activeLevel = this.levelMenu[0];
+					}
+					this.getCourseList(this.activeLevel.id);
+				} else {
+					this.activeLevel = {};
+					this.activeCourse = {};
+					this.courseMenu = [];
 				}
+				console.log(this.levelMenu);
 			});
 			// this.loadPageEvent();
 		},
 		//获取课程
 		getCourseList(levelId) {
-			store
-				.getCourseList({
-					level_id: levelId
-				})
-				.then(res => {
-					//默认课程全部展示
-					this.courseMenu = res;
-					if (this.courseMenu && this.courseMenu.length > 0) {
+			store.getCourseList({ level_id: levelId }).then(res => {
+				if (res && res.length > 0) {
+					this.courseMenu = res.map(val => {
+						val.edit = false;
+						if (JSON.stringify(this.activeCourse) !== "{}" && val.id === this.activeCourse.id) {
+							this.activeCourse = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeCourse) === "{}") {
 						this.activeCourse = this.courseMenu[0];
 					}
-				});
+				}
+			});
 		},
 		/**
 		 * 课程选择
@@ -154,7 +166,7 @@ export default {
 		/**
 		 * 删除
 		 */
-		del(key, item) {
+		del(key) {
 			let param = {};
 			if (key === "level") {
 				param = this.activeLevel;
@@ -178,24 +190,43 @@ export default {
 		 * 加载页面事件
 		 */
 		addEvent() {
-			if (this.activeLevel.name === "" || this.activeCourse === "") {
-				return;
-			}
-			this.$set(this.activeLevel, "edit", false);
-			this.$set(this.activeCourse, "edit", false);
-			switch (this.activeOperation.type) {
-				case "add":
-					this.activeOperation.key === "level"
-						? this.addLevel(this.activeLevel)
-						: this.addCourse(this.activeCourse);
-					break;
-				case "edit":
-					this.activeOperation.key === "level"
-						? this.updateLevel(this.activeLevel)
-						: this.updateCourse(this.activeCourse);
-					break;
-				default:
-					break;
+			if (this.activeLevel.name === "" || this.activeCourse.name === "") {  //编辑名称为空的情况，直接删除
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level" ? this.activeLevel.pop() : this.activeCourse.pop();
+						break;
+					case "edit":
+						if (this.activeOperation.key === "level") {
+							store.delLevelById(this.activeLevel.id).then(() => {
+								this.init();
+							});
+						} else {
+							store.delCourseById(this.activeCourse.id).then(() => {
+								this.init();
+							});
+						}
+
+						break;
+					default:
+						break;
+				}
+			} else {
+				this.$set(this.activeLevel, "edit", false);
+				this.$set(this.activeCourse, "edit", false);
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level"
+							? this.addLevel(this.activeLevel)
+							: this.addCourse(this.activeCourse);
+						break;
+					case "edit":
+						this.activeOperation.key === "level"
+							? this.updateLevel(this.activeLevel)
+							: this.updateCourse(this.activeCourse);
+						break;
+					default:
+						break;
+				}
 			}
 		},
 		//回车事件
@@ -218,6 +249,7 @@ export default {
 					add_time: Sunset.Dates.format(new Date())
 				})
 				.then(res => {
+					this.activeLevel = res;
 					this.init();
 				});
 		},
@@ -234,11 +266,16 @@ export default {
 		 * 添加课程
 		 */
 		addCourse(model) {
-			store.addCourse({
-				name: model.name,
-				level: model.level,
-				add_time: Sunset.Dates.format(new Date())
-			});
+			store
+				.addCourse({
+					name: model.name,
+					level: model.level,
+					add_time: Sunset.Dates.format(new Date())
+				})
+				.then(res => {
+					this.activeCourse = res;
+					this.init();
+				});
 		},
 		/**
 		 * 修改课程
