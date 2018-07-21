@@ -185,8 +185,12 @@ export default {
 		//获取指令匹配
 		initDirectiveMatch() {
 			STORE.getCommandsMatch().then(res => {
+				
+				if(res.length==0){
+					this.modelDirective.curriculum_id=0;
+					return	
+				}
 				this.commandMatchLevel = {};
-				if(res.length==0){return}
 				this.matchOptions1.data.push(
 					...res.map(item => {
 						var cc = {};
@@ -415,6 +419,10 @@ export default {
 				this.modelDirective.section_id = "0";
 				this.modelDirective.level_id = "0";
 			} else {
+				if(!this.commandMatchLevel){
+					this.modelDirective.curriculum_id=0;
+				}
+				this.commandMatchSection={};
 				this.matchOptions2.data.push(
 					...this.commandMatchLevel[val].map(item => {
 						var cc = {};
@@ -431,6 +439,10 @@ export default {
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 			} else {
+				if(!this.commandMatchSection){
+					this.modelDirective.level_id=0;
+					return;
+				}
 				this.matchOptions2.data.push(
 					...this.commandMatchSection[val].map(item => {
 						var cc = {};
@@ -447,8 +459,8 @@ export default {
 			type: "",
 			triggleData: [],
 			showParams: false,
-			commandMatchLevel: {},
-			commandMatchSection: {},
+			commandMatchLevel: null,
+			commandMatchSection: null,
 			modelDirectiveError: {
 				error: false,
 				tips: "指令出现特殊字符"
