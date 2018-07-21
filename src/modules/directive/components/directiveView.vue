@@ -38,6 +38,7 @@
 								<div class="parameter-seting-btn" @click="showParams=!showParams">参数设置</div>
 							</div>
 							<div class="parameter-list" v-show="showParams">
+								<div class="arrow"></div>
 								<div v-for="(item,index) in parameterData" :key="index">
 									<span>{{item.name}}</span>
 									<div class="step-item" :class="{'error-class':item.item1.error}">
@@ -185,10 +186,9 @@ export default {
 		//获取指令匹配
 		initDirectiveMatch() {
 			STORE.getCommandsMatch().then(res => {
-				
-				if(res.length==0){
-					this.modelDirective.curriculum_id=0;
-					return	
+				if (res.length == 0) {
+					this.modelDirective.curriculum_id = 0;
+					return;
 				}
 				this.commandMatchLevel = {};
 				this.matchOptions1.data.push(
@@ -414,15 +414,15 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-			debugger
+			debugger;
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 				this.modelDirective.level_id = "0";
 			} else {
-				if(!this.commandMatchLevel){
-					this.modelDirective.curriculum_id=0;
+				if (!this.commandMatchLevel) {
+					this.modelDirective.curriculum_id = 0;
 				}
-				this.commandMatchSection={};
+				this.commandMatchSection = {};
 				this.matchOptions2.data.push(
 					...this.commandMatchLevel[val].map(item => {
 						var cc = {};
@@ -439,8 +439,8 @@ export default {
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 			} else {
-				if(!this.commandMatchSection){
-					this.modelDirective.level_id=0;
+				if (!this.commandMatchSection) {
+					this.modelDirective.level_id = 0;
 					return;
 				}
 				this.matchOptions2.data.push(
@@ -677,6 +677,17 @@ export default {
 		.error-class .el-input__inner:hover,
 		.error-class .el-input__inner {
 			border-color: #e22929 !important;
+		}
+		.arrow {
+			position: absolute;
+			right: 93px;
+			width: 0px;
+			height: 0px;
+			border-top: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-bottom: 10px solid #bbd2ff;
+			border-left: 10px solid transparent;
+			top: -20px;
 		}
 	}
 	.parameter-seting-btn {
