@@ -26,7 +26,7 @@
 						</div>
 						<div class="form-item">
 							<div class="user-lable">指令名称</div>
-							<div class="user-operate" :class="{'error':modelDirectiveError.error}">
+							<div class="user-operate cp" :class="{'error':modelDirectiveError.error}">
 								<xui-input v-model="modelDirective.name" :options="inputOnptions"></xui-input>
 								<p class="error-tips" v-show="modelDirectiveError.error">{{modelDirectiveError.tips}}</p>
 							</div>
@@ -38,6 +38,7 @@
 								<div class="parameter-seting-btn" @click="showParams=!showParams">参数设置</div>
 							</div>
 							<div class="parameter-list" v-show="showParams">
+								<div class="arrow"></div>
 								<div v-for="(item,index) in parameterData" :key="index">
 									<span>{{item.name}}</span>
 									<div class="step-item" :class="{'error-class':item.item1.error}">
@@ -185,8 +186,11 @@ export default {
 		//获取指令匹配
 		initDirectiveMatch() {
 			STORE.getCommandsMatch().then(res => {
+				if (res.length == 0) {
+					this.modelDirective.curriculum_id = 0;
+					return;
+				}
 				this.commandMatchLevel = {};
-				if(res.length==0){return}
 				this.matchOptions1.data.push(
 					...res.map(item => {
 						var cc = {};
@@ -237,6 +241,12 @@ export default {
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
+			if (this.modelDirective.name=="") {
+				this.modelDirectiveError.error = true;
+				this.modelDirectiveError.tips="指令名称不能为空";
+			} else {
+				this.modelDirectiveError.error = false;
+			}
 			STORE.postCommandsSave(this.modelDirective.id ? "put" : "post", params).then(res => {
 				if (res) {
 					var tips = "新增成功";
@@ -389,6 +399,7 @@ export default {
 		"modelDirective.name": function(val) {
 			if (val) {
 				if (specilWorldTest(val)) {
+					this.modelDirectiveError.tips="指令出现特殊字符";
 					this.modelDirectiveError.error = true;
 				} else {
 					this.modelDirectiveError.error = false;
@@ -410,11 +421,14 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-			debugger
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 				this.modelDirective.level_id = "0";
 			} else {
+				if (!this.commandMatchLevel) {
+					this.modelDirective.curriculum_id = 0;
+				}
+				this.commandMatchSection = {};
 				this.matchOptions2.data.push(
 					...this.commandMatchLevel[val].map(item => {
 						var cc = {};
@@ -431,6 +445,10 @@ export default {
 			if (val == "0") {
 				this.modelDirective.section_id = "0";
 			} else {
+				if (!this.commandMatchSection) {
+					this.modelDirective.level_id = 0;
+					return;
+				}
 				this.matchOptions2.data.push(
 					...this.commandMatchSection[val].map(item => {
 						var cc = {};
@@ -447,8 +465,8 @@ export default {
 			type: "",
 			triggleData: [],
 			showParams: false,
-			commandMatchLevel: {},
-			commandMatchSection: {},
+			commandMatchLevel: null,
+			commandMatchSection: null,
 			modelDirectiveError: {
 				error: false,
 				tips: "指令出现特殊字符"
@@ -605,7 +623,9 @@ export default {
 .directive-form .error-parameter.triggle-list {
 	border: 1px solid #e22929;
 }
-
+.cp.error .el-input__inner{
+	border: 1px solid #e22929;
+}
 .directive-form {
 	overflow: hidden;
 	padding: 20px 30px;
@@ -665,6 +685,17 @@ export default {
 		.error-class .el-input__inner:hover,
 		.error-class .el-input__inner {
 			border-color: #e22929 !important;
+		}
+		.arrow {
+			position: absolute;
+			right: 93px;
+			width: 0px;
+			height: 0px;
+			border-top: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-bottom: 10px solid #bbd2ff;
+			border-left: 10px solid transparent;
+			top: -20px;
 		}
 	}
 	.parameter-seting-btn {
