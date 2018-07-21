@@ -10,7 +10,7 @@
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span v-show="activeSection.name === item.name && activeSection.edit "></span>
-					<xui-input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name"></xui-input>
+					<input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 				</div>
 			</div>
 			<!-- 模块操作 -->
@@ -35,14 +35,14 @@
 			<div class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
-					<span style="width:20%;text-align: center;">{{item.text}}</span>
-					<span style="width:8%">{{item.motion && item.motion.name}}</span>
-					<span style="width:8%">{{item.expression && item.expression.name}}</span>
-					<span style="width:8%">{{item.camera && item.camera.name}}</span>
-					<span style="width:8%">{{item.compare && item.compare.name}}</span>
-					<span style="width:8%">{{item.effect && item.effect.name}}</span>
-					<span style="width:10%">{{item.hint && item.hint.text}}</span>
-					<span style="width:10%">{{item.person_dir && item.person_dir}}</span>
+					<span class="xui-pop" style="width:20%;text-align: center;" data-content="item.text">{{item.text}}</span>
+					<span class="xui-pop" style="width:8%" data-content="item">{{item.motion && item.motion.name}}</span>
+					<span class="xui-pop" style="width:8%" data-content="item">{{item.expression && item.expression.name}}</span>
+					<span class="xui-pop" style="width:8%" data-content="item">{{item.camera && item.camera.name}}</span>
+					<span class="xui-pop" style="width:8%" data-content="item">{{item.compare && item.compare.name}}</span>
+					<span class="xui-pop" style="width:8%" data-content="item">{{item.effect && item.effect.name}}</span>
+					<span class="xui-pop" style="width:10%" data-content="item">{{item.hint && item.hint.text}}</span>
+					<span class="xui-pop" style="width:10%" data-content="item">{{item.person_dir && item.person_dir}}</span>
 					<span style="width:10%" class="content-operation">
 						<i class="edit" @click="editStep(index,item)"></i>
 						<i class="del" @click="delStep(item)"></i>
@@ -55,15 +55,17 @@
 										<label>{{val.name}}</label>
 									</li>
 									<li v-for="step in val.item">
-										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style"></xui-input>
+										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
+										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
 								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
 									<li>
-										<label>{{s.name}}</label>
+										<label style="top:0px;">{{s.name}}</label>
 									</li>
 									<li v-for="i in s.item">
-										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+										<p class="error-tips">{{i.error}}</p>
 									</li>
 								</div>
 
@@ -89,7 +91,8 @@
 										<label>{{val.name}}</label>
 									</li>
 									<li v-for="step in val.item">
-										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style"></xui-input>
+										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
+										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
 								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
@@ -97,7 +100,8 @@
 										<label>{{s.name}}</label>
 									</li>
 									<li v-for="i in s.item">
-										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style"></xui-input>
+										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+										<p class="error-tips">{{i.error}}</p>
 									</li>
 								</div>
 							</ul>
@@ -113,14 +117,52 @@
 					</div>
 				</div>
 			</div>
-			<div class="table-bottom" @click="addStep">
-				<span class="submit"></span>
+			<div class="table-bottom">
+				<span class="submit" @click="addStep"></span>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+function specilWorldTest(a) {
+	if (a === "") {
+		return false;
+	}
+	var regEn = /[`~!@#$%^&*()_+<>?:"{},.\/;'[\]]/im,
+		regCn = /[·！#￥（——）：；“”‘、，|《。》？、【】[\]]/im;
+
+	if (regEn.test(a) || regCn.test(a)) {
+		return true;
+	}
+	return false;
+}
+function number(a) {
+	var pattern = new RegExp("^[0-9]*$");
+	if (pattern.test(a)) {
+		return true;
+	}
+	return false;
+}
+function numberMinus(a) {
+	if (a === "") {
+		return true;
+	}
+	var pattern = new RegExp("^[-+]?[0-9]+$");
+	if (pattern.test(a)) {
+		return true;
+	}
+	return false;
+}
+
+function timeOffset(a) {
+	var pattern = new RegExp("^[0-9]*$"),
+		pattern2 = new RegExp("^[-|0-9][0-9]* ");
+	if ((pattern.test(a) || pattern2.test(a)) && a <= 10) {
+		return true;
+	}
+	return false;
+}
 import store from "./store.js";
 export default {
 	name: "editCourse",
@@ -144,61 +186,76 @@ export default {
 				text: {
 					name: "话术",
 					key: "text",
-					item: [{ value: "", placeholder: "话术", class: "", style: "width:675px" }]
+					id: 0,
+					item: [{ value: "", placeholder: "话术", class: "", style: "width:675px", error: "" }]
 				},
 				motion: {
 					name: "动作",
+					id: 0,
 					item: [
-						{ value: "", placeholder: "初级示范", class: "default-input" },
-						{ value: "", placeholder: "ID", class: "id-input" },
-						{ value: "", placeholder: "触发时机", class: "timing-input" },
-						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
 				expression: {
 					name: "表情",
+					id: 0,
 					item: [
-						{ value: "", placeholder: "初级示范", class: "default-input" },
-						{ value: "", placeholder: "ID", class: "id-input" },
-						{ value: "", placeholder: "触发时机", class: "timing-input" },
-						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
 				camera: {
 					name: "镜头",
+					id: 0,
 					item: [
-						{ value: "", placeholder: "初级示范", class: "default-input" },
-						{ value: "", placeholder: "ID", class: "id-input" },
-						{ value: "", placeholder: "触发时机", class: "timing-input" },
-						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
 				compare: {
 					name: "比对",
+					id: 0,
 					item: [
-						{ value: "", placeholder: "初级示范", class: "default-input" },
-						{ value: "", placeholder: "ID", class: "id-input" },
-						{ value: "", placeholder: "触发时机", class: "timing-input" },
-						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
 				effect: {
 					name: "动效",
+					id: 0,
 					item: [
-						{ value: "", placeholder: "初级示范", class: "default-input" },
-						{ value: "", placeholder: "ID", class: "id-input" },
-						{ value: "", placeholder: "触发时机", class: "timing-input" },
-						{ value: "", placeholder: "偏移时间", class: "offset-input" }
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
 				special: {
 					hint: {
 						name: "标题",
-						item: [{ value: "", placeholder: "向右走步特", style: "width:212px;margin-right: 93px;" }]
+						id: 0,
+						item: [
+							{
+								value: "",
+								placeholder: "标题",
+								style: "width:212px;margin-right: 93px;",
+								error: ""
+							}
+						]
 					},
 					person_dir: {
 						name: "人物方向",
-						item: [{ value: "", placeholder: "0/180", style: "width:270px" }]
+						id: 0,
+						item: [{ value: "", placeholder: "人物方向", style: "width:270px", error: "" }]
 					}
 				}
 			},
@@ -226,9 +283,14 @@ export default {
 				.then(res => {
 					this.sectionList = res.map(val => {
 						val.edit = false;
+						if (JSON.stringify(this.activeSection) !== "{}" && val.id === this.activeSection.id) {
+							this.activeSection = val;
+						}
 						return val;
 					});
-					this.activeSection = this.sectionList[0];
+					if (JSON.stringify(this.activeSection) === "{}") {
+						this.activeSection = this.sectionList[0];
+					}
 					this.getStepBySectionId();
 				});
 		},
@@ -251,8 +313,22 @@ export default {
 		//删除小节
 		delSection() {
 			store.delSection(this.activeSection.id).then(() => {
+				this.activeSection = {};
 				this.getSection();
 			});
+		},
+		addEvent() {
+			this.$set(this.activeSection, "edit", false);
+			switch (this.activeOperation) {
+				case "add":
+					this.addSections(this.activeSection);
+					break;
+				case "edit":
+					this.updateSection(this.activeSection.id, this.activeSection);
+					break;
+				default:
+					break;
+			}
 		},
 		/**
 		 * 加载页面事件
@@ -262,17 +338,7 @@ export default {
 			document.onkeydown = function(event) {
 				let e = event || window.event || arguments.callee.caller.arguments[0];
 				if (e && e.keyCode == 13) {
-					self.$set(self.activeSection, "edit", false);
-					switch (self.activeOperation) {
-						case "add":
-							self.addSections(self.activeSection);
-							break;
-						case "edit":
-							self.updateSection(self.activeSection.id, self.activeSection);
-							break;
-						default:
-							break;
-					}
+					self.addEvent();
 				}
 			};
 		},
@@ -280,11 +346,16 @@ export default {
 		 * 添加小节
 		 */
 		addSections(model) {
-			store.addSections({
-				curriculum: model.curriculum,
-				name: model.name,
-				add_time: Sunset.Dates.format(new Date())
-			});
+			store
+				.addSections({
+					curriculum: model.curriculum,
+					name: model.name,
+					add_time: Sunset.Dates.format(new Date())
+				})
+				.then(res => {
+					this.activeSection = res;
+					this.getSection();
+				});
 		},
 		/**
 		 * 修改小节
@@ -343,6 +414,7 @@ export default {
 						case "compare":
 						case "effect":
 							if (element !== null) {
+								this.editSteps[key].id = element.id;
 								this.editSteps[key].item[0].value = element.name;
 								this.editSteps[key].item[1].value = element.action;
 								this.editSteps[key].item[2].value = element.begin;
@@ -351,6 +423,7 @@ export default {
 							break;
 						case "hint":
 							if (element !== null) {
+								this.editSteps["special"][key].id = element.id;
 								this.editSteps["special"][key].item[0].value = element.text;
 							}
 							break;
@@ -369,17 +442,70 @@ export default {
 			}
 			this.editSteps.id = currentStep.id;
 		},
+		//校验
+		changeHandle(item) {
+			switch (item.placeholder) {
+				case "话术":
+					if (item.value === "") {
+						item.error = "内容不能为空";
+					} else if (item.value.length > 40) {
+						item.error = "最长40个汉字";
+					} else {
+						item.error = "";
+					}
+					break;
+				case "名称":
+					item.value.length > 10 ? (item.error = "最长10个汉字") : (item.error = "");
+					break;
+				case "标题":
+					item.value.length > 6 ? (item.error = "最长6个汉字") : (item.error = "");
+					break;
+				case "人物方向":
+					if (!number(item.value)) {
+						item.error = "仅可填入数字";
+					} else if (item.value > 180) {
+						item.error = "角度大小不超过180";
+					} else {
+						item.error = "";
+					}
+					break;
+				case "ID":
+					number(item.value) ? (item.error = "") : (item.error = "仅可填入数字");
+					break;
+				case "触发时机":
+					if (!number(item.value)) {
+						item.error = "仅可填入数字";
+					} else if (item.value > 100) {
+						item.error = "超出话术时长,不超过100";
+					} else {
+						item.error = "";
+					}
+					break;
+				case "偏移时间":
+					if (!numberMinus(item.value)) {
+						item.error = "仅可填入数字";
+					} else if (item.value > 10) {
+						item.error = "超出话术时长,不超过10";
+					} else {
+						item.error = "";
+					}
+					break;
+				default:
+					break;
+			}
+		},
+
 		//编辑步骤
 		confirmStep() {
 			console.log(this.editSteps);
+			let isCheck = true;
 			let newStep = {
-				id: 0,
+				id: this.editSteps.id ? this.editSteps.id : 0,
 				section_id: this.activeSection.id
 			};
 			for (const key in this.editSteps) {
 				if (this.editSteps.hasOwnProperty(key)) {
 					const element = this.editSteps[key];
-					console.log(element);
 					switch (key) {
 						case "motion":
 						case "expression":
@@ -387,8 +513,14 @@ export default {
 						case "compare":
 						case "effect":
 							if (element !== null) {
+								element.item.forEach(i => {
+									if (i.error !== "") {
+										isCheck = false;
+										return;
+									}
+								});
 								let obj = {
-									id: 0,
+									id: element.id,
 									name: element.item[0].value,
 									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
 									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
@@ -402,10 +534,14 @@ export default {
 							}
 							break;
 						case "special":
-							if (element.hint !== null) {
+							if (element.hint.item[0].value !== "") {
+								if (element.hint.item[0].error !== "") {
+									isCheck = false;
+									break;
+								}
 								let obj = {
-									id: 0,
-									name: element.hint.item[0].value,
+									id: element.hint.id,
+									text: element.hint.item[0].value,
 									action: 0,
 									begin: 0,
 									offset: 0,
@@ -416,15 +552,21 @@ export default {
 							} else {
 								newStep["hint"] = null;
 							}
-							if (element.person_dir !== null) {
-								newStep["person_dir"] = parseInt(
-									element.person_dir.item[0].value === "" ? 0 : element.person_dir.item[0].value
-								);
+							if (element.person_dir.item[0].value !== "") {
+								if (element.person_dir.item[0].error !== "") {
+									isCheck = false;
+									break;
+								}
+								newStep["person_dir"] = parseInt(element.person_dir.item[0].value);
 							} else {
 								newStep["person_dir"] = 0;
 							}
 							break;
 						case "text":
+							if (element.item[0].error !== "") {
+								isCheck = false;
+								break;
+							}
 							newStep["text"] = element.item[0].value;
 							break;
 						default:
@@ -432,7 +574,10 @@ export default {
 					}
 				}
 			}
-			debugger
+			//如果存在校验错误，不执行任何操作
+			if (!isCheck) {
+				return;
+			}
 			if (this.editSteps.id) {
 				store.updateSteps(this.editSteps.id, newStep).then(res => {
 					this.isShowfirstSteps = false;
@@ -499,8 +644,18 @@ export default {
 				vertical-align: text-top;
 			}
 			.sectionInput {
-				top: -65px;
+				position: relative;
+				left: -192px;
+				top: -45px;
 				width: 98px;
+				color: #ffffff;
+				box-shadow: 0px 0px 0px;
+				background: #c7c7c7;
+				border: 0px;
+				font-size: 14px;
+				font-weight: bold;
+				text-align: center;
+				outline: none;
 			}
 			span {
 				width: 98px;
@@ -529,15 +684,6 @@ export default {
 					margin-left: -10px;
 					margin-top: -2px;
 				}
-			}
-			.el-input .el-input__inner {
-				color: #ffffff;
-				box-shadow: 0px 0px 0px;
-				background: #c7c7c7;
-				border: 0px;
-				font-size: 14px;
-				font-weight: bold;
-				text-align: center;
 			}
 		}
 		.module-operation {
@@ -613,13 +759,11 @@ export default {
 					display: none;
 				}
 				&:hover {
+					background: #eff2f6;
 					& > .content-operation {
 						display: inline-block;
 					}
 				}
-			}
-			& > :nth-child(even) {
-				background: #eff2f6;
 			}
 		}
 		.module-edit {
@@ -634,19 +778,22 @@ export default {
 				box-shadow: 0px 0px 84px rgba(139, 149, 163, 0.2);
 				display: inline-block;
 				ul {
-					margin: 33px 120px 0px 120px;
+					margin: 20px 120px 0px 120px;
 					li {
 						display: inline-block;
 						label {
 							font-size: 16px;
 							color: #333333;
 							font-weight: 500;
-							display: block;
+							display: inline-block;
 							margin-right: 30px;
+							position: relative;
 						}
+
 						.el-input .el-input__inner {
 							height: 36px;
 							line-height: 36px;
+							outline: none;
 						}
 						.step-btn {
 							width: 98px;
@@ -688,6 +835,12 @@ export default {
 							}
 						}
 					}
+				}
+				.error-tips {
+					color: #e22929;
+					font-size: 12px;
+					text-align: left;
+					float: left;
 				}
 			}
 		}

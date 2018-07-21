@@ -1,7 +1,6 @@
 <!-- 课程管理 -->
 <template>
 	<div class="course" id="course">
-		<div class="xui-pop" style="width:200px;background:red;" data-content="<div>欢迎学习伦巴的基本步动作，来，让我们一起跳起来</div>">12323</div>
 		<div v-show="!isShowEditCourse">
 			<!-- 等级列表 -->
 			<div class="item">
@@ -10,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus />
+						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus  maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -26,7 +25,7 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus/>
+						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -205,7 +204,6 @@ export default {
 								this.init();
 							});
 						}
-
 						break;
 					default:
 						break;
@@ -394,6 +392,7 @@ export default {
 				padding-left: 20px;
 				border: 0px;
 				margin-right: 77px;
+				outline:none;
 			}
 		}
 		.operate {
