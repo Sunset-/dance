@@ -209,6 +209,7 @@ $sidebar-mini-width: 74px;
 		background: #fff;
 		font-size: 13pt;
 		padding: 0px 15px;
+		overflow: hidden;
 		box-shadow: 0px 0px 480px rgba(#8c8c8c, 0.15);
 		position: relative;
 		.header-logo {

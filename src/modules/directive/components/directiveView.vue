@@ -2,12 +2,12 @@
 	<div style="transform:translate(0,0)">
 		<xui-modal ref="modal" :options="options" @opened="tip('opened')" @closed="tip('closed')">
 			<template slot-scope="props" slot="content">
-				<div v-if="props.opened" style="width:570px;min-height: 330px;">
+				<div v-if="props.opened" style="width:530px;min-height: 330px;">
 					<div class="directive-form">
 						<div class="form-item" v-if="type=='edit'">
 							<div class="user-lable">指令ID</div>
 							<div class="user-operate">
-								<span>{{modelDirective.id}}</span>
+								<span class="user-id">{{modelDirective.id}}</span>
 							</div>
 						</div>
 						<div class="form-item">
@@ -36,14 +36,25 @@
 							<div class="user-operate">
 								<xui-input v-model="modelDirective.tips" :options="inputOnptions" style="width:217px;"></xui-input>
 								<div class="parameter-seting-btn" @click="showParams=!showParams">参数设置</div>
-								<div class="parameter-list" v-show="showParams" >
-									<div v-for="(item,index) in parameterData" :key="index">
-										<span>{{item.name}}</span>
-										<xui-input v-model="item.item1.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item1.placeholder" :maxlength="item.item1.maxLength" style="width:100px"></xui-input>
-										<span v-if="item.name=='标题'" style="margin-left:26px">{{item.name2}}</span>
-										<xui-input v-model="item.item2.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item2.placeholder" :class="{'direct-class':item.name=='标题'}"></xui-input>
-										<xui-input v-model="item.item3.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item3.placeholder" v-if="item.name!='标题'"></xui-input>
-										<xui-input v-model="item.item4.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item4.placeholder" v-if="item.name!='标题'"></xui-input>
+							</div>
+							<div class="parameter-list" v-show="showParams">
+								<div v-for="(item,index) in parameterData" :key="index">
+									<span>{{item.name}}</span>
+									<div class="step-item" :class="{'error-class':item.item1.error}">
+										<xui-input v-model="item.item1.value" :options="inputOnptions" class="parameter-input parameter-input1" :placeholder="item.item1.placeholder" :class="{'direct-class':(item.name=='人物方向')||(item.name=='标题')}" @change="input1Change(item.item1)"></xui-input>
+										<span class="err-tips">{{item.item1.error}}</span>
+									</div>
+									<div class="step-item" :class="{'error-class':item.item2.error}" v-if="(item.name!='人物方向')&&(item.name!='标题')">
+										<xui-input v-model="item.item2.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item2.placeholder" @change="input2Change(item.item2)"></xui-input>
+										<span class="err-tips">{{item.item2.error}}</span>
+									</div>
+									<div class="step-item" :class="{'error-class':item.item3.error}" v-if="item.name!='人物方向'">
+										<xui-input v-model="item.item3.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item3.placeholder" @change="input3Change(item.item3),$event"></xui-input>
+										<span class="err-tips">{{item.item3.error}}</span>
+									</div>
+									<div class="step-item" :class="{'error-class':item.item4.error}" v-if="item.name!='人物方向'">
+										<xui-input v-model="item.item4.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item4.placeholder" @change="input4Change(item.item4,$event)"></xui-input>
+										<span class="err-tips">{{item.item4.error}}</span>
 									</div>
 								</div>
 							</div>
@@ -55,7 +66,7 @@
 								<div class="triggle-list" :class="{'error-parameter':modelDirectiveContextError.error}">
 									<xui-scroll style="height:100%;">
 										<p v-for="(item,index)  in triggleData" :key="index">
-											<xui-input v-model="item.name" :options="inputOnptions" class="triggle-input" @change="triggleTest"></xui-input>
+											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest"></xui-input>
 											<i class="icon-delete-item" @click="deletList(index)"></i>
 										</p>
 									</xui-scroll>
@@ -90,7 +101,7 @@ function specilWorldTest(a) {
 }
 function number(a) {
 	var pattern = new RegExp("^[0-9]*$");
-	if (pattern.test(a) && a <= 100 && a >= 0) {
+	if (pattern.test(a)) {
 		return true;
 	}
 	return false;
@@ -98,59 +109,74 @@ function number(a) {
 function timeOffset(a) {
 	var pattern = new RegExp("^[0-9]*$"),
 		pattern2 = new RegExp("^[-|0-9][0-9]* ");
-	if ((pattern.test(a) || pattern2.test(a)) && a <= 100) {
+	if ((pattern.test(a) || pattern2.test(a)) && a <= 10) {
 		return true;
 	}
 	return false;
 }
-function number(a) {
-	if (a <= 100 && a >= 0) {
-		return true;
-	}
-	return false;
-}
-import STORE from "../store.js"
+
+import STORE from "../store.js";
 export default {
 	methods: {
-		open: function(parmas,type) {
-			this.type=type;
-			
-			if(type=='add'){
+		open: function(type, parmas) {
+			this.type = type;
+			if (type == "add") {
 				this.reset();
-				this.initDirectiveType();
+				// this.initDirectiveType();
 				this.initDirectiveMatch();
+			} else {
+				this.initDirective(parmas);
 			}
 			this.$refs.modal.open();
+		},
+		initDirective(parmas) {
+			this.modelDirective = {
+				id: parmas.id,
+				name: parmas.name,
+				type: parmas.cmd_type_id,
+				level_id: parmas.level_id || 2,
+				curriculum_id: parmas.curriculum_id || 2,
+				section_id: parmas.section_id || 2
+			};
+			this.modelDirective.tips = parmas.step_item.text;
+			this.triggleData = parmas.trigger_words;
 		},
 		tip: function(msg) {
 			console.log(msg);
 		},
-		initDirectiveType(){
-			STORE.getCommandsTypesList().then(res=>{
-				var list = res.map(item=>{
-						var c={};
-						c.text=item.name,
-						c.value= item.id;
-						return c;
-				})
-				this.typeOptions.data=list;
-			})
-		},
-		initDirectiveMatch(){
-			STORE.getCommandsMatch().then(res=>{				
-				this.matchOptions1.data=res;
-			})
+		// initDirectiveType() {
+		// 	STORE.getCommandsTypesList().then(res => {
+		// 		var list = res.map(item => {
+		// 			var c = {};
+		// 			(c.text = item.name), (c.value = item.id);
+		// 			return c;
+		// 		});
+		// 		this.typeOptions.data = list;
+		// 	});
+		// },
+		initDirectiveMatch() {
+			STORE.getCommandsMatch().then(res => {
+				this.commandMatch = {};
+				this.matchOptions3.data.push(
+					...res.map(item => {
+						var cc = {};
+						this.commandMatch[item.id] = item.curriculum;
+						cc.text = item.name;
+						cc.value = item.id;
+						return cc;
+					})
+				);
+			});
 		},
 		addList() {
-			if(this.triggleData.length>0){
-				var cc = this.triggleData.filter(item=>{
-					return item.name!="";
-				})
-				if(cc.length==0){
-
+			if (this.triggleData.length > 0) {
+				var cc = this.triggleData.filter(item => {
+					return item.word != "";
+				});
+				if (cc.length == 0) {
 				}
 			}
-			var c = { name: "" };
+			var c = { word: "" };
 			this.triggleData.push(c);
 		},
 		deletList(index) {
@@ -169,69 +195,161 @@ export default {
 			}
 		},
 		//保存指令
-		saveDirctive(){
-			var parms={
-				id:"",
-				name:this.modelDirective.name,
-				dance_id:"",
-				dance_name:"",
-				cmd_type_id:this.modelDirective.type,
-				curriculum_id:this.modelDirective.curriculum_id,
-				section_id:this.modelDirective.section_id,
-				trigger_words:this.triggleData
-			}
-			STORE.postCommandsSave(parms).then(res=>{
-				if(res){
-					$tip("新增成功","success");
+		saveDirctive() {
+			var step_item = this.formatStepItem();
+			var parms = {
+				id: this.modelDirective.id,
+				name: this.modelDirective.name,
+				cmd_type_id: this.modelDirective.type,
+				curriculum_id: this.modelDirective.curriculum_id,
+				level_id: this.modelDirective.level_id,
+				section_id: this.modelDirective.section_id,
+				step_item: step_item,
+				trigger_words: this.triggleData
+			};
+			STORE.postCommandsSave(parms).then(res => {
+				if (res) {
+					var tips ="新增成功" 
+					if(this.type=="edit"){
+						tips="编辑成功"
+					}
+					$tip(tips, "success");
 					this.$refs.modal.close();
-					this.$emit("refresh",true)
+					this.$emit("refresh", true);
 				}
-			})
+			});
+		},
+		input1Change(record) {
+			if (record.placeholder === "0/180") {
+				if(number(record.value) && parseInt(record.value) <= 100){
+					record.error = "";
+				}else{
+					record.error = "数字不能大于180";
+				}
+
+			} else if (record.value.length >= record.maxLength) {
+				record.error = "内容超过长度";
+			} else {
+				record.error = "";
+			}
+		},
+		input2Change(record) {
+			if (number(record.value)) {
+				record.error = "";
+			} else {
+				record.error = "数字且不能含特殊字符";
+			}
+		},
+		input3Change(record) {
+			if (number(record.value) && parseInt(record.value) <= 100) {
+				record.error = "";
+			} else if (parseInt(record.value) > 100) {
+				record.error = "数字不能大于100";
+			} else {
+				record.error = "不能含特殊字符";
+			}
+		},
+		input4Change(record) {
+			if (timeOffset(record.value)) {
+				record.error = "";
+			} else if (parseInt(record.value) > 10) {
+				record.error = "数字不能大于10";
+			} else {
+				record.error = "不能含特殊字符";
+			}
+		},
+		formatStepItem() {
+			var step = {};
+			step = {
+				id: this.modelDirective.id,
+				section_id: this.modelDirective.section_id,
+				text: this.modelDirective.tips,
+				motion: {
+					id: parseInt(this.parameterData[0].item2.value) || 0,
+					name: this.parameterData[0].item1.value || 0,
+					action: parseInt(this.parameterData[0].item3.value) || 0,
+					offset: parseInt(this.parameterData[0].item4.value) || 0
+				},
+				expression: {
+					id: parseInt(this.parameterData[1].item2.value) || 0,
+					name: this.parameterData[1].item1.value,
+					action: parseInt(this.parameterData[1].item3.value) || 0,
+					offset: parseInt(this.parameterData[1].item4.value) || 0
+				},
+				hint: {
+					name: this.parameterData[2].item1.value,
+					action: parseInt(this.parameterData[2].item3.value),
+					offset: parseInt(this.parameterData[2].item4.value) || 0
+				},
+				camera: {
+					id: parseInt(this.parameterData[3].item2.value) || 0,
+					name: this.parameterData[3].item1.value,
+					action: parseInt(this.parameterData[3].item3.value) || 0,
+					offset: parseInt(this.parameterData[3].item4.value) || 0
+				},
+				effect: {
+					id: parseInt(this.parameterData[4].item2.value) || 0,
+					name: this.parameterData[4].item1.value,
+					action: parseInt(this.parameterData[4].item3.value) || 0,
+					offset: parseInt(this.parameterData[4].item4.value) || 0
+				},
+				compare: null,
+				person_dir: parseInt(this.parameterData[5].item1.value)|| 0
+			};
+			return step;
 		},
 		//新增时重置弹框
-		reset(){
-			this.triggleData=[];
-			this.modelDirective={
+		reset() {
+			this.showParams = false;
+			this.triggleData = [];
+			this.modelDirective = {
+				id: "",
 				name: "",
 				type: 1,
 				level_id: "0",
 				curriculum_id: "0",
-				section_id: "0"
+				section_id: "0",
+				tips: ""
 			};
-			this.parameterData=[
+			this.parameterData = [
 				{
 					name: "动作",
-					item1: { value: "", placeholder: "初级示范" },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "初级示范", error: "", maxLength: 10 },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "表情",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "镜头",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "动效",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "标题",
-					item1: { value: "", placeholder: "向右走步特",maxLength:6 },
-					name2: "人物方向",
-					item2: { value: "", placeholder: "0/180" }
+					item1: { value: "", placeholder: "向右走步特", maxLength: 6, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
+				},
+				{
+					name: "人物方向",
+					item1: { value: "", placeholder: "0/180", error: "" }
 				}
 			];
 		}
@@ -249,82 +367,97 @@ export default {
 			}
 		},
 		"modelDirective.type": function(val) {
-			if(val==2){
-				this.matchOptions1.disabled=false;
-				this.matchOptions2.disabled=false;
-				this.matchOptions3.disabled=false;
-			}else{
-				this.matchOptions1.disabled=true;
-				this.matchOptions2.disabled=true;
-				this.matchOptions3.disabled=true;
+			if (val == 2) {
+				this.matchOptions1.disabled = false;
+				this.matchOptions2.disabled = false;
+				this.matchOptions3.disabled = false;
+			} else {
+				this.matchOptions1.disabled = true;
+				this.matchOptions2.disabled = true;
+				this.matchOptions3.disabled = true;
+			}
+		},
+		"modelDirective.level_id": function(val) {
+			if (val == "0") {
+				this.modelDirective.match3 = "0";
+				this.modelDirective.match2 = "0";
+			} else {
 			}
 		}
 	},
 	data() {
 		return {
-			type:"",
+			type: "",
 			triggleData: [],
 			showParams: false,
-			modelDirectiveError:{
-				error:false,
-				tips:"指令出现特殊字符"
+			commandMatch: {},
+			modelDirectiveError: {
+				error: false,
+				tips: "指令出现特殊字符"
 			},
-			modelDirectiveContextError:{
-				error:false,
-				tips:"指令出现特殊字符"
+			modelDirectiveContextError: {
+				error: false,
+				tips: "指令出现特殊字符"
 			},
-			modelDirectiveTipsError:{
-				error:false,
-				tips:"指令出现特殊字符"
+			modelDirectiveTipsError: {
+				error: false,
+				tips: "指令出现特殊字符"
 			},
 			modelDirective: {
+				id: "",
 				name: "",
 				type: 1,
-				match1: "0",
-				match2: "0",
-				match3: "0"
+				level_id: "0",
+				curriculum_id: "0",
+				section_id: "0",
+				tips: ""
 			},
 			parameterData: [
 				{
 					name: "动作",
-					item1: { value: "", placeholder: "初级示范" },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "初级示范", error: "", maxLength: 6 },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "表情",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "镜头",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "动效",
-					item1: { value: "", placeholder: "名称",maxLength:10 },
-					item2: { value: "", placeholder: "ID" },
-					item3: { value: "", placeholder: "触发时机" },
-					item4: { value: "", placeholder: "偏移时间" }
+					item1: { value: "", placeholder: "名称", maxLength: 10, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
 				},
 				{
 					name: "标题",
-					item1: { value: "", placeholder: "向右走步特",maxLength:6 },
-					name2: "人物方向",
-					item2: { value: "", placeholder: "0/180" }
+					item1: { value: "", placeholder: "向右走步特", maxLength: 6, error: "" },
+					item2: { value: "", placeholder: "ID", error: "" },
+					item3: { value: "", placeholder: "触发时机", error: "" },
+					item4: { value: "", placeholder: "偏移时间", error: "" }
+				},
+				{
+					name: "人物方向",
+					item1: { value: "", placeholder: "0/180", error: "" }
 				}
 			],
 			matchOptions1: {
 				multiple: false,
 				clearable: true,
 				filter: false,
-				disabled:true,
+				disabled: true,
 				style: "width:90px;",
 				data: [
 					{
@@ -337,7 +470,7 @@ export default {
 				multiple: false,
 				clearable: true,
 				filter: false,
-				disabled:true,
+				disabled: true,
 				style: "width:90px;",
 				data: [
 					{
@@ -350,7 +483,7 @@ export default {
 				multiple: false,
 				clearable: true,
 				filter: false,
-				disabled:true,
+				disabled: true,
 				style: "width:90px;",
 				data: [
 					{
@@ -366,11 +499,11 @@ export default {
 				data: [
 					{
 						text: "控制指令",
-						value: "1"
+						value: 1
 					},
 					{
 						text: "选择指令",
-						value: "2"
+						value: 2
 					}
 				]
 			},
@@ -391,7 +524,7 @@ export default {
 						style:
 							"background:#4081FF;color:#fff;border-radius:20px;margin-right:20px;padding:15px 30px;line-height:0px",
 						// color: "success",
-						operate:()=>{
+						operate: () => {
 							this.saveDirctive();
 						}
 					},
@@ -411,7 +544,7 @@ export default {
 <style lang="less">
 .error .xui-input-style .el-input--suffix .el-input__inner,
 .directive-form .error-parameter.triggle-list:hover,
-.directive-form .error-parameter.triggle-list{
+.directive-form .error-parameter.triggle-list {
 	border: 1px solid #e22929;
 }
 
@@ -428,18 +561,53 @@ export default {
 		display: inline-block;
 		float: left;
 	}
+	.user-id {
+		background: #ededed;
+		color: #999999;
+		padding: 5px;
+		min-width: 40px;
+		display: inline-block;
+	}
 	.form-item .user-lable {
 		width: 90px;
 		text-align: center;
 		line-height: 30px;
 	}
 	.parameter-list {
-		left: -50px;
 		position: relative;
 		text-align: left;
 		margin: 20px 0px 10px 0px;
 		padding-left: 15px;
-		border-left: 1px solid #ccc;
+		// border-left: 1px solid #ccc;
+		background: #bbd2ff;
+		border-radius: 4px;
+		padding: 20px;
+		.step-item {
+			margin: 5px 0px;
+			display: inline-block;
+			position: relative;
+		}
+		span {
+			width: 60px;
+			text-align: right;
+			display: inline-block;
+		}
+		.err-tips {
+			position: absolute;
+			left: 0px;
+			color: #e22929;
+			display: none;
+			width: 200px;
+			bottom: -9px;
+			text-align: left;
+		}
+		.error-class .err-tips {
+			display: inline;
+		}
+		.error-class .el-input__inner:hover,
+		.error-class .el-input__inner {
+			border-color: #e22929 !important;
+		}
 	}
 	.parameter-seting-btn {
 		cursor: pointer;
@@ -463,8 +631,11 @@ export default {
 		height: 30px;
 		margin: 5px;
 	}
+	.parameter-input1 {
+		width: 100px;
+	}
 	.parameter-input.direct-class {
-		width: 152px;
+		width: 185px;
 	}
 	.triggle-list {
 		width: 220px;
