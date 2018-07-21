@@ -14,10 +14,11 @@ module.exports = {
 	/**
 	 * 获取所有课程
 	 */
-	getCourseList() {
+	getCourseList(model) {
 		return $http({
 			url: URLS.course,
-			type: "get"
+			type: "get",
+			data: model
 		}).then(res => {
 			return res;
 		});
@@ -48,7 +49,6 @@ module.exports = {
 	 * @param {*} id
 	 */
 	delCourseById(id) {
-		debugger;
 		return $http({ url: `${URLS.courseHandle}/${id}`, type: "DELETE" }).then(res => {
 			return res;
 		});

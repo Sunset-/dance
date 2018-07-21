@@ -262,7 +262,6 @@ export default {
 			document.onkeydown = function(event) {
 				let e = event || window.event || arguments.callee.caller.arguments[0];
 				if (e && e.keyCode == 13) {
-					debugger
 					self.$set(self.activeSection, "edit", false);
 					switch (self.activeOperation) {
 						case "add":
@@ -433,6 +432,7 @@ export default {
 					}
 				}
 			}
+			debugger
 			if (this.editSteps.id) {
 				store.updateSteps(this.editSteps.id, newStep).then(res => {
 					this.isShowfirstSteps = false;
