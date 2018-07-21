@@ -1,6 +1,6 @@
 <template>
 	<div style="transform:translate(0,0)">
-		<xui-modal ref="modal" :options="options" @opened="tip('opened')" @closed="tip('closed')">
+		<xui-modal ref="modal" :options="options">
 			<template slot-scope="props" slot="content">
 				<div v-if="props.opened" style="width:530px;min-height: 330px;">
 					<div class="directive-form">
@@ -19,14 +19,14 @@
 						<div class="form-item">
 							<div class="user-lable">指令匹配</div>
 							<div class="user-operate">
-								<xui-select v-model="modelDirective.level_id" :options="matchOptions1"></xui-select>
-								<xui-select v-model="modelDirective.curriculum_id" :options="matchOptions2"></xui-select>
+								<xui-select v-model="modelDirective.curriculum_id" :options="matchOptions1"></xui-select>
+								<xui-select v-model="modelDirective.level_id" :options="matchOptions2"></xui-select>
 								<xui-select v-model="modelDirective.section_id" :options="matchOptions3"></xui-select>
 							</div>
 						</div>
 						<div class="form-item">
 							<div class="user-lable">指令名称</div>
-							<div class="user-operate" :class="{'error':modelDirectiveError.error}">
+							<div class="user-operate cp" :class="{'error':modelDirectiveError.error}">
 								<xui-input v-model="modelDirective.name" :options="inputOnptions"></xui-input>
 								<p class="error-tips" v-show="modelDirectiveError.error">{{modelDirectiveError.tips}}</p>
 							</div>
@@ -38,6 +38,7 @@
 								<div class="parameter-seting-btn" @click="showParams=!showParams">参数设置</div>
 							</div>
 							<div class="parameter-list" v-show="showParams">
+								<div class="arrow"></div>
 								<div v-for="(item,index) in parameterData" :key="index">
 									<span>{{item.name}}</span>
 									<div class="step-item" :class="{'error-class':item.item1.error}">
@@ -66,7 +67,7 @@
 								<div class="triggle-list" :class="{'error-parameter':modelDirectiveContextError.error}">
 									<xui-scroll style="height:100%;">
 										<p v-for="(item,index)  in triggleData" :key="index">
-											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest"></xui-input>
+											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" :class="{'triggle-has-class':item.word}"></xui-input>
 											<i class="icon-delete-item" @click="deletList(index)"></i>
 										</p>
 									</xui-scroll>
@@ -120,47 +121,80 @@ export default {
 	methods: {
 		open: function(type, parmas) {
 			this.type = type;
+			this.initDirectiveMatch();
 			if (type == "add") {
 				this.reset();
-				// this.initDirectiveType();
-				this.initDirectiveMatch();
 			} else {
 				this.initDirective(parmas);
 			}
 			this.$refs.modal.open();
 		},
+		//编辑时赋值
 		initDirective(parmas) {
 			this.modelDirective = {
 				id: parmas.id,
 				name: parmas.name,
 				type: parmas.cmd_type_id,
-				level_id: parmas.level_id || 2,
-				curriculum_id: parmas.curriculum_id || 2,
-				section_id: parmas.section_id || 2
+				level_id: parmas.level_id || 0,
+				curriculum_id: parmas.curriculum_id || 0,
+				section_id: parmas.section_id || 0
 			};
 			this.modelDirective.tips = parmas.step_item.text;
 			this.triggleData = parmas.trigger_words;
+			//触发提示设置参数复制--运动
+			if (parmas.step_item.motion) {
+				this.parameterData[0].item1.value = parmas.step_item.motion.id;
+				this.parameterData[0].item2.value = parmas.step_item.motion.name;
+				this.parameterData[0].item3.value = parmas.step_item.motion.action;
+				this.parameterData[0].item4.value = parmas.step_item.motion.offset;
+			}
+
+			//表情
+			if (parmas.step_item.expression) {
+				this.parameterData[1].item1.value = parmas.step_item.expression.id;
+				this.parameterData[1].item2.value = parmas.step_item.expression.name;
+				this.parameterData[1].item3.value = parmas.step_item.expression.action;
+				this.parameterData[1].item4.value = parmas.step_item.expression.offset;
+			}
+
+			//镜头
+			if (parmas.step_item.camera) {
+				this.parameterData[2].item1.value = parmas.step_item.camera.id;
+				this.parameterData[2].item2.value = parmas.step_item.camera.name;
+				this.parameterData[2].item3.value = parmas.step_item.camera.action;
+				this.parameterData[2].item4.value = parmas.step_item.camera.offset;
+			}
+
+			//特效
+			if (parmas.step_item.effect) {
+				this.parameterData[3].item1.value = parmas.step_item.effect.id;
+				this.parameterData[3].item2.value = parmas.step_item.effect.name;
+				this.parameterData[3].item3.value = parmas.step_item.effect.action;
+				this.parameterData[3].item4.value = parmas.step_item.effect.offset;
+			}
+
+			//标题
+			if (parmas.step_item.hint) {
+				this.parameterData[4].item2.value = parmas.step_item.hint.name;
+				this.parameterData[4].item3.value = parmas.step_item.hint.action;
+				this.parameterData[4].item4.value = parmas.step_item.hint.offset;
+			}
+
+			//人物方向
+			this.parameterData[5].item1.value = parmas.step_item.person_dir;
 		},
-		tip: function(msg) {
-			console.log(msg);
-		},
-		// initDirectiveType() {
-		// 	STORE.getCommandsTypesList().then(res => {
-		// 		var list = res.map(item => {
-		// 			var c = {};
-		// 			(c.text = item.name), (c.value = item.id);
-		// 			return c;
-		// 		});
-		// 		this.typeOptions.data = list;
-		// 	});
-		// },
+		//获取指令匹配
 		initDirectiveMatch() {
 			STORE.getCommandsMatch().then(res => {
-				this.commandMatch = {};
-				this.matchOptions3.data.push(
+				if (res.length == 0) {
+					this.modelDirective.curriculum_id = 0;
+					return;
+				}
+				this.commandMatchLevel = {};
+				this.matchOptions1.data.push(
 					...res.map(item => {
 						var cc = {};
-						this.commandMatch[item.id] = item.curriculum;
+						this.commandMatchLevel[item.id] = item.courses;
 						cc.text = item.name;
 						cc.value = item.id;
 						return cc;
@@ -197,7 +231,7 @@ export default {
 		//保存指令
 		saveDirctive() {
 			var step_item = this.formatStepItem();
-			var parms = {
+			var params = {
 				id: this.modelDirective.id,
 				name: this.modelDirective.name,
 				cmd_type_id: this.modelDirective.type,
@@ -207,11 +241,17 @@ export default {
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
-			STORE.postCommandsSave(parms).then(res => {
+			if (this.modelDirective.name=="") {
+				this.modelDirectiveError.error = true;
+				this.modelDirectiveError.tips="指令名称不能为空";
+			} else {
+				this.modelDirectiveError.error = false;
+			}
+			STORE.postCommandsSave(this.modelDirective.id ? "put" : "post", params).then(res => {
 				if (res) {
-					var tips ="新增成功" 
-					if(this.type=="edit"){
-						tips="编辑成功"
+					var tips = "新增成功";
+					if (this.type == "edit") {
+						tips = "编辑成功";
 					}
 					$tip(tips, "success");
 					this.$refs.modal.close();
@@ -219,14 +259,14 @@ export default {
 				}
 			});
 		},
+		//校验
 		input1Change(record) {
 			if (record.placeholder === "0/180") {
-				if(number(record.value) && parseInt(record.value) <= 100){
+				if (number(record.value) && parseInt(record.value) <= 100) {
 					record.error = "";
-				}else{
+				} else {
 					record.error = "数字不能大于180";
 				}
-
 			} else if (record.value.length >= record.maxLength) {
 				record.error = "内容超过长度";
 			} else {
@@ -258,6 +298,7 @@ export default {
 				record.error = "不能含特殊字符";
 			}
 		},
+		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
 			step = {
@@ -294,7 +335,7 @@ export default {
 					offset: parseInt(this.parameterData[4].item4.value) || 0
 				},
 				compare: null,
-				person_dir: parseInt(this.parameterData[5].item1.value)|| 0
+				person_dir: parseInt(this.parameterData[5].item1.value) || 0
 			};
 			return step;
 		},
@@ -358,6 +399,7 @@ export default {
 		"modelDirective.name": function(val) {
 			if (val) {
 				if (specilWorldTest(val)) {
+					this.modelDirectiveError.tips="指令出现特殊字符";
 					this.modelDirectiveError.error = true;
 				} else {
 					this.modelDirectiveError.error = false;
@@ -377,11 +419,44 @@ export default {
 				this.matchOptions3.disabled = true;
 			}
 		},
+		//监听课程
+		"modelDirective.curriculum_id": function(val) {
+			if (val == "0") {
+				this.modelDirective.section_id = "0";
+				this.modelDirective.level_id = "0";
+			} else {
+				if (!this.commandMatchLevel) {
+					this.modelDirective.curriculum_id = 0;
+				}
+				this.commandMatchSection = {};
+				this.matchOptions2.data.push(
+					...this.commandMatchLevel[val].map(item => {
+						var cc = {};
+						this.commandMatchSection[item.id] = item.section;
+						cc.text = item.name;
+						cc.value = item.id;
+						return cc;
+					})
+				);
+			}
+		},
+		//监听等级
 		"modelDirective.level_id": function(val) {
 			if (val == "0") {
-				this.modelDirective.match3 = "0";
-				this.modelDirective.match2 = "0";
+				this.modelDirective.section_id = "0";
 			} else {
+				if (!this.commandMatchSection) {
+					this.modelDirective.level_id = 0;
+					return;
+				}
+				this.matchOptions2.data.push(
+					...this.commandMatchSection[val].map(item => {
+						var cc = {};
+						cc.text = item.name;
+						cc.value = item.id;
+						return cc;
+					})
+				);
 			}
 		}
 	},
@@ -390,7 +465,8 @@ export default {
 			type: "",
 			triggleData: [],
 			showParams: false,
-			commandMatch: {},
+			commandMatchLevel: null,
+			commandMatchSection: null,
 			modelDirectiveError: {
 				error: false,
 				tips: "指令出现特殊字符"
@@ -453,7 +529,7 @@ export default {
 					item1: { value: "", placeholder: "0/180", error: "" }
 				}
 			],
-			matchOptions1: {
+			matchOptions2: {
 				multiple: false,
 				clearable: true,
 				filter: false,
@@ -466,7 +542,7 @@ export default {
 					}
 				]
 			},
-			matchOptions2: {
+			matchOptions1: {
 				multiple: false,
 				clearable: true,
 				filter: false,
@@ -547,7 +623,9 @@ export default {
 .directive-form .error-parameter.triggle-list {
 	border: 1px solid #e22929;
 }
-
+.cp.error .el-input__inner{
+	border: 1px solid #e22929;
+}
 .directive-form {
 	overflow: hidden;
 	padding: 20px 30px;
@@ -608,6 +686,17 @@ export default {
 		.error-class .el-input__inner {
 			border-color: #e22929 !important;
 		}
+		.arrow {
+			position: absolute;
+			right: 93px;
+			width: 0px;
+			height: 0px;
+			border-top: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-bottom: 10px solid #bbd2ff;
+			border-left: 10px solid transparent;
+			top: -20px;
+		}
 	}
 	.parameter-seting-btn {
 		cursor: pointer;
@@ -653,6 +742,15 @@ export default {
 			border-radius: 0px;
 			height: 30px;
 			margin: 5px;
+		}
+		.triggle-has-class {
+			.el-input__inner {
+				border-width: 0px;
+			}
+			.el-input__inner:focus,
+			.el-input__inner:hover {
+				border-width: 1px;
+			}
 		}
 		p {
 			position: relative;

@@ -1,6 +1,7 @@
 <!-- 课程管理 -->
 <template>
 	<div class="course" id="course">
+		<div class="xui-pop" style="width:200px;background:red;" data-content="<div>欢迎学习伦巴的基本步动作，来，让我们一起跳起来</div>">12323</div>
 		<div v-show="!isShowEditCourse">
 			<!-- 等级列表 -->
 			<div class="item">
@@ -8,14 +9,14 @@
 				<span class="line"></span>
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
-						<span :class="[{'active': activeLevel.name === item.name }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<xui-input v-show="activeLevel.name === item.name && activeLevel.edit" v-model="item.name"></xui-input>
+						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
+						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus />
 					</div>
 				</div>
 				<div class="operate">
 					<span class="add" @click="add('level')"></span>
-					<span class="edit" v-show="activeLevel.name" @click="edit('level')"></span>
-					<span class="del" v-show="activeLevel.name" @click="del('level')"></span>
+					<span class="edit" v-show="activeLevel.id" @click="edit('level')"></span>
+					<span class="del" v-show="activeLevel.id" @click="del('level')"></span>
 				</div>
 			</div>
 			<!-- 课程列表-->
@@ -24,17 +25,17 @@
 				<span class="line"></span>
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
-						<span :class="[{'active': activeCourse.name === item.name}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<xui-input class="edit" v-show="activeCourse.name === item.name && activeCourse.edit" v-model="item.name"></xui-input>
+						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
+						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus/>
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" v-show="activeLevel.name " @click="add('course')"></span>
-					<span class="edit" v-show="activeLevel.name && activeCourse.name" @click="edit('course')"></span>
-					<span class="del" v-show="activeLevel.name && activeCourse.name" @click="del('course')"></span>
+					<span class="add" v-show="activeLevel.id " @click="add('course')"></span>
+					<span class="edit" v-show="activeLevel.id && activeCourse.id" @click="edit('course')"></span>
+					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
 			</div>
-			<div class="btn" :class="{'allow': activeLevel.name && activeCourse.name}" @click="enterEdit">
+			<div class="btn" :class="{'allow': activeLevel.id && activeCourse.id}" @click="enterEdit">
 				<i></i>
 			</div>
 			<!-- 删除组件 -->
@@ -59,7 +60,6 @@ export default {
 	data() {
 		return {
 			isShowEditCourse: false,
-			allCourseMenu: [],
 			levelMenu: [],
 			courseMenu: [],
 			activeLevel: {},
@@ -74,28 +74,47 @@ export default {
 	computed: {},
 	methods: {
 		/**
-		 * 初始化家加载等级、课程
+		 * 初始化加载等级、课程
 		 */
 		init() {
-			const proLevel = new Promise((resolve, reject) => {
-				store.getLevelList().then(res => {
-					resolve(res);
-				});
+			store.getLevelList().then(res => {
+				if (res && res.length > 0) {
+					this.levelMenu = res.map(val => {
+						val.edit = false;
+						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
+							this.activeLevel = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeLevel) === "{}") {
+						this.activeLevel = this.levelMenu[0];
+					}
+					this.getCourseList(this.activeLevel.id);
+				} else {
+					this.activeLevel = {};
+					this.activeCourse = {};
+					this.courseMenu = [];
+				}
+				console.log(this.levelMenu);
 			});
-			const proCourse = new Promise((resolve, reject) => {
-				store.getCourseList().then(res => {
-					resolve(res);
-				});
+			// this.loadPageEvent();
+		},
+		//获取课程
+		getCourseList(levelId) {
+			store.getCourseList({ level_id: levelId }).then(res => {
+				if (res && res.length > 0) {
+					this.courseMenu = res.map(val => {
+						val.edit = false;
+						if (JSON.stringify(this.activeCourse) !== "{}" && val.id === this.activeCourse.id) {
+							this.activeCourse = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeCourse) === "{}") {
+						this.activeCourse = this.courseMenu[0];
+					}
+				}
 			});
-			Promise.all([proCourse, proLevel]).then(posts => {
-				this.levelMenu = posts[1].map(val => {
-					val.edit = false;
-					return val;
-				});
-				//默认课程全部展示
-				this.allCourseMenu = this.courseMenu = posts[0];
-			});
-			this.loadPageEvent();
 		},
 		/**
 		 * 课程选择
@@ -104,21 +123,10 @@ export default {
 			if (key === "level") {
 				this.activeLevel = item;
 				this.activeCourse = {};
-				this.filterCourse();
+				this.getCourseList(this.activeLevel.id);
 			} else {
 				this.activeCourse = item;
 			}
-		},
-		/**
-		 * 过滤等级与课程关联
-		 */
-		filterCourse() {
-			this.courseMenu = [];
-			this.allCourseMenu.forEach(c => {
-				if (this.activeLevel.id === c.level) {
-					this.courseMenu.push(c);
-				}
-			});
 		},
 		/**
 		 * 添加开始
@@ -158,7 +166,7 @@ export default {
 		/**
 		 * 删除
 		 */
-		del(key, item) {
+		del(key) {
 			let param = {};
 			if (key === "level") {
 				param = this.activeLevel;
@@ -172,7 +180,6 @@ export default {
 			this.$refs.delmodal.open(param);
 		},
 		enterEdit() {
-			console.log("进入编辑");
 			this.currentData = {
 				level: this.activeLevel,
 				course: this.activeCourse
@@ -182,27 +189,53 @@ export default {
 		/**
 		 * 加载页面事件
 		 */
+		addEvent() {
+			if (this.activeLevel.name === "" || this.activeCourse.name === "") {  //编辑名称为空的情况，直接删除
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level" ? this.activeLevel.pop() : this.activeCourse.pop();
+						break;
+					case "edit":
+						if (this.activeOperation.key === "level") {
+							store.delLevelById(this.activeLevel.id).then(() => {
+								this.init();
+							});
+						} else {
+							store.delCourseById(this.activeCourse.id).then(() => {
+								this.init();
+							});
+						}
+
+						break;
+					default:
+						break;
+				}
+			} else {
+				this.$set(this.activeLevel, "edit", false);
+				this.$set(this.activeCourse, "edit", false);
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level"
+							? this.addLevel(this.activeLevel)
+							: this.addCourse(this.activeCourse);
+						break;
+					case "edit":
+						this.activeOperation.key === "level"
+							? this.updateLevel(this.activeLevel)
+							: this.updateCourse(this.activeCourse);
+						break;
+					default:
+						break;
+				}
+			}
+		},
+		//回车事件
 		loadPageEvent() {
 			let self = this;
 			document.onkeydown = function(event) {
 				let e = event || window.event || arguments.callee.caller.arguments[0];
 				if (e && e.keyCode == 13) {
-					self.$set(self.activeLevel, "edit", false);
-					self.$set(self.activeCourse, "edit", false);
-					switch (self.activeOperation.type) {
-						case "add":
-							self.activeOperation.key === "level"
-								? self.addLevel(self.activeLevel)
-								: self.addCourse(self.activeCourse);
-							break;
-						case "edit":
-							self.activeOperation.key === "level"
-								? self.updateLevel(self.activeLevel)
-								: self.updateCourse(self.activeCourse);
-							break;
-						default:
-							break;
-					}
+					self.addEvent();
 				}
 			};
 		},
@@ -210,10 +243,15 @@ export default {
 		 * 添加等级
 		 */
 		addLevel(model) {
-			store.addLevel({
-				name: model.name,
-				add_time: Sunset.Dates.format(new Date())
-			});
+			store
+				.addLevel({
+					name: model.name,
+					add_time: Sunset.Dates.format(new Date())
+				})
+				.then(res => {
+					this.activeLevel = res;
+					this.init();
+				});
 		},
 		/**
 		 * 修改等级
@@ -228,11 +266,16 @@ export default {
 		 * 添加课程
 		 */
 		addCourse(model) {
-			store.addCourse({
-				name: model.name,
-				level: model.level,
-				add_time: Sunset.Dates.format(new Date())
-			});
+			store
+				.addCourse({
+					name: model.name,
+					level: model.level,
+					add_time: Sunset.Dates.format(new Date())
+				})
+				.then(res => {
+					this.activeCourse = res;
+					this.init();
+				});
 		},
 		/**
 		 * 修改课程
@@ -340,7 +383,7 @@ export default {
 				background: #4081ff;
 				box-shadow: 0px 0px 24px #4081ff;
 			}
-			.el-input .el-input__inner {
+			.input {
 				color: #999999;
 				border-radius: 20px;
 				box-shadow: 0px 0px 0px;

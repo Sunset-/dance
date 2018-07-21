@@ -20,10 +20,10 @@ module.exports = {
     /**
      * 新增指令
      */
-    postCommandsSave(data) {
+    postCommandsSave(type, data) {
         return $http({
-            url: URLS.commandsUrl,
-            type: "POST",
+            url: URLS.commandsUrl + (type == "add" ? "" : `/${data.id}`),
+            type: type,
             data: data
         }).then(res => {
             return res;

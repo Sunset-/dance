@@ -141,8 +141,19 @@ export default {
 .xui-style-table .xui-datatable-table tr th {
 	border: 0px solid #000;
 }
+.xui-style-table .xui-datatable-table thead tr{
+	background: #EEEEEE;
+	height: 32px;
+	line-height: 32px;
+}
+.xui-datatable .xui-datatable-table tbody tr:nth-child(odd){
+	background: #fff;
+}
 .xui-style-table .xui-datatable-table tr:hover button {
 	opacity: 1 !important;
+}
+.xui-style-table .xui-datatable-table tbody tr:hover{
+	background: #EFF2F6;
 }
 .el-icon-add {
 	background: url("/assets/directive/icon/icon-add.png");

@@ -19,6 +19,9 @@ Vue.use(XUI);
 //引入公共服务
 import "./services/index";
 
+//引入公共组件
+import "./components/index";
+
 //开始
 import App from "./App.vue";
 import Modules from "./Modules.vue";
@@ -76,12 +79,13 @@ router.beforeEach((to, from, next)=>{
     }
     if(to.path == '/login' || to.path == '/reset'&&window.localStorage.getItem("verify_code")){
         next()
-    }else{
-    	if(!window.sessionStorage.getItem("user")){
+    }else {
+        if (!window.sessionStorage.getItem("user")) {
             next({path: '/login'})
-		}else {
+        } else {
             next();
-		}
+        }
     }
 });
+window.$router = router;
 new Vue({ el: "#app", router, render: h => h(App) });
