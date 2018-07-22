@@ -509,9 +509,8 @@ export default {
 					switch (key) {
 						case "motion":
 						case "expression":
-						case "camera":
 						case "compare":
-						case "effect":
+						case "camera":
 							if (element !== null) {
 								element.item.forEach(i => {
 									if (i.error !== "") {
@@ -533,6 +532,27 @@ export default {
 								newStep[key] = null;
 							}
 							break;
+						case "effect":
+							if (element !== null) {
+								element.item.forEach(i => {
+									if (i.error !== "") {
+										isCheck = false;
+										return;
+									}
+								});
+								let obj = {
+									id: element.id,
+									name: element.item[0].value,
+									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
+									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
+									offset: parseInt(element.item[3].value === "" ? 0 : element.item[3].value),
+									end: 0
+								};
+								newStep[key] = obj;
+							} else {
+								newStep[key] = null;
+							}
+							break;
 						case "special":
 							if (element.hint.item[0].value !== "") {
 								if (element.hint.item[0].error !== "") {
@@ -542,7 +562,6 @@ export default {
 								let obj = {
 									id: element.hint.id,
 									text: element.hint.item[0].value,
-									action: 0,
 									begin: 0,
 									offset: 0,
 									end: 0,

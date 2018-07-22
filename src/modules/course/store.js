@@ -172,7 +172,7 @@ module.exports = {
 	 * @returns
 	 */
 	updateSteps(stepId, model) {
-		return $http({ url: `${URLS.stepsHandle}/${stepId}`, type: "PATCH", data: model }).then(res => {
+		return $http({ url: `${URLS.stepsHandle}/${stepId}`, type: "PUT", data: model }).then(res => {
 			return res;
 		});
 	},
