@@ -35,14 +35,14 @@
 			<div class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
-					<span class="xui-pop" style="width:20%;text-align: center;" data-content="item.text">{{item.text}}</span>
-					<span class="xui-pop" style="width:8%" data-content="item">{{item.motion && item.motion.name}}</span>
-					<span class="xui-pop" style="width:8%" data-content="item">{{item.expression && item.expression.name}}</span>
-					<span class="xui-pop" style="width:8%" data-content="item">{{item.camera && item.camera.name}}</span>
-					<span class="xui-pop" style="width:8%" data-content="item">{{item.compare && item.compare.name}}</span>
-					<span class="xui-pop" style="width:8%" data-content="item">{{item.effect && item.effect.name}}</span>
-					<span class="xui-pop" style="width:10%" data-content="item">{{item.hint && item.hint.text}}</span>
-					<span class="xui-pop" style="width:10%" data-content="item">{{item.person_dir && item.person_dir}}</span>
+					<span class="xui-pop" style="width:20%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
+					<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'>${item.motion.name}</span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.name}}</span>
+					<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'>${item.expression.name}</span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.name}}</span>
+					<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'>${item.camera.name}</span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.name}}</span>
+					<span class="xui-pop" style="width:8%" :data-content="item.compare && `<div class='pop-content'><span class='title'>${item.compare.name}</span><span>触发时机 <em>${item.compare.begin}</em></span><span>偏移时间 <em>${item.compare.offset}</em></span></div>`">{{item.compare && item.compare.name}}</span>
+					<span class="xui-pop" style="width:8%" :data-content="item.effect && `<div class='pop-content'><span class='title'>${item.effect.name}</span><span>触发时机 <em>${item.effect.begin}</em></span><span>偏移时间 <em>${item.effect.offset}</em></span></div>`">{{item.effect && item.effect.name}}</span>
+					<span class="xui-pop" style="width:10%" :data-content="item.hint && `<div class='pop-content text'>${item.hint.text}</div>`">{{item.hint && item.hint.text}}</span>
+					<span class="xui-pop" style="width:10%" :data-content="item.person_dir && `<div class='pop-content text'>${item.person_dir}</div>`">{{item.person_dir && item.person_dir}}</span>
 					<span style="width:10%" class="content-operation">
 						<i class="edit" @click="editStep(index,item)"></i>
 						<i class="del" @click="delStep(item)"></i>
@@ -875,6 +875,31 @@ export default {
 				}
 			}
 		}
+	}
+}
+.xui-pop-wrap {
+	.pop-content {
+		width: 183px;
+		line-height: 10px;
+		.title {
+			font-size: 16px;
+			text-align: center;
+			padding-left: 0px;
+			padding-bottom: 15px;
+		}
+		span {
+			display: block;
+			padding-left: 24px;
+			padding-bottom: 12px;
+			font-size: 14px;
+			em {
+				color: #4081ff;
+				margin-left: 50px;
+			}
+		}
+	}
+	.text {
+		width: 100%;
 	}
 }
 </style>
