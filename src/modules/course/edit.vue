@@ -318,16 +318,32 @@ export default {
 			});
 		},
 		addEvent() {
-			this.$set(this.activeSection, "edit", false);
-			switch (this.activeOperation) {
-				case "add":
-					this.addSections(this.activeSection);
-					break;
-				case "edit":
-					this.updateSection(this.activeSection.id, this.activeSection);
-					break;
-				default:
-					break;
+			if (this.activeSection.name === "") {
+				switch (this.activeOperation) {
+					case "add":
+						this.sectionList.pop();
+						break;
+					case "edit":
+						store.delSection(this.activeSection.id).then(() => {
+							this.activeSection = {};
+							this.getSection();
+						});
+						break;
+					default:
+						break;
+				}
+			} else {
+				this.$set(this.activeSection, "edit", false);
+				switch (this.activeOperation) {
+					case "add":
+						this.addSections(this.activeSection);
+						break;
+					case "edit":
+						this.updateSection(this.activeSection.id, this.activeSection);
+						break;
+					default:
+						break;
+				}
 			}
 		},
 		/**
@@ -497,7 +513,6 @@ export default {
 
 		//编辑步骤
 		confirmStep() {
-			console.log(this.editSteps);
 			let isCheck = true;
 			let newStep = {
 				id: this.editSteps.id ? this.editSteps.id : 0,
@@ -649,11 +664,11 @@ export default {
 		}
 	}
 	.content {
-		width: 1629px;
 		background: #fff;
 		border-radius: 4px;
 		box-shadow: 0px 0px 40px rgba(180, 182, 214, 0.16);
 		margin-left: 30px;
+		margin-right: 30px;
 		.module {
 			width: 100%;
 			height: 132px;

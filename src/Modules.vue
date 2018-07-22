@@ -8,13 +8,13 @@
 			<div class="header-right" @mouseleave="hideHandel">
 				<div class="login-user-info">
 					<img src="/assets/img/login/head-img.png" alt="">
-					<span>{{currentUser}}</span>
+					<span @mouseover="showHandel">{{currentUser}}</span>
 					<span @mouseover="showHandel"></span>
 				</div>
 			</div>
 		</header>
 		<!--用户操作栏-->
-		<div class="edit-user" v-if="showPanel" @mouseover="showHandel">
+		<div class="edit-user" v-if="showPanel" @mouseover="showHandel" @mouseleave="hideHandel">
 			<div class="handle-change-password">
 				<img src="/assets/img/login/edit-password.png" />
 				<div @click="changePassword">修改密码</div>
@@ -29,12 +29,12 @@
 				<div class="app-menu-toggle" @click="miniMenu=!miniMenu"></div>
 				<ul class="app-menu">
 					<li :class="{active : activeMenu(item)}" v-for="(item,index) in menus" :key="index" @click="go(item)">
-						<i :class="'icon-'+item.name"></i>
+						<i :class="'icon-'+item.name" :title="item.title"></i>
 						<span>{{item.title}}</span>
 					</li>
 				</ul>
 			</div>
-			<div class="app-major">
+			<div class="app-major" :style="miniMenu ? 'left:75px':'227px' ">
 				<router-view></router-view>
 			</div>
 		</div>
@@ -127,6 +127,7 @@ export default {
 		},
 		//修改密码
 		changePassword() {
+			this.showPanel = false;
 			this.showDialog = true;
 		},
 		//关闭弹窗,清空数据
@@ -250,6 +251,7 @@ $sidebar-mini-width: 74px;
 				top: 20px;
 				width: 150px;
 				height: 80px;
+				cursor: pointer;
 				img {
 					width: 40px;
 					height: 40px;
