@@ -3,7 +3,7 @@
 	<div class="edit-Course">
 		<div class="nav">
 			<i/>
-			<h3>{{currentData.level.name}} > {{currentData.course.name}}</h3>
+			<h3 @click="goback">{{currentData.level.name}} > {{currentData.course.name}}</h3>
 		</div>
 		<div class="content">
 			<div class="module">
@@ -28,7 +28,7 @@
 				<span style="width:8%">比对ID</span>
 				<span style="width:8%">动效ID</span>
 				<span style="width:10%">标题</span>
-				<span style="width:10%">任务方向</span>
+				<span style="width:10%">人物方向</span>
 				<span style="width:10%"></span>
 			</div>
 			<!-- 步骤内容 -->
@@ -629,6 +629,9 @@ export default {
 		cancelStep(item) {
 			this.activeStepEdit = "";
 			this.isShowfirstSteps = false;
+		},
+		goback() {
+			this.$emit("goback", true);
 		}
 	},
 	created() {},
@@ -661,6 +664,7 @@ export default {
 			color: #4081ff;
 			font-weight: bold;
 			margin-left: 14px;
+			cursor: pointer;
 		}
 	}
 	.content {

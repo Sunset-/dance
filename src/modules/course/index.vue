@@ -41,7 +41,7 @@
 			<delCourse ref="delmodal" @closed="init"></delCourse>
 		</div>
 		<!-- 课程编辑组件 -->
-		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData"></editCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData" @goback="goback"></editCourse>
 	</div>
 </template>
 
@@ -288,6 +288,9 @@ export default {
 				level: model.level,
 				add_time: Sunset.Dates.format(new Date())
 			});
+		},
+		goback() {
+			this.isShowEditCourse = false;
 		}
 	},
 	created() {},
