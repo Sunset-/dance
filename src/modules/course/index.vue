@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus  maxlength="6" />
+						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -112,6 +112,9 @@ export default {
 					if (JSON.stringify(this.activeCourse) === "{}") {
 						this.activeCourse = this.courseMenu[0];
 					}
+				} else {
+					this.courseMenu = [];
+					this.activeCourse = {};
 				}
 			});
 		},
@@ -189,10 +192,11 @@ export default {
 		 * 加载页面事件
 		 */
 		addEvent() {
-			if (this.activeLevel.name === "" || this.activeCourse.name === "") {  //编辑名称为空的情况，直接删除
+			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
+				//编辑名称为空的情况，直接删除
 				switch (this.activeOperation.type) {
 					case "add":
-						this.activeOperation.key === "level" ? this.activeLevel.pop() : this.activeCourse.pop();
+						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
 						break;
 					case "edit":
 						if (this.activeOperation.key === "level") {
@@ -392,7 +396,7 @@ export default {
 				padding-left: 20px;
 				border: 0px;
 				margin-right: 77px;
-				outline:none;
+				outline: none;
 			}
 		}
 		.operate {
