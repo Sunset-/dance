@@ -14,7 +14,7 @@
 			</div>
 		</header>
 		<!--用户操作栏-->
-		<div class="edit-user" v-if="showPanel" @mouseover="showHandel">
+		<div class="edit-user" v-if="showPanel" @mouseover="showHandel" @mouseleave="hideHandel">
 			<div class="handle-change-password">
 				<img src="/assets/img/login/edit-password.png" />
 				<div @click="changePassword">修改密码</div>
@@ -123,6 +123,7 @@ export default {
 		},
 		//修改密码
 		changePassword() {
+			this.showPanel = false;
 			this.showDialog = true;
 		},
 		//关闭弹窗,清空数据
