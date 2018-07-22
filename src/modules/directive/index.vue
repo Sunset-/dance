@@ -1,8 +1,6 @@
 <template>
-	<div>
-		<xui-table :options="directiveOptionsTable" class="xui-style-table" ref="dTableRef">
-
-		</xui-table>
+	<div style="margin: 35px;padding-bottom: 35px;background: #fff">
+		<xui-table :options="directiveOptionsTable" class="xui-style-table" ref="dTableRef"></xui-table>
 		<div class="add-directive">
 			<xui-button @click="openModal('add','')" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>
@@ -29,7 +27,7 @@ export default {
 							tools: [
 								{
 									label: "编辑",
-									style: "opacity:0;background:#2F7CEF;color:#fff;border-radius:10px",
+									style: "opacity:0;background: linear-gradient(#2F7CEF,#3298F7);color:#fff;border-radius:10px",
 									// icon: "icon-table-edit icon-base-org icon-table-common", //编辑
 									// premise: () => {
 									// 	return this.flag;
@@ -40,7 +38,7 @@ export default {
 									}
 								},
 								{
-									style: "opacity:0;background:#FC9167;color:#fff;border-radius:10px",
+									style: "opacity:0;background: linear-gradient(#FF2156,#FF7539);color:#fff;border-radius:10px",
 									label: "删除",
 									align: "center",
 									// icon: "icon-table-delete icon-table-common", //删除
@@ -137,14 +135,23 @@ export default {
 };
 </script>
 <style lang="less">
+.xui-style-table{
+	border-bottom: 1px solid #f1f1f1;
+}
 .xui-style-table .xui-datatable-table tr td,
 .xui-style-table .xui-datatable-table tr th {
 	border: 0px solid #000;
 }
 .xui-style-table .xui-datatable-table thead tr{
-	background: #EEEEEE;
-	height: 32px;
-	line-height: 32px;
+	background: linear-gradient(#FFFFFF,#EEEEEE);
+	height: 48px;
+	line-height: 48px;
+	font-size: 16px;
+}
+.xui-datatable .xui-datatable-table tbody tr{
+	color: #666666;
+	font-size: 14px;
+	height: 45px;
 }
 .xui-datatable .xui-datatable-table tbody tr:nth-child(odd){
 	background: #fff;
