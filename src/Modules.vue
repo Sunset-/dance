@@ -8,7 +8,7 @@
 			<div class="header-right" @mouseleave="hideHandel">
 				<div class="login-user-info">
 					<img src="/assets/img/login/head-img.png" alt="">
-					<span>{{currentUser}}</span>
+					<span @mouseover="showHandel">{{currentUser}}</span>
 					<span @mouseover="showHandel"></span>
 				</div>
 			</div>
@@ -29,7 +29,7 @@
 				<div class="app-menu-toggle" @click="miniMenu=!miniMenu"></div>
 				<ul class="app-menu">
 					<li :class="{active : activeMenu(item)}" v-for="(item,index) in menus" :key="index" @click="go(item)">
-						<i :class="'icon-'+item.name"></i>
+						<i :class="'icon-'+item.name" :title="item.title"></i>
 						<span>{{item.title}}</span>
 					</li>
 				</ul>
@@ -246,6 +246,7 @@ $sidebar-mini-width: 74px;
 				top: 20px;
 				width: 150px;
 				height: 80px;
+				cursor: pointer;
 				img {
 					width: 40px;
 					height: 40px;

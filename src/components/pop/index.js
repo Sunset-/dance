@@ -28,7 +28,7 @@ $("body").on("mouseleave", ".xui-pop", function() {
 		$(".xui-pop-wrap").hide();
 	}, 50);
 });
-$("body").on("mouseleave", ".xui-wrap", function() {
+$("body").on("mouseleave", ".xui-pop-wrap", function() {
 	timer = setTimeout(() => {
 		$(".xui-pop-wrap").hide();
 	}, 50);
