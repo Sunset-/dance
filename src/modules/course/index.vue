@@ -305,7 +305,6 @@ export default {
 	left: 0px;
 	background-color: #f6f7fb;
 	.item {
-		width: 1641px;
 		height: 123px;
 		background: rgba(255, 255, 255, 1);
 		border-radius: 6px;

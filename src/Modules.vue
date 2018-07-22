@@ -34,7 +34,7 @@
 					</li>
 				</ul>
 			</div>
-			<div class="app-major">
+			<div class="app-major" :style="miniMenu ? 'left:75px':'227px' ">
 				<router-view></router-view>
 			</div>
 		</div>

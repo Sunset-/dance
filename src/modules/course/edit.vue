@@ -664,11 +664,11 @@ export default {
 		}
 	}
 	.content {
-		width: 1629px;
 		background: #fff;
 		border-radius: 4px;
 		box-shadow: 0px 0px 40px rgba(180, 182, 214, 0.16);
 		margin-left: 30px;
+		margin-right: 30px;
 		.module {
 			width: 100%;
 			height: 132px;
