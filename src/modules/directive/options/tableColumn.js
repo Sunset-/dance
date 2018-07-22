@@ -1,5 +1,5 @@
 module.exports = [{
-        title: "编号",
+        title: "指令ID",
         name: "name",
         style: "text-align:center;width:200px",
         format: function() {

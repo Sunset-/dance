@@ -645,6 +645,7 @@ export default {
 		padding: 5px;
 		min-width: 40px;
 		display: inline-block;
+		border-radius: 4px;
 	}
 	.form-item .user-lable {
 		width: 90px;
@@ -657,7 +658,7 @@ export default {
 		margin: 20px 0px 10px 0px;
 		padding-left: 15px;
 		// border-left: 1px solid #ccc;
-		background: #bbd2ff;
+		background: #F2F6FA;
 		border-radius: 4px;
 		padding: 20px;
 		.step-item {

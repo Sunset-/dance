@@ -129,7 +129,6 @@ export default {
             }).catch(error=>{
                 if(error){
                     this.loginError = true;
-                    this.unserName = '';
                     this.pwd = '';
 				}
 			})

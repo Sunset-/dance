@@ -14,7 +14,7 @@
 			</div>
 		</header>
 		<!--用户操作栏-->
-		<div class="edit-user" v-if="showPanel" @mouseover="showHandel">
+		<div class="edit-user" v-if="showPanel" @mouseover="showHandel" @mouseleave="hideHandel">
 			<div class="handle-change-password">
 				<img src="/assets/img/login/edit-password.png" />
 				<div @click="changePassword">修改密码</div>
@@ -90,7 +90,7 @@ export default {
 					name: "directive"
 				}
 			],
-			currentUser: window.sessionStorage.getItem("username"),
+			currentUser: "",
 			showPanel: false, //显示修改、退出操作板
 			showDialog: false, //显示修改密码弹框
 			currentPwd: "", //当前密码
@@ -103,6 +103,10 @@ export default {
 			changeSuccess: false, //修改密码成功
 			changeTime: 2 //成功跳转时间
 		};
+	},
+	mounted(){
+	    this.currentUser = window.sessionStorage.getItem("username");
+        this.currentUser = this.currentUser.indexOf("@")>0?this.currentUser.substr(0,this.currentUser.indexOf("@")):this.currentUser;
 	},
 	methods: {
 		go(item) {
@@ -123,6 +127,7 @@ export default {
 		},
 		//修改密码
 		changePassword() {
+			this.showPanel = false;
 			this.showDialog = true;
 		},
 		//关闭弹窗,清空数据
@@ -334,6 +339,7 @@ $sidebar-mini-width: 74px;
 			bottom: 0px;
 			left: $sidebar-width;
 			right: 0px;
+			background: #f6f7fb;
 		}
 	}
 	.pwd-dialog-layer {
