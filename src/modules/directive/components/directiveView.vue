@@ -141,6 +141,9 @@ export default {
 				curriculum_id: parmas.curriculum_id || 0,
 				section_id: parmas.section_id || 0
 			};
+			console.log("课程Id",parmas.curriculum_id);
+			console.log("等级Id",parmas.level_id);
+			console.log("模块Id",parmas.section_id);
 			this.modelDirective.tips = parmas.step_item.text;
 			this.triggleData = parmas.trigger_words;
 			//触发提示设置参数复制--运动
@@ -198,6 +201,9 @@ export default {
 					...res.map(item => {
 						var cc = {};
 						this.commandMatchLevel[item.id] = item.courses;
+						console.log("课程接口============s==");
+						console.log("等级Id",item.id);
+						console.log("课程接口=============e=");
 						cc.text = item.name;
 						cc.value = item.id;
 						return cc;
@@ -207,7 +213,7 @@ export default {
 					text: "课程",
 					value: "0"
 				});
-				
+
 			});
 		},
 		addList() {
@@ -444,6 +450,9 @@ export default {
 						this.commandMatchSection[item.id] = item.section;
 						cc.text = item.name;
 						cc.value = item.id;
+						console.log("等级接口============s==");
+						console.log("等级Id",item.id);
+						console.log("等级接口=============e=");
 						return cc;
 					})
 				);
@@ -468,6 +477,9 @@ export default {
 						var cc = {};
 						cc.text = item.name;
 						cc.value = item.id;
+						console.log("模型接口============s==");
+						console.log("等级Id",item.id);
+						console.log("模型接口=============e");
 						return cc;
 					})
 				);
