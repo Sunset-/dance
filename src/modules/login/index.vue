@@ -186,6 +186,7 @@ export default {
 		height: 100%;
 		float: left;
 		position: relative;
+		z-index: 10;
 		.login-content{
 			position: absolute;
 			top: 10%;
