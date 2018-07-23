@@ -688,6 +688,7 @@ export default {
 			& > div {
 				display: inline-block;
 				vertical-align: text-top;
+				margin-bottom: 22px;
 			}
 			.sectionInput {
 				position: relative;
@@ -732,7 +733,7 @@ export default {
 				}
 			}
 		}
-		.module-left{
+		.module-left {
 			text-align: left;
 		}
 		.module-operation {
@@ -760,6 +761,7 @@ export default {
 			width: 100%;
 			height: 58px;
 			background: linear-gradient(#ffffff, #eeeeee);
+			border-top: 1px solid #e9e9e9;
 			span {
 				line-height: 58px;
 				display: inline-block;
