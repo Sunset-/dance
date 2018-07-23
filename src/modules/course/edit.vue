@@ -6,7 +6,7 @@
 			<h3 @click="goback">{{currentData.level.name}} > {{currentData.course.name}}</h3>
 		</div>
 		<div class="content">
-			<div class="module">
+			<div class="module" :class="{'module-left':sectionList.length > 6}">
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span v-show="activeSection.name === item.name && activeSection.edit "></span>
@@ -296,14 +296,23 @@ export default {
 		},
 		//新增小节
 		addSection() {
-			let tempSection = {
-				name: "",
-				curriculum: this.currentData.course.id,
-				edit: true
-			};
-			this.sectionList.push(tempSection);
-			this.activeSection = tempSection;
-			this.activeOperation = "add";
+			let flag = true;
+			this.sectionList.forEach(section => {
+				if (section.name === "") {
+					flag = false;
+					return;
+				}
+			});
+			if (flag) {
+				let tempSection = {
+					name: "",
+					curriculum: this.currentData.course.id,
+					edit: true
+				};
+				this.sectionList.push(tempSection);
+				this.activeSection = tempSection;
+				this.activeOperation = "add";
+			}
 		},
 		//编辑小节
 		editSection() {
@@ -672,18 +681,19 @@ export default {
 		margin-left: 30px;
 		margin-right: 30px;
 		.module {
-			width: 100%;
-			height: 132px;
+			width: calc(~"100% - 325px");
+			height: auto;
 			text-align: center;
+			margin-left: 180px;
 			& > div {
 				display: inline-block;
 				vertical-align: text-top;
 			}
 			.sectionInput {
 				position: relative;
-				left: -192px;
+				left: -191px;
 				top: -45px;
-				width: 98px;
+				width: 96px;
 				color: #ffffff;
 				box-shadow: 0px 0px 0px;
 				background: #c7c7c7;
@@ -721,6 +731,9 @@ export default {
 					margin-top: -2px;
 				}
 			}
+		}
+		.module-left{
+			text-align: left;
 		}
 		.module-operation {
 			float: right;
