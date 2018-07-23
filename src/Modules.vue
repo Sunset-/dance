@@ -243,13 +243,12 @@ $sidebar-mini-width: 74px;
 			float: right;
 			position: relative;
 			height: 89px;
-			width: 160px;
+			width: 300px;
 			z-index: 10;
 			.login-user-info {
 				position: absolute;
 				right: 0;
 				top: 20px;
-				width: 150px;
 				height: 80px;
 				cursor: pointer;
 				img {
@@ -259,7 +258,6 @@ $sidebar-mini-width: 74px;
 				}
 				span:nth-child(2) {
 					display: inline-block;
-					width: 40px;
 					height: 40px;
 					line-height: 40px;
 					float: left;
@@ -287,7 +285,7 @@ $sidebar-mini-width: 74px;
 		position: absolute;
 		display: inline-block;
 		top: 80px;
-		right: 30px;
+		right: 15px;
 		z-index: 10;
 		.handle-change-password,
 		.handle-quit {
