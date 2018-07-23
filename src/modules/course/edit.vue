@@ -539,8 +539,7 @@ export default {
 									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
 									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
 									offset: parseInt(element.item[3].value === "" ? 0 : element.item[3].value),
-									end: 0,
-									wait: false
+									end: 0
 								};
 								newStep[key] = obj;
 							} else {
@@ -579,8 +578,7 @@ export default {
 									text: element.hint.item[0].value,
 									begin: 0,
 									offset: 0,
-									end: 0,
-									wait: false
+									end: 0
 								};
 								newStep["hint"] = obj;
 							} else {
