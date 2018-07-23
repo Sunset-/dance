@@ -118,10 +118,12 @@ function timeOffset(a) {
 
 import STORE from "../store.js";
 export default {
+	created() {
+		this.initDirectiveMatch();
+	},
 	methods: {
 		open: function(type, parmas) {
 			this.type = type;
-			this.initDirectiveMatch();
 			if (type == "add") {
 				this.reset();
 			} else {
@@ -139,6 +141,9 @@ export default {
 				curriculum_id: parmas.curriculum_id || 0,
 				section_id: parmas.section_id || 0
 			};
+			console.log("课程Id",parmas.curriculum_id);
+			console.log("等级Id",parmas.level_id);
+			console.log("模块Id",parmas.section_id);
 			this.modelDirective.tips = parmas.step_item.text;
 			this.triggleData = parmas.trigger_words;
 			//触发提示设置参数复制--运动
@@ -191,15 +196,24 @@ export default {
 					return;
 				}
 				this.commandMatchLevel = {};
+				this.matchOptions1.data = [];
 				this.matchOptions1.data.push(
 					...res.map(item => {
 						var cc = {};
 						this.commandMatchLevel[item.id] = item.courses;
+						console.log("课程接口============s==");
+						console.log("等级Id",item.id);
+						console.log("课程接口=============e=");
 						cc.text = item.name;
 						cc.value = item.id;
 						return cc;
 					})
 				);
+				this.matchOptions1.data.unshift({
+					text: "课程",
+					value: "0"
+				});
+
 			});
 		},
 		addList() {
@@ -241,9 +255,9 @@ export default {
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
-			if (this.modelDirective.name=="") {
+			if (this.modelDirective.name == "") {
 				this.modelDirectiveError.error = true;
-				this.modelDirectiveError.tips="指令名称不能为空";
+				this.modelDirectiveError.tips = "指令名称不能为空";
 			} else {
 				this.modelDirectiveError.error = false;
 			}
@@ -399,7 +413,7 @@ export default {
 		"modelDirective.name": function(val) {
 			if (val) {
 				if (specilWorldTest(val)) {
-					this.modelDirectiveError.tips="指令出现特殊字符";
+					this.modelDirectiveError.tips = "指令出现特殊字符";
 					this.modelDirectiveError.error = true;
 				} else {
 					this.modelDirectiveError.error = false;
@@ -429,15 +443,23 @@ export default {
 					this.modelDirective.curriculum_id = 0;
 				}
 				this.commandMatchSection = {};
+				this.matchOptions2.data = [];
 				this.matchOptions2.data.push(
 					...this.commandMatchLevel[val].map(item => {
 						var cc = {};
 						this.commandMatchSection[item.id] = item.section;
 						cc.text = item.name;
 						cc.value = item.id;
+						console.log("等级接口============s==");
+						console.log("等级Id",item.id);
+						console.log("等级接口=============e=");
 						return cc;
 					})
 				);
+				this.matchOptions2.data.unshift({
+					text: "等级",
+					value: "0"
+				});
 			}
 		},
 		//监听等级
@@ -449,14 +471,22 @@ export default {
 					this.modelDirective.level_id = 0;
 					return;
 				}
-				this.matchOptions2.data.push(
+				this.matchOptions3.data = [];
+				this.matchOptions3.data.push(
 					...this.commandMatchSection[val].map(item => {
 						var cc = {};
 						cc.text = item.name;
 						cc.value = item.id;
+						console.log("模型接口============s==");
+						console.log("等级Id",item.id);
+						console.log("模型接口=============e");
 						return cc;
 					})
 				);
+				this.matchOptions3.data.unshift({
+					text: "模块",
+					value: "0"
+				});
 			}
 		}
 	},
@@ -535,12 +565,7 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: [
-					{
-						text: "等级",
-						value: "0"
-					}
-				]
+				data: []
 			},
 			matchOptions1: {
 				multiple: false,
@@ -548,12 +573,7 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: [
-					{
-						text: "课程",
-						value: "0"
-					}
-				]
+				data: []
 			},
 			matchOptions3: {
 				multiple: false,
@@ -561,12 +581,7 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: [
-					{
-						text: "模块",
-						value: "0"
-					}
-				]
+				data: []
 			},
 			typeOptions: {
 				multiple: false,
@@ -623,7 +638,7 @@ export default {
 .directive-form .error-parameter.triggle-list {
 	border: 1px solid #e22929;
 }
-.cp.error .el-input__inner{
+.cp.error .el-input__inner {
 	border: 1px solid #e22929;
 }
 .directive-form {
@@ -658,7 +673,7 @@ export default {
 		margin: 20px 0px 10px 0px;
 		padding-left: 15px;
 		// border-left: 1px solid #ccc;
-		background: #F2F6FA;
+		background: #f2f6fa;
 		border-radius: 4px;
 		padding: 20px;
 		.step-item {
