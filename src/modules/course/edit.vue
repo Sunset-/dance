@@ -10,7 +10,7 @@
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
-						<input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -303,18 +303,24 @@ export default {
 			if (flag) {
 				let tempSection = {
 					name: "",
-					curriculum: this.currentData.course.id,
+					curriculum: this.currentData.couserid,
 					edit: true
 				};
 				this.sectionList.push(tempSection);
 				this.activeSection = tempSection;
 				this.activeOperation = "add";
 			}
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		//编辑小节
 		editSection() {
 			this.activeSection.edit = true;
 			this.activeOperation = "edit";
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		//删除小节
 		delSection() {
