@@ -666,7 +666,7 @@ export default {
 		}
 		h3 {
 			display: inline-block;
-			font-size: 24px;
+			font-size: 22px;
 			color: #4081ff;
 			font-weight: bold;
 			margin-left: 14px;

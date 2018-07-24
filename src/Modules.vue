@@ -1,7 +1,7 @@
 <template>
 	<div class="app-container">
 		<header class="app-header">
-			<div class="header-logo">
+			<div class="header-logo" @click="home">
 				<img src="/assets/img/login/mark-logo.png" />
 				<div class="header-logo-title">后台管理系统</div>
 			</div>
@@ -104,11 +104,17 @@ export default {
 			changeTime: 2 //成功跳转时间
 		};
 	},
-	mounted(){
-	    this.currentUser = window.sessionStorage.getItem("username");
-        this.currentUser = this.currentUser.indexOf("@")>0?this.currentUser.substr(0,this.currentUser.indexOf("@")):this.currentUser;
+	mounted() {
+		this.currentUser = window.sessionStorage.getItem("username");
+		this.currentUser =
+			this.currentUser.indexOf("@") > 0
+				? this.currentUser.substr(0, this.currentUser.indexOf("@"))
+				: this.currentUser;
 	},
 	methods: {
+		home() {
+			$router.push("/");
+		},
 		go(item) {
 			$router.push({ name: item.name });
 		},
@@ -221,6 +227,7 @@ $sidebar-mini-width: 74px;
 			height: 80px;
 			top: 20px;
 			left: 50px;
+			cursor: pointer;
 			img {
 				float: left;
 				width: 40px;

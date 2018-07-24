@@ -29,7 +29,7 @@
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" v-show="activeLevel.id" @click="add('course')"></span>
+					<span class="add" :style="courseMenu.length==0?'display:inline-block !important;':''" v-show="activeLevel.id" @click="add('course')"></span>
 					<span class="edit" v-show="activeLevel.id && activeCourse.id" @click="edit('course')"></span>
 					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
@@ -58,7 +58,6 @@ export default {
 	},
 	data() {
 		return {
-			isShowEditCourse: false,
 			levelMenu: [],
 			courseMenu: [],
 			activeLevel: {},
@@ -71,7 +70,11 @@ export default {
 			isShowCourseAdd: false
 		};
 	},
-	computed: {},
+	computed: {
+		isShowEditCourse() {
+			return !this.$route.path.endsWith("course");
+		}
+	},
 	methods: {
 		/**
 		 * 初始化加载等级、课程
@@ -206,7 +209,7 @@ export default {
 					level: this.activeLevel,
 					course: this.activeCourse
 				};
-				this.isShowEditCourse = true;
+				$router.push(`/course/${this.activeCourse.id}`);
 			}
 		},
 		/**
@@ -312,7 +315,7 @@ export default {
 			});
 		},
 		goback() {
-			this.isShowEditCourse = false;
+			history.back();
 		}
 	},
 	created() {},
@@ -337,7 +340,9 @@ export default {
 		cursor: pointer;
 		&:hover {
 			& > .operate {
-				display: inline-block;
+				& > span {
+					display: inline-block;
+				}
 			}
 		}
 		.title {
@@ -424,14 +429,14 @@ export default {
 		}
 		.operate {
 			float: right;
-			display: none;
 			margin-top: 30px;
+			width: 280px;
 			span {
 				width: 56px;
 				height: 56px;
 				background: rgba(64, 129, 255, 1);
 				box-shadow: 0px 0px 10px rgba(64, 129, 255, 1);
-				display: inline-block;
+				display: none;
 				text-align: center;
 				border-radius: 56px;
 				margin-right: 34px;
