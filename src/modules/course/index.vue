@@ -136,20 +136,38 @@ export default {
 		 */
 		add(key) {
 			if (key === "level") {
-				let tempLevel = {
-					name: "",
-					edit: true
-				};
-				this.levelMenu.push(tempLevel);
-				this.activeLevel = tempLevel;
+				let flag = true;
+				this.levelMenu.forEach(level => {
+					if (level.name === "") {
+						flag = false;
+						return;
+					}
+				});
+				if (flag) {
+					let tempLevel = {
+						name: "",
+						edit: true
+					};
+					this.levelMenu.push(tempLevel);
+					this.activeLevel = tempLevel;
+				}
 			} else {
-				let tempCourse = {
-					level: this.activeLevel.id,
-					name: "",
-					edit: true
-				};
-				this.courseMenu.push(tempCourse);
-				this.activeCourse = tempCourse;
+				let flag = true;
+				this.courseMenu.forEach(course => {
+					if (course.name === "") {
+						flag = false;
+						return;
+					}
+				});
+				if (flag) {
+					let tempCourse = {
+						level: this.activeLevel.id,
+						name: "",
+						edit: true
+					};
+					this.courseMenu.push(tempCourse);
+					this.activeCourse = tempCourse;
+				}
 			}
 			this.activeOperation = {
 				key: key,
