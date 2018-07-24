@@ -98,7 +98,6 @@ export default {
 					this.activeCourse = {};
 					this.courseMenu = [];
 				}
-				console.log(this.levelMenu);
 			});
 			// this.loadPageEvent();
 		},

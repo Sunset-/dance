@@ -61,7 +61,7 @@
 										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
 									<li>
 										<label style="top:0px;">{{s.name}}</label>
 									</li>
@@ -97,7 +97,7 @@
 										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
 									<li>
 										<label>{{s.name}}</label>
 									</li>
@@ -246,23 +246,20 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
+				hint: {
+					name: "标题",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", style: "width:382px", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
 				special: {
-					hint: {
-						name: "标题",
-						id: 0,
-						item: [
-							{
-								value: "",
-								placeholder: "标题",
-								style: "width:212px;margin-right: 93px;",
-								error: ""
-							}
-						]
-					},
 					person_dir: {
 						name: "人物方向",
 						id: 0,
-						item: [{ value: "", placeholder: "人物方向", style: "width:270px", error: "" }]
+						item: [{ value: "", placeholder: "人物方向", style: "width:382px", error: "" }]
 					}
 				}
 			},
@@ -418,7 +415,7 @@ export default {
 		//添加步骤
 		addStep() {
 			let newStep = {};
-			if(this.sectionList.length === 0){
+			if (this.sectionList.length === 0) {
 				return;
 			}
 			newStep.section_id = this.activeSection.id;
@@ -464,8 +461,10 @@ export default {
 							break;
 						case "hint":
 							if (element !== null) {
-								this.editSteps["special"][key].id = element.id;
-								this.editSteps["special"][key].item[0].value = element.text;
+								this.editSteps[key].id = element.id;
+								this.editSteps[key].item[0].value = element.text;
+								this.editSteps[key].item[1].value = element.begin;
+								this.editSteps[key].item[2].value = element.offset;
 							}
 							break;
 						case "person_dir":
@@ -577,23 +576,32 @@ export default {
 								newStep[key] = null;
 							}
 							break;
-						case "special":
-							if (element.hint.item[0].value !== "") {
-								if (element.hint.item[0].error !== "") {
-									isCheck = false;
-									break;
-								}
+						case "hint":
+							if (
+								element.item[0].value !== "" ||
+								element.item[1].value !== "" ||
+								element.item[2].value !== "" ||
+								element.item[3].value !== ""
+							) {
+								element.item.forEach(i => {
+									if (i.error !== "") {
+										isCheck = false;
+										return;
+									}
+								});
 								let obj = {
-									id: element.hint.id,
-									text: element.hint.item[0].value,
-									begin: 0,
-									offset: 0,
+									id: element.id,
+									text: element.item[0].value,
+									begin: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
+									offset: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
 									end: 0
 								};
-								newStep["hint"] = obj;
+								newStep[key] = obj;
 							} else {
-								newStep["hint"] = null;
+								newStep[key] = null;
 							}
+							break;
+						case "special":
 							if (element.person_dir.item[0].value !== "") {
 								if (element.person_dir.item[0].error !== "") {
 									isCheck = false;
