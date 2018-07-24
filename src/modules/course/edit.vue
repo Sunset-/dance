@@ -3,14 +3,16 @@
 	<div class="edit-Course">
 		<div class="nav">
 			<i/>
-			<h3>{{currentData.level.name}} > {{currentData.course.name}}</h3>
+			<h3 @click="goback">{{currentData.level.name}} > {{currentData.course.name}}</h3>
 		</div>
 		<div class="content">
-			<div class="module">
+			<div class="module" :class="{'module-left':sectionList.length > 6}">
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
-					<span v-show="activeSection.name === item.name && activeSection.edit "></span>
-					<input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
+						<input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+					</span>
+
 				</div>
 			</div>
 			<!-- 模块操作 -->
@@ -28,7 +30,7 @@
 				<span style="width:8%">比对ID</span>
 				<span style="width:8%">动效ID</span>
 				<span style="width:10%">标题</span>
-				<span style="width:10%">任务方向</span>
+				<span style="width:10%">人物方向</span>
 				<span style="width:10%"></span>
 			</div>
 			<!-- 步骤内容 -->
@@ -121,6 +123,8 @@
 				<span class="submit" @click="addStep"></span>
 			</div>
 		</div>
+		<!-- 删除组件 -->
+		<delSection ref="delsection" @closed="overloadSection"></delSection>
 	</div>
 </template>
 
@@ -163,10 +167,13 @@ function timeOffset(a) {
 	}
 	return false;
 }
+import delSection from "./del.vue";
 import store from "./store.js";
 export default {
 	name: "editCourse",
-	components: {},
+	components: {
+		delSection
+	},
 	mixins: [],
 	props: {
 		currentData: {
@@ -296,14 +303,23 @@ export default {
 		},
 		//新增小节
 		addSection() {
-			let tempSection = {
-				name: "",
-				curriculum: this.currentData.course.id,
-				edit: true
-			};
-			this.sectionList.push(tempSection);
-			this.activeSection = tempSection;
-			this.activeOperation = "add";
+			let flag = true;
+			this.sectionList.forEach(section => {
+				if (section.name === "") {
+					flag = false;
+					return;
+				}
+			});
+			if (flag) {
+				let tempSection = {
+					name: "",
+					curriculum: this.currentData.course.id,
+					edit: true
+				};
+				this.sectionList.push(tempSection);
+				this.activeSection = tempSection;
+				this.activeOperation = "add";
+			}
 		},
 		//编辑小节
 		editSection() {
@@ -312,10 +328,16 @@ export default {
 		},
 		//删除小节
 		delSection() {
-			store.delSection(this.activeSection.id).then(() => {
-				this.activeSection = {};
-				this.getSection();
-			});
+			let param = {
+				id: this.activeSection.id,
+				message: "小节",
+				opType: "section"
+			};
+			this.$refs.delsection.open(param);
+		},
+		overloadSection() {
+			this.activeSection = {};
+			this.getSection();
 		},
 		addEvent() {
 			if (this.activeSection.name === "") {
@@ -526,29 +548,13 @@ export default {
 						case "expression":
 						case "compare":
 						case "camera":
-							if (element !== null) {
-								element.item.forEach(i => {
-									if (i.error !== "") {
-										isCheck = false;
-										return;
-									}
-								});
-								let obj = {
-									id: element.id,
-									name: element.item[0].value,
-									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
-									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
-									offset: parseInt(element.item[3].value === "" ? 0 : element.item[3].value),
-									end: 0,
-									wait: false
-								};
-								newStep[key] = obj;
-							} else {
-								newStep[key] = null;
-							}
-							break;
 						case "effect":
-							if (element !== null) {
+							if (
+								element.item[0].value !== "" ||
+								element.item[1].value !== "" ||
+								element.item[2].value !== "" ||
+								element.item[3].value !== ""
+							) {
 								element.item.forEach(i => {
 									if (i.error !== "") {
 										isCheck = false;
@@ -579,8 +585,7 @@ export default {
 									text: element.hint.item[0].value,
 									begin: 0,
 									offset: 0,
-									end: 0,
-									wait: false
+									end: 0
 								};
 								newStep["hint"] = obj;
 							} else {
@@ -597,8 +602,9 @@ export default {
 							}
 							break;
 						case "text":
-							if (element.item[0].error !== "") {
+							if (element.item[0].value === "" || element.item[0].error !== "") {
 								isCheck = false;
+								this.editSteps.text.item[0].error = "内容不能为空";
 								break;
 							}
 							newStep["text"] = element.item[0].value;
@@ -629,6 +635,9 @@ export default {
 		cancelStep(item) {
 			this.activeStepEdit = "";
 			this.isShowfirstSteps = false;
+		},
+		goback() {
+			this.$emit("goback", true);
 		}
 	},
 	created() {},
@@ -661,6 +670,7 @@ export default {
 			color: #4081ff;
 			font-weight: bold;
 			margin-left: 14px;
+			cursor: pointer;
 		}
 	}
 	.content {
@@ -670,21 +680,22 @@ export default {
 		margin-left: 30px;
 		margin-right: 30px;
 		.module {
-			width: 100%;
-			height: 132px;
+			width: calc(~"100% - 325px");
+			min-height: 132px;
 			text-align: center;
+			margin-left: 180px;
 			& > div {
 				display: inline-block;
 				vertical-align: text-top;
+				margin-bottom: 22px;
 			}
+
 			.sectionInput {
 				position: relative;
-				left: -192px;
-				top: -45px;
-				width: 98px;
-				color: #ffffff;
+				width: 96px;
+				color: #999999;
 				box-shadow: 0px 0px 0px;
-				background: #c7c7c7;
+				background: #f6f7fb;
 				border: 0px;
 				font-size: 14px;
 				font-weight: bold;
@@ -706,6 +717,9 @@ export default {
 				font-weight: bold;
 				cursor: pointer;
 			}
+			.sectionEditspan {
+				background: #f6f7fb;
+			}
 			& > div > .active {
 				background: linear-gradient(#2f7cef, #5baffd);
 				&:after {
@@ -719,6 +733,9 @@ export default {
 					margin-top: -2px;
 				}
 			}
+		}
+		.module-left {
+			text-align: left;
 		}
 		.module-operation {
 			float: right;
@@ -745,6 +762,7 @@ export default {
 			width: 100%;
 			height: 58px;
 			background: linear-gradient(#ffffff, #eeeeee);
+			border-top: 1px solid #e9e9e9;
 			span {
 				line-height: 58px;
 				display: inline-block;

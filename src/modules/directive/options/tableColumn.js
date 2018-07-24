@@ -1,10 +1,10 @@
 module.exports = [{
         title: "指令ID",
-        name: "name",
+        name: "id",
         style: "text-align:center;width:200px",
-        format: function() {
-            return arguments[4] + 1;
-        }
+        // format: function() {
+        //     return arguments[4] + 1;
+        // }
     },
     {
         title: "指令类型",

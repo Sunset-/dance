@@ -42,7 +42,13 @@ export default {
 			this.$refs.modal.close();
 		},
 		confirm() {
-			this.currentData.opType === "level" ? store.delLevelById(this.currentData.id) : store.delCourseById(this.currentData.id);
+			if (this.currentData.opType === "level") {
+				store.delLevelById(this.currentData.id);
+			} else if (this.currentData.opType === "course") {
+				store.delCourseById(this.currentData.id);
+			} else {
+				store.delSection(this.currentData.id);
+			}
 			this.$refs.modal.close();
 			this.$emit("closed", true);
 		},

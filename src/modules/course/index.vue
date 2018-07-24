@@ -29,7 +29,7 @@
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" v-show="activeLevel.id " @click="add('course')"></span>
+					<span class="add" v-show="activeLevel.id" @click="add('course')"></span>
 					<span class="edit" v-show="activeLevel.id && activeCourse.id" @click="edit('course')"></span>
 					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
@@ -41,7 +41,7 @@
 			<delCourse ref="delmodal" @closed="init"></delCourse>
 		</div>
 		<!-- 课程编辑组件 -->
-		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData"></editCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData" @goback="goback"></editCourse>
 	</div>
 </template>
 
@@ -67,7 +67,8 @@ export default {
 				key: "",
 				type: ""
 			},
-			currentData: {}
+			currentData: {},
+			isShowCourseAdd: false
 		};
 	},
 	computed: {},
@@ -182,11 +183,13 @@ export default {
 			this.$refs.delmodal.open(param);
 		},
 		enterEdit() {
-			this.currentData = {
-				level: this.activeLevel,
-				course: this.activeCourse
-			};
-			this.isShowEditCourse = true;
+			if (this.activeLevel.id && this.activeCourse.id) {
+				this.currentData = {
+					level: this.activeLevel,
+					course: this.activeCourse
+				};
+				this.isShowEditCourse = true;
+			}
 		},
 		/**
 		 * 加载页面事件
@@ -252,6 +255,7 @@ export default {
 				})
 				.then(res => {
 					this.activeLevel = res;
+					this.isShowCourseAdd = true;
 					this.init();
 				});
 		},
@@ -288,6 +292,9 @@ export default {
 				level: model.level,
 				add_time: Sunset.Dates.format(new Date())
 			});
+		},
+		goback() {
+			this.isShowEditCourse = false;
 		}
 	},
 	created() {},
@@ -389,12 +396,11 @@ export default {
 				border-radius: 20px;
 				box-shadow: 0px 0px 0px;
 				background: #f6f7fb;
-				width: 107px;
-				height: 40px;
+				width: 87px;
+				height: 38px;
 				line-height: 40px;
 				padding-left: 20px;
 				border: 0px;
-				margin-right: 77px;
 				outline: none;
 			}
 		}
