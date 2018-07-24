@@ -113,6 +113,7 @@ export default {
 		},
 		refresh(flag){
 			if(flag){
+				debugger
 				this.$refs.dTableRef.refresh();
 			}
 		},

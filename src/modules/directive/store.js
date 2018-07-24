@@ -22,7 +22,7 @@ module.exports = {
      */
     postCommandsSave(type, data) {
         return $http({
-            url: URLS.commandsUrl + (type == "add" ? "" : `/${data.id}`),
+            url: URLS.commandsUrl + (type == "post" ? "" : `/${data.id}`),
             type: type,
             data: data
         }).then(res => {
