@@ -3,7 +3,7 @@
 	<div class="edit-Course">
 		<div class="nav">
 			<i/>
-			<h3 @click="goback">{{currentData.level.name}} > {{currentData.course.name}}</h3>
+			<h3 @click="goback">{{currentData.levelname}} > {{currentData.soursename}}</h3>
 		</div>
 		<div class="content">
 			<div class="module" :class="{'module-left':sectionList.length > 6}">
@@ -175,16 +175,10 @@ export default {
 		delSection
 	},
 	mixins: [],
-	props: {
-		currentData: {
-			type: Object,
-			default(params) {
-				return {};
-			}
-		}
-	},
+	props: {},
 	data() {
 		return {
+			currentData: {},
 			sectionList: [],
 			activeSection: {},
 			stepList: [],
@@ -277,11 +271,10 @@ export default {
 		},
 		//获取小节
 		getSection() {
-			let course = this.currentData.course;
 			store
 				.getSectionsByCourseId({
 					name: "",
-					curriculum_id: course.id,
+					curriculum_id: this.currentData.couserid,
 					curriculum_name: ""
 				})
 				.then(res => {
@@ -653,6 +646,7 @@ export default {
 	},
 	created() {},
 	mounted() {
+		this.currentData = this.$route.params;
 		this.getSection();
 		this.loadPageEvent();
 	},
