@@ -62,6 +62,7 @@
 					<input type="password" class="edit-password" placeholder="请再次输入新密码" v-model="confirmNewPwd">
 					<div class="empty-pwd" v-if="!confirmNewPwd&&passwordEmpty">确认密码不能为空</div>
 					<div class="empty-pwd" v-if="passwordSome">两次输入密码不一致</div>
+					<div class="empty-pwd" v-if="oldPasswordSome">新密码和旧密码一致</div>
 				</div>
 				<div class="edit-confirm-password" @click="confirm">确认</div>
 			</div>
@@ -98,6 +99,7 @@ export default {
 			confirmNewPwd: "", //确认新密码
 			passwordEmpty: false, //点击确认检验密码是否填值了
 			passwordSome: false, //校验新密码是否一致
+			oldPasswordSome: false,	//检验新密码和旧密码是否一致
 			passwordRule: false, //密码规则校验
 			currentNoExist: false, //当前密码是否不存在
 			changeSuccess: false, //修改密码成功
@@ -164,6 +166,11 @@ export default {
 				return;
 			} else {
 				this.passwordSome = false;
+			}
+			//新密码不能和老密码相同
+			if(this.newPwd == this.currentPwd && this.confirmNewPwd == this.currentPwd){
+			    this.oldPasswordSome = true;
+				return;
 			}
 			$http({
 				url: "dance/modify_pwd",
