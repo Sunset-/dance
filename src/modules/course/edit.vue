@@ -120,7 +120,7 @@
 				</div>
 			</div>
 			<div class="table-bottom">
-				<span class="submit" @click="addStep"></span>
+				<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
 			</div>
 		</div>
 		<!-- 删除组件 -->
@@ -418,6 +418,9 @@ export default {
 		//添加步骤
 		addStep() {
 			let newStep = {};
+			if(this.sectionList.length === 0){
+				return;
+			}
 			newStep.section_id = this.activeSection.id;
 			if (this.stepList.length > 0) {
 				newStep = this.stepList[this.stepList.length - 1];
@@ -925,6 +928,10 @@ export default {
 					margin-top: -15px;
 					margin-left: 35px;
 				}
+			}
+			.submit-none {
+				background: #999;
+				box-shadow: 0px 0px 24px #999;
 			}
 		}
 	}
