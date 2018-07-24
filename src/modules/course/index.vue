@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -25,7 +25,7 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -186,6 +186,9 @@ export default {
 				key: key,
 				type: "edit"
 			};
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		/**
 		 * 删除
