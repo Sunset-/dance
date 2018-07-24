@@ -55,7 +55,7 @@
 					<img src="/assets/img/login/login-password.png" alt="">
 					<input type="password" class="edit-password" placeholder="请输入新密码" v-model="newPwd">
 					<div class="empty-pwd" v-if="!newPwd&&passwordEmpty">新密码不能为空</div>
-					<div class="empty-pwd" v-if="passwordRule">密码可由数字、字母、特殊符号任意组成，且最少8个字符，最多20个字符</div>
+					<div class="empty-pwd" v-if="passwordRule">最少8个字符，最多20个字符</div>
 				</div>
 				<div>
 					<img src="/assets/img/login/login-confim-password.png" alt="">
@@ -180,7 +180,6 @@ export default {
 						if (this.changeTime == 0) {
 							window.clearInterval(time);
 							window.sessionStorage.removeItem("user");
-							window.sessionStorage.removeItem("username");
 							$router.push({ path: "/login" });
 						}
 					}, 1000);
@@ -190,7 +189,6 @@ export default {
 		//退出系统
 		quite() {
 			window.sessionStorage.removeItem("user");
-			window.sessionStorage.removeItem("username");
 			$router.push({ path: "/login" });
 		}
 	}

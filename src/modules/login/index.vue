@@ -44,13 +44,6 @@
 		<div class="login-bottom">
 			<img src="/assets/img/login/login-water.png"/>
 		</div>
-		<div class="login-success-layer" v-if="loginLoading">
-			<div class="login-success-dialog">
-				<div>登录成功</div>
-				<div>{{loginTime}}秒回后自动跳转</div>
-				<img src="/assets/img/login/login-loading.png"/>
-			</div>
-		</div>
 	</div>
 </template>
 
@@ -61,12 +54,14 @@ export default {
             unserName:	'',
             pwd: '',
 			loginValueEmpty: false,		//点击登录检验是否填值了
-			loginLoading: false,	//登录成功加载
 			loginError: false,	//登录验证错误
 			loginTime: 2,
 			forgetUser: false,		//忘记密码时校验用户名
 			forgetValueEmpty: false,	//忘记密码时检验用户名是否填了
 		};
+	},
+	mounted(){
+	  	this.unserName = window.sessionStorage.getItem("username");
 	},
 	methods: {
 	    //输入内容时不显示错误提示
@@ -117,14 +112,7 @@ export default {
 					window.sessionStorage.setItem("user",userInfo.token);
 					window.sessionStorage.setItem("username",this.unserName);
 					$tools.setCookie("Authorization",`JWT ${userInfo.token}`);
-                    this.loginLoading = true;
-                    var time = window.setInterval(()=>{
-                        this.loginTime--;
-                        if(this.loginTime==0){
-                            window.clearInterval(time);
-                            $router.push({path:"/course"});
-                        }
-                    },1000);
+                    $router.push({path:"/course"});
 				}
             }).catch(error=>{
                 if(error){
