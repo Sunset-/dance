@@ -739,7 +739,7 @@ export default {
 			height: 0px;
 			border-top: 10px solid transparent;
 			border-right: 10px solid transparent;
-			border-bottom: 10px solid #bbd2ff;
+			border-bottom: 10px solid #f2f6fa;
 			border-left: 10px solid transparent;
 			top: -20px;
 		}
