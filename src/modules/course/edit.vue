@@ -3,14 +3,14 @@
 	<div class="edit-Course">
 		<div class="nav">
 			<i/>
-			<h3 @click="goback">{{currentData.level.name}} > {{currentData.course.name}}</h3>
+			<h3 @click="goback">{{currentData.levelname}} > {{currentData.soursename}}</h3>
 		</div>
 		<div class="content">
 			<div class="module" :class="{'module-left':sectionList.length > 6}">
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
-						<input class="sectionInput" v-show="activeSection.name === item.name && activeSection.edit " v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -61,7 +61,7 @@
 										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
 									<li>
 										<label style="top:0px;">{{s.name}}</label>
 									</li>
@@ -97,7 +97,7 @@
 										<p class="error-tips">{{step.error}}</p>
 									</li>
 								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block;">
+								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
 									<li>
 										<label>{{s.name}}</label>
 									</li>
@@ -120,7 +120,7 @@
 				</div>
 			</div>
 			<div class="table-bottom">
-				<span class="submit" @click="addStep"></span>
+				<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
 			</div>
 		</div>
 		<!-- 删除组件 -->
@@ -175,16 +175,10 @@ export default {
 		delSection
 	},
 	mixins: [],
-	props: {
-		currentData: {
-			type: Object,
-			default(params) {
-				return {};
-			}
-		}
-	},
+	props: {},
 	data() {
 		return {
+			currentData: {},
 			sectionList: [],
 			activeSection: {},
 			stepList: [],
@@ -246,23 +240,20 @@ export default {
 						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
 				},
+				hint: {
+					name: "标题",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", style: "width:382px", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
 				special: {
-					hint: {
-						name: "标题",
-						id: 0,
-						item: [
-							{
-								value: "",
-								placeholder: "标题",
-								style: "width:212px;margin-right: 93px;",
-								error: ""
-							}
-						]
-					},
 					person_dir: {
 						name: "人物方向",
 						id: 0,
-						item: [{ value: "", placeholder: "人物方向", style: "width:270px", error: "" }]
+						item: [{ value: "", placeholder: "人物方向", style: "width:382px", error: "" }]
 					}
 				}
 			},
@@ -280,11 +271,10 @@ export default {
 		},
 		//获取小节
 		getSection() {
-			let course = this.currentData.course;
 			store
 				.getSectionsByCourseId({
 					name: "",
-					curriculum_id: course.id,
+					curriculum_id: this.currentData.couserid,
 					curriculum_name: ""
 				})
 				.then(res => {
@@ -313,18 +303,24 @@ export default {
 			if (flag) {
 				let tempSection = {
 					name: "",
-					curriculum: this.currentData.course.id,
+					curriculum: this.currentData.couserid,
 					edit: true
 				};
 				this.sectionList.push(tempSection);
 				this.activeSection = tempSection;
 				this.activeOperation = "add";
 			}
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		//编辑小节
 		editSection() {
 			this.activeSection.edit = true;
 			this.activeOperation = "edit";
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		//删除小节
 		delSection() {
@@ -418,6 +414,9 @@ export default {
 		//添加步骤
 		addStep() {
 			let newStep = {};
+			if (this.sectionList.length === 0) {
+				return;
+			}
 			newStep.section_id = this.activeSection.id;
 			if (this.stepList.length > 0) {
 				newStep = this.stepList[this.stepList.length - 1];
@@ -461,8 +460,10 @@ export default {
 							break;
 						case "hint":
 							if (element !== null) {
-								this.editSteps["special"][key].id = element.id;
-								this.editSteps["special"][key].item[0].value = element.text;
+								this.editSteps[key].id = element.id;
+								this.editSteps[key].item[0].value = element.text;
+								this.editSteps[key].item[1].value = element.begin;
+								this.editSteps[key].item[2].value = element.offset;
 							}
 							break;
 						case "person_dir":
@@ -574,23 +575,32 @@ export default {
 								newStep[key] = null;
 							}
 							break;
-						case "special":
-							if (element.hint.item[0].value !== "") {
-								if (element.hint.item[0].error !== "") {
-									isCheck = false;
-									break;
-								}
+						case "hint":
+							if (
+								element.item[0].value !== "" ||
+								element.item[1].value !== "" ||
+								element.item[2].value !== "" ||
+								element.item[3].value !== ""
+							) {
+								element.item.forEach(i => {
+									if (i.error !== "") {
+										isCheck = false;
+										return;
+									}
+								});
 								let obj = {
-									id: element.hint.id,
-									text: element.hint.item[0].value,
-									begin: 0,
-									offset: 0,
+									id: element.id,
+									text: element.item[0].value,
+									begin: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
+									offset: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
 									end: 0
 								};
-								newStep["hint"] = obj;
+								newStep[key] = obj;
 							} else {
-								newStep["hint"] = null;
+								newStep[key] = null;
 							}
+							break;
+						case "special":
 							if (element.person_dir.item[0].value !== "") {
 								if (element.person_dir.item[0].error !== "") {
 									isCheck = false;
@@ -642,6 +652,7 @@ export default {
 	},
 	created() {},
 	mounted() {
+		this.currentData = this.$route.params;
 		this.getSection();
 		this.loadPageEvent();
 	},
@@ -925,6 +936,10 @@ export default {
 					margin-top: -15px;
 					margin-left: 35px;
 				}
+			}
+			.submit-none {
+				background: #999;
+				box-shadow: 0px 0px 24px #999;
 			}
 		}
 	}

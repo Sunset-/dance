@@ -13,8 +13,8 @@ import Router from "vue-router";
 Vue.use(Router);
 
 //引入组件库
-import XUI from "./netposa_xui";
-Vue.use(XUI);
+import SunsetUI from "./sunset-ui";
+Vue.use(SunsetUI);
 
 //引入公共服务
 import "./services/index";
@@ -43,7 +43,7 @@ var router = new Router({
 					component: Course,
 					children: [
 						{
-							path: ":id",
+							path: ":couserid/:levelname/:soursename",
 							component: Course
 						}
 					]

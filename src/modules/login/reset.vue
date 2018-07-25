@@ -180,17 +180,17 @@ export default {
 				}
 			}
 			.login-user{
-				width: 580px;
+				width: 100%;
 				height: 80px;
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 100px;
+					width: 20%;
 					height: 80px;
 					float: left;
 				}
 				.login-user-name{
-					width: 432px;
+					width: 65%;
 					height: 78px;
 					float: left;
 					background: #eff2f5;
@@ -202,20 +202,21 @@ export default {
 				.login-error{
 					border: 1px solid #DC3030;
 					height: 80px;
+					background: #eff2f5;
 				}
 			}
 			.login-password{
-				width: 580px;
+				width: 100%;
 				height: 80px;
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 100px;
+					width: 20%;
 					height: 80px;
 					float: left;
 				}
 				.login-password-name{
-					width: 432px;
+					width: 65%;
 					height: 78px;
 					float: left;
 					background: #eff2f5;
@@ -227,6 +228,7 @@ export default {
 				.login-error{
 					border: 1px solid #DC3030;
 					height: 80px;
+					background: #eff2f5;
 				}
 			}
 			.login-confirm-user-error{
@@ -237,10 +239,10 @@ export default {
 			.login-confirm-password-error{
 				font-size: 20px;
 				color: #DC3030;
-				width: 580px;
+				width: 100%;
 			}
 			.login-forget-password{
-				width: 580px;
+				width: 90%;
 				height: 80px;
 				line-height: 40px;
 				margin: 0 auto;
@@ -255,7 +257,7 @@ export default {
 				}
 			}
 			.login-btn{
-				width: 580px;
+				width: 100%;
 				height: 80px;
 				line-height: 80px;
 				background: linear-gradient(#2F7CEF, #3298F7);

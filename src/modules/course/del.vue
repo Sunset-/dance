@@ -134,6 +134,7 @@ export default {
 	}
 }
 .xui-modal-style > .xui-modal-box {
+	top: 250px !important ;
 	text-align: center;
 	box-shadow: 0px 0px 43px rgba(0, 0, 0, 0.25);
 	background: rgba(255, 255, 255, 1);

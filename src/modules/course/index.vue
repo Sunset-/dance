@@ -38,10 +38,10 @@
 				<i></i>
 			</div>
 			<!-- 删除组件 -->
-			<delCourse ref="delmodal" @closed="init"></delCourse>
+			<delCourse ref="delmodal" @closed="delAfter"></delCourse>
 		</div>
 		<!-- 课程编辑组件 -->
-		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData" @goback="goback"></editCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse"  @goback="goback"></editCourse>
 	</div>
 </template>
 
@@ -66,7 +66,6 @@ export default {
 				key: "",
 				type: ""
 			},
-			currentData: {},
 			isShowCourseAdd: false
 		};
 	},
@@ -84,6 +83,7 @@ export default {
 				if (res && res.length > 0) {
 					this.levelMenu = res.map(val => {
 						val.edit = false;
+						//如果删除的是课程，记录当前等级
 						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
 							this.activeLevel = val;
 						}
@@ -98,9 +98,31 @@ export default {
 					this.activeCourse = {};
 					this.courseMenu = [];
 				}
-				console.log(this.levelMenu);
 			});
 			// this.loadPageEvent();
+		},
+		delAfter(type) {
+			store.getLevelList().then(res => {
+				if (res && res.length > 0) {
+					this.levelMenu = res.map(val => {
+						val.edit = false;
+						//如果删除的是课程，记录当前等级
+						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
+							this.activeLevel = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeLevel) === "{}") {
+						this.activeLevel = this.levelMenu[this.levelMenu.length - 1];
+					}
+
+					this.getCourseList(this.activeLevel.id);
+				} else {
+					this.activeLevel = {};
+					this.activeCourse = {};
+					this.courseMenu = [];
+				}
+			});
 		},
 		//获取课程
 		getCourseList(levelId) {
@@ -176,6 +198,9 @@ export default {
 				key: key,
 				type: "add"
 			};
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		/**
 		 * 编辑开始
@@ -208,11 +233,7 @@ export default {
 		},
 		enterEdit() {
 			if (this.activeLevel.id && this.activeCourse.id) {
-				this.currentData = {
-					level: this.activeLevel,
-					course: this.activeCourse
-				};
-				$router.push(`/course/${this.activeCourse.id}`);
+				$router.push(`/course/${this.activeCourse.id}/${this.activeLevel.name}/${this.activeCourse.name}`);
 			}
 		},
 		/**
