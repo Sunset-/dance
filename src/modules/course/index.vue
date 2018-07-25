@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input class="input" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -25,11 +25,11 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input class="input" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" v-show="activeLevel.id" @click="add('course')"></span>
+					<span class="add" :style="courseMenu.length==0?'display:inline-block !important;':''" v-show="activeLevel.id" @click="add('course')"></span>
 					<span class="edit" v-show="activeLevel.id && activeCourse.id" @click="edit('course')"></span>
 					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
@@ -38,10 +38,10 @@
 				<i></i>
 			</div>
 			<!-- 删除组件 -->
-			<delCourse ref="delmodal" @closed="init"></delCourse>
+			<delCourse ref="delmodal" @closed="delAfter"></delCourse>
 		</div>
 		<!-- 课程编辑组件 -->
-		<editCourse re="editCourse" v-if="isShowEditCourse" :currentData="currentData" @goback="goback"></editCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse"  @goback="goback"></editCourse>
 	</div>
 </template>
 
@@ -58,7 +58,6 @@ export default {
 	},
 	data() {
 		return {
-			isShowEditCourse: false,
 			levelMenu: [],
 			courseMenu: [],
 			activeLevel: {},
@@ -67,11 +66,14 @@ export default {
 				key: "",
 				type: ""
 			},
-			currentData: {},
 			isShowCourseAdd: false
 		};
 	},
-	computed: {},
+	computed: {
+		isShowEditCourse() {
+			return !this.$route.path.endsWith("course");
+		}
+	},
 	methods: {
 		/**
 		 * 初始化加载等级、课程
@@ -81,6 +83,7 @@ export default {
 				if (res && res.length > 0) {
 					this.levelMenu = res.map(val => {
 						val.edit = false;
+						//如果删除的是课程，记录当前等级
 						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
 							this.activeLevel = val;
 						}
@@ -95,9 +98,31 @@ export default {
 					this.activeCourse = {};
 					this.courseMenu = [];
 				}
-				console.log(this.levelMenu);
 			});
 			// this.loadPageEvent();
+		},
+		delAfter(type) {
+			store.getLevelList().then(res => {
+				if (res && res.length > 0) {
+					this.levelMenu = res.map(val => {
+						val.edit = false;
+						//如果删除的是课程，记录当前等级
+						if (JSON.stringify(this.activeLevel) !== "{}" && val.id === this.activeLevel.id) {
+							this.activeLevel = val;
+						}
+						return val;
+					});
+					if (JSON.stringify(this.activeLevel) === "{}") {
+						this.activeLevel = this.levelMenu[this.levelMenu.length - 1];
+					}
+
+					this.getCourseList(this.activeLevel.id);
+				} else {
+					this.activeLevel = {};
+					this.activeCourse = {};
+					this.courseMenu = [];
+				}
+			});
 		},
 		//获取课程
 		getCourseList(levelId) {
@@ -136,25 +161,46 @@ export default {
 		 */
 		add(key) {
 			if (key === "level") {
-				let tempLevel = {
-					name: "",
-					edit: true
-				};
-				this.levelMenu.push(tempLevel);
-				this.activeLevel = tempLevel;
+				let flag = true;
+				this.levelMenu.forEach(level => {
+					if (level.name === "") {
+						flag = false;
+						return;
+					}
+				});
+				if (flag) {
+					let tempLevel = {
+						name: "",
+						edit: true
+					};
+					this.levelMenu.push(tempLevel);
+					this.activeLevel = tempLevel;
+				}
 			} else {
-				let tempCourse = {
-					level: this.activeLevel.id,
-					name: "",
-					edit: true
-				};
-				this.courseMenu.push(tempCourse);
-				this.activeCourse = tempCourse;
+				let flag = true;
+				this.courseMenu.forEach(course => {
+					if (course.name === "") {
+						flag = false;
+						return;
+					}
+				});
+				if (flag) {
+					let tempCourse = {
+						level: this.activeLevel.id,
+						name: "",
+						edit: true
+					};
+					this.courseMenu.push(tempCourse);
+					this.activeCourse = tempCourse;
+				}
 			}
 			this.activeOperation = {
 				key: key,
 				type: "add"
 			};
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		/**
 		 * 编辑开始
@@ -165,6 +211,9 @@ export default {
 				key: key,
 				type: "edit"
 			};
+			this.$nextTick(() => {
+				$(".edit-input.editing").focus();
+			});
 		},
 		/**
 		 * 删除
@@ -184,11 +233,7 @@ export default {
 		},
 		enterEdit() {
 			if (this.activeLevel.id && this.activeCourse.id) {
-				this.currentData = {
-					level: this.activeLevel,
-					course: this.activeCourse
-				};
-				this.isShowEditCourse = true;
+				$router.push(`/course/${this.activeCourse.id}/${this.activeLevel.name}/${this.activeCourse.name}`);
 			}
 		},
 		/**
@@ -294,7 +339,7 @@ export default {
 			});
 		},
 		goback() {
-			this.isShowEditCourse = false;
+			history.back();
 		}
 	},
 	created() {},
@@ -319,7 +364,9 @@ export default {
 		cursor: pointer;
 		&:hover {
 			& > .operate {
-				display: inline-block;
+				& > span {
+					display: inline-block;
+				}
 			}
 		}
 		.title {
@@ -406,14 +453,14 @@ export default {
 		}
 		.operate {
 			float: right;
-			display: none;
 			margin-top: 30px;
+			width: 280px;
 			span {
 				width: 56px;
 				height: 56px;
 				background: rgba(64, 129, 255, 1);
 				box-shadow: 0px 0px 10px rgba(64, 129, 255, 1);
-				display: inline-block;
+				display: none;
 				text-align: center;
 				border-radius: 56px;
 				margin-right: 34px;

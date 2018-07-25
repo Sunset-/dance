@@ -601,7 +601,7 @@ export default {
 			options: {
 				top: 100,
 				title: "",
-				maskClose: true
+				maskClose: false
 			},
 			inputOnptions: {
 				type: "text",

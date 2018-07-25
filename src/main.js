@@ -40,7 +40,13 @@ var router = new Router({
 				{
 					name: "course",
 					path: "/course",
-					component: Course
+					component: Course,
+					children: [
+						{
+							path: ":couserid/:levelname/:soursename",
+							component: Course
+						}
+					]
 				},
 				{
 					name: "directive",
