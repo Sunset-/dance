@@ -141,7 +141,7 @@ export default {
 				curriculum_id: parmas.curriculum_id || 0,
 				section_id: parmas.section_id || 0
 			};
-			this.showParams=false;
+			this.showParams = false;
 			console.log("课程Id", parmas.curriculum_id);
 			console.log("等级Id", parmas.level_id);
 			console.log("模块Id", parmas.section_id);
@@ -270,7 +270,6 @@ export default {
 					$tip(tips, "success");
 					this.$emit("refresh", true);
 					this.$refs.modal.close();
-					
 				}
 			});
 		},
@@ -316,7 +315,7 @@ export default {
 		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
-			if (!this.showParams && this.type=='add') {
+			if (!this.showParams && this.type == "add") {
 				return {
 					id: this.modelDirective.id,
 					section_id: this.modelDirective.section_id,
@@ -329,7 +328,7 @@ export default {
 					compare: null,
 					person_dir: 0
 				};
-			};
+			}
 			step = {
 				id: this.modelDirective.id,
 				section_id: this.modelDirective.section_id,
@@ -774,11 +773,11 @@ export default {
 	}
 	.triggle-list {
 		width: 220px;
-		height: 80px;
+		height: 160px;
 		overflow: hidden;
 		float: none;
 		clear: both;
-		border-radius: 10px;
+		border-radius: 5px;
 		border: 1px solid #c0c4cc;
 		&:hover {
 			border: 1px solid #4081ff;

@@ -734,6 +734,7 @@ export default {
 				margin-top: 12px;
 				font-weight: bold;
 				cursor: pointer;
+				user-select: none;
 			}
 			.sectionEditspan {
 				background: #f6f7fb;

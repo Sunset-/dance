@@ -9,13 +9,13 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @keydown.enter="saveRecord" @blur="blurHandle" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
 					<span class="add" @click="add('level')"></span>
-					<span class="edit" v-show="activeLevel.id" @click="edit('level')"></span>
-					<span class="del" v-show="activeLevel.id" @click="del('level')"></span>
+					<span class="edit" @click="edit('level')"></span>
+					<span class="del" @click="del('level')"></span>
 				</div>
 			</div>
 			<!-- 课程列表-->
@@ -23,9 +23,9 @@
 				<i class="title icon-course"></i>
 				<span class="line"></span>
 				<div class="content">
-					<div v-for="item in courseMenu" :key="item.id">
+					<div v-if="activeLevel.id" v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @keydown.enter="saveRecord" @blur="blurHandle" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -66,7 +66,8 @@ export default {
 				key: "",
 				type: ""
 			},
-			isShowCourseAdd: false
+			isShowCourseAdd: false,
+			lastActiveRecord: null
 		};
 	},
 	computed: {
@@ -123,7 +124,13 @@ export default {
 				//编辑名称为空的情况，直接删除
 				switch (this.activeOperation.type) {
 					case "add":
-						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
+						if (this.activeOperation.key === "level") {
+							this.levelMenu.pop();
+							this.chooseCourse("level", this.lastActiveRecord);
+						} else {
+							this.courseMenu.pop();
+							this.chooseCourse("cource", this.lastActiveRecord);
+						}
 						break;
 					case "edit":
 						if (this.activeOperation.key === "level") {
@@ -243,6 +250,7 @@ export default {
 						edit: true
 					};
 					this.levelMenu.push(tempLevel);
+					this.lastActiveRecord = this.activeLevel;
 					this.activeLevel = tempLevel;
 				}
 			} else {
@@ -260,6 +268,7 @@ export default {
 						edit: true
 					};
 					this.courseMenu.push(tempCourse);
+					this.lastActiveRecord = this.activeCourse;
 					this.activeCourse = tempCourse;
 				}
 			}
@@ -305,19 +314,8 @@ export default {
 				$router.push(`/course/${this.activeCourse.id}/${this.activeLevel.name}/${this.activeCourse.name}`);
 			}
 		},
-		blurHandle() {
-			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
-				//编辑名称为空的情况，直接删除
-				switch (this.activeOperation.type) {
-					case "add":
-						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
-						break;
-					case "edit":
-						break;
-					default:
-						break;
-				}
-			}
+		blurHandle(ev) {
+			ev.target.blur();
 		},
 		//回车事件
 		loadPageEvent() {
@@ -466,11 +464,12 @@ export default {
 				text-align: center;
 				line-height: 40px;
 				vertical-align: middle;
+				user-select: none;
 				cursor: pointer;
 				&:hover {
 					color: #fff;
-					background: #4081ff;
-					box-shadow: 0px 0px 24px #4081ff;
+					background: #84aeff;
+					box-shadow: 0px 0px 24px #84aeff;
 				}
 			}
 			& > div > .active {

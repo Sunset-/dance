@@ -5,14 +5,14 @@
 			<xui-button @click="openModal('add','')" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>
 		<directive-view ref="moduleRef" @refresh="refresh"></directive-view>
-		<del-view ref="delRef" @confirm="deleConfirm" ></del-view>
+		<del-view ref="delRef" @confirm="deleConfirm"></del-view>
 	</div>
 </template>
 <script>
 import DIRECTIVECOLUMN from "./options/tableColumn.js";
 import directiveView from "./components/directiveView";
 import delView from "./components/del.vue";
-import STORE from "./store.js"
+import STORE from "./store.js";
 export default {
 	data() {
 		return {
@@ -27,18 +27,20 @@ export default {
 							tools: [
 								{
 									label: "编辑",
-									style: "opacity:0;background: linear-gradient(#2F7CEF,#3298F7);color:#fff;border-radius:10px",
+									style:
+										"opacity:0;background: linear-gradient(#2F7CEF,#3298F7);color:#fff;border-radius:10px",
 									// icon: "icon-table-edit icon-base-org icon-table-common", //编辑
 									// premise: () => {
 									// 	return this.flag;
 									// },
 									operate: record => {
-										this.openModal('edit',record);
+										this.openModal("edit", record);
 										// this.orgEventRecive("edit", record.id);
 									}
 								},
 								{
-									style: "opacity:0;background: linear-gradient(#FF2156,#FF7539);color:#fff;border-radius:10px",
+									style:
+										"opacity:0;background: linear-gradient(#FF2156,#FF7539);color:#fff;border-radius:10px",
 									label: "删除",
 									align: "center",
 									// icon: "icon-table-delete icon-table-common", //删除
@@ -87,16 +89,16 @@ export default {
 					// 	data: data
 					// };
 					return STORE.getCommandsList().then(res => {
-						if(!res || res.length==0){
+						if (!res || res.length == 0) {
 							return {
-								data:"",
-							    length:0
-							}
+								data: "",
+								length: 0
+							};
 						}
 						// this.roleCount = res.list.length;
 						return {
-							data:res,
-							length:res.length
+							data: res,
+							length: res.length
 						};
 					});
 				}
@@ -108,27 +110,25 @@ export default {
 		delView
 	},
 	methods: {
-		openModal(type,record) {
-			this.$refs.moduleRef.open(type,record);
+		openModal(type, record) {
+			this.$refs.moduleRef.open(type, record);
 		},
-		refresh(flag){
-			if(flag){
-				debugger
+		refresh(flag) {
+			if (flag) {
 				this.$refs.dTableRef.refresh();
 			}
 		},
-		deleConfirm(id){
-			if(id){
-				STORE.getCommandsDelete(id).then(res=>{
-					if(res.msg=="ok"){
-						$tip(res.msg,"success");
+		deleConfirm(id) {
+			if (id) {
+				STORE.getCommandsDelete(id).then(res => {
+					if (res.msg == "ok") {
+						$tip(res.msg, "success");
 						this.$refs.delRef.cancel();
 						this.refresh(true);
-						return
+						return;
 					}
-					$tip(res.msg,"warning");
-					
-				})
+					$tip(res.msg, "warning");
+				});
 			}
 		}
 	},
@@ -136,32 +136,32 @@ export default {
 };
 </script>
 <style lang="less">
-.xui-style-table{
+.xui-style-table {
 	border-bottom: 1px solid #f1f1f1;
 }
 .xui-style-table .xui-datatable-table tr td,
 .xui-style-table .xui-datatable-table tr th {
 	border: 0px solid #000;
 }
-.xui-style-table .xui-datatable-table thead tr{
-	background: linear-gradient(#FFFFFF,#EEEEEE);
+.xui-style-table .xui-datatable-table thead tr {
+	background: linear-gradient(#ffffff, #eeeeee);
 	height: 48px;
 	line-height: 48px;
 	font-size: 16px;
 }
-.xui-datatable .xui-datatable-table tbody tr{
+.xui-datatable .xui-datatable-table tbody tr {
 	color: #666666;
 	font-size: 14px;
 	height: 45px;
 }
-.xui-datatable .xui-datatable-table tbody tr:nth-child(odd){
+.xui-datatable .xui-datatable-table tbody tr:nth-child(odd) {
 	background: #fff;
 }
 .xui-style-table .xui-datatable-table tr:hover button {
 	opacity: 1 !important;
 }
-.xui-style-table .xui-datatable-table tbody tr:hover{
-	background: #EFF2F6;
+.xui-style-table .xui-datatable-table tbody tr:hover {
+	background: #eff2f6;
 }
 .el-icon-add {
 	background: url("/assets/directive/icon/icon-add.png");
