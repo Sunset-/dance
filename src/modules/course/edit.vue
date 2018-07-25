@@ -10,7 +10,7 @@
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
-						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -278,17 +278,19 @@ export default {
 					curriculum_name: ""
 				})
 				.then(res => {
-					this.sectionList = res.map(val => {
-						val.edit = false;
-						if (JSON.stringify(this.activeSection) !== "{}" && val.id === this.activeSection.id) {
-							this.activeSection = val;
+					if(res && res.length >0){
+						this.sectionList = res.map(val => {
+							val.edit = false;
+							if (JSON.stringify(this.activeSection) !== "{}" && val.id === this.activeSection.id) {
+								this.activeSection = val;
+							}
+							return val;
+						});
+						if (JSON.stringify(this.activeSection) === "{}") {
+							this.activeSection = this.sectionList[0];
 						}
-						return val;
-					});
-					if (JSON.stringify(this.activeSection) === "{}") {
-						this.activeSection = this.sectionList[0];
+						this.getStepBySectionId();
 					}
-					this.getStepBySectionId();
 				});
 		},
 		//新增小节
@@ -335,7 +337,21 @@ export default {
 			this.activeSection = {};
 			this.getSection();
 		},
+		blurHandle(){
+			if (this.activeSection.name === "") {
+				switch (this.activeOperation) {
+					case "add":
+						this.sectionList.pop();
+						break;
+					case "edit":
+						break;
+					default:
+						break;
+				}
+			}
+		},
 		addEvent() {
+			debugger
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
@@ -579,8 +595,7 @@ export default {
 							if (
 								element.item[0].value !== "" ||
 								element.item[1].value !== "" ||
-								element.item[2].value !== "" ||
-								element.item[3].value !== ""
+								element.item[2].value !== ""
 							) {
 								element.item.forEach(i => {
 									if (i.error !== "") {
@@ -654,7 +669,10 @@ export default {
 	mounted() {
 		this.currentData = this.$route.params;
 		this.getSection();
-		this.loadPageEvent();
+		this.$nextTick(() => {
+			this.loadPageEvent();
+		});
+		
 	},
 	beforeDestory() {}
 };

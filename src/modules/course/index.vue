@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -25,7 +25,7 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -99,7 +99,7 @@ export default {
 					this.courseMenu = [];
 				}
 			});
-			// this.loadPageEvent();
+			this.loadPageEvent();
 		},
 		delAfter(type) {
 			store.getLevelList().then(res => {
@@ -234,6 +234,20 @@ export default {
 		enterEdit() {
 			if (this.activeLevel.id && this.activeCourse.id) {
 				$router.push(`/course/${this.activeCourse.id}/${this.activeLevel.name}/${this.activeCourse.name}`);
+			}
+		},
+		blurHandle(){
+			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
+			//编辑名称为空的情况，直接删除
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
+						break;
+					case "edit":
+						break;
+					default:
+						break;
+				}
 			}
 		},
 		/**
