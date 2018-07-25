@@ -10,7 +10,7 @@
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
-						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="addEvent" autofocus maxlength="6" />
+						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -704,6 +704,7 @@ export default {
 			.sectionInput {
 				position: relative;
 				width: 96px;
+				height: 100%;
 				color: #999999;
 				box-shadow: 0px 0px 0px;
 				background: #f6f7fb;
