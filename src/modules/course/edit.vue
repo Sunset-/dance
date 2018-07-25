@@ -34,6 +34,7 @@
 				<span style="width:10%"></span>
 			</div>
 			<!-- 步骤内容 -->
+			<!-- <xui-scroll style="height:600px"> -->
 			<div v-show="activeSection.id" class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
@@ -122,6 +123,7 @@
 			<div class="table-bottom" v-show="activeSection.id">
 				<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
 			</div>
+			<!-- </xui-scroll> -->
 		</div>
 		<!-- 删除组件 -->
 		<delSection ref="delsection" @ensure="removeSection"></delSection>
