@@ -1,5 +1,5 @@
 import StaticDict from "./static";
-var XuiDictionary = NetPosaXUI.Dictionary;
+var XuiDictionary = SunsetUI.Dictionary;
 var inited = false;
 XuiDictionary.install(StaticDict);
 XuiDictionary.init = function() {

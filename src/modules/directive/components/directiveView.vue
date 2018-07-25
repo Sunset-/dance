@@ -141,9 +141,10 @@ export default {
 				curriculum_id: parmas.curriculum_id || 0,
 				section_id: parmas.section_id || 0
 			};
-			console.log("课程Id",parmas.curriculum_id);
-			console.log("等级Id",parmas.level_id);
-			console.log("模块Id",parmas.section_id);
+			this.showParams=false;
+			console.log("课程Id", parmas.curriculum_id);
+			console.log("等级Id", parmas.level_id);
+			console.log("模块Id", parmas.section_id);
 			this.modelDirective.tips = parmas.step_item.text;
 			this.triggleData = parmas.trigger_words;
 			//触发提示设置参数复制--运动
@@ -202,7 +203,7 @@ export default {
 						var cc = {};
 						this.commandMatchLevel[item.id] = item.courses;
 						console.log("课程接口============s==");
-						console.log("等级Id",item.id);
+						console.log("等级Id", item.id);
 						console.log("课程接口=============e=");
 						cc.text = item.name;
 						cc.value = item.id;
@@ -211,9 +212,8 @@ export default {
 				);
 				this.matchOptions1.data.unshift({
 					text: "课程",
-					value: "0"
+					value: 0
 				});
-
 			});
 		},
 		addList() {
@@ -268,8 +268,9 @@ export default {
 						tips = "编辑成功";
 					}
 					$tip(tips, "success");
-					this.$refs.modal.close();
 					this.$emit("refresh", true);
+					this.$refs.modal.close();
+					
 				}
 			});
 		},
@@ -315,6 +316,20 @@ export default {
 		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
+			if (!this.showParams && this.type=='add') {
+				return {
+					id: this.modelDirective.id,
+					section_id: this.modelDirective.section_id,
+					text: this.modelDirective.tips,
+					motion: null,
+					expression: null,
+					camera: null,
+					effect: null,
+					hint: null,
+					compare: null,
+					person_dir: 0
+				};
+			};
 			step = {
 				id: this.modelDirective.id,
 				section_id: this.modelDirective.section_id,
@@ -331,19 +346,19 @@ export default {
 					action: parseInt(this.parameterData[1].item3.value) || 0,
 					offset: parseInt(this.parameterData[1].item4.value) || 0
 				},
-				hint: {
+				camera: {
+					id: parseInt(this.parameterData[2].item2.value) || 0,
 					name: this.parameterData[2].item1.value,
-					action: parseInt(this.parameterData[2].item3.value),
+					action: parseInt(this.parameterData[2].item3.value) || 0,
 					offset: parseInt(this.parameterData[2].item4.value) || 0
 				},
-				camera: {
+				effect: {
 					id: parseInt(this.parameterData[3].item2.value) || 0,
 					name: this.parameterData[3].item1.value,
 					action: parseInt(this.parameterData[3].item3.value) || 0,
 					offset: parseInt(this.parameterData[3].item4.value) || 0
 				},
-				effect: {
-					id: parseInt(this.parameterData[4].item2.value) || 0,
+				hint: {
 					name: this.parameterData[4].item1.value,
 					action: parseInt(this.parameterData[4].item3.value) || 0,
 					offset: parseInt(this.parameterData[4].item4.value) || 0
@@ -361,9 +376,9 @@ export default {
 				id: "",
 				name: "",
 				type: 1,
-				level_id: "0",
-				curriculum_id: "0",
-				section_id: "0",
+				level_id: 0,
+				curriculum_id: 0,
+				section_id: 0,
 				tips: ""
 			};
 			this.parameterData = [
@@ -451,14 +466,14 @@ export default {
 						cc.text = item.name;
 						cc.value = item.id;
 						console.log("等级接口============s==");
-						console.log("等级Id",item.id);
+						console.log("等级Id", item.id);
 						console.log("等级接口=============e=");
 						return cc;
 					})
 				);
 				this.matchOptions2.data.unshift({
 					text: "等级",
-					value: "0"
+					value: 0
 				});
 			}
 		},
@@ -478,14 +493,14 @@ export default {
 						cc.text = item.name;
 						cc.value = item.id;
 						console.log("模型接口============s==");
-						console.log("等级Id",item.id);
+						console.log("等级Id", item.id);
 						console.log("模型接口=============e");
 						return cc;
 					})
 				);
 				this.matchOptions3.data.unshift({
 					text: "模块",
-					value: "0"
+					value: 0
 				});
 			}
 		}
@@ -513,9 +528,9 @@ export default {
 				id: "",
 				name: "",
 				type: 1,
-				level_id: "0",
-				curriculum_id: "0",
-				section_id: "0",
+				level_id: 0,
+				curriculum_id: 0,
+				section_id: 0,
 				tips: ""
 			},
 			parameterData: [
@@ -565,7 +580,12 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: []
+				data: [
+					{
+						text: "等级",
+						value: 0
+					}
+				]
 			},
 			matchOptions1: {
 				multiple: false,
@@ -573,7 +593,12 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: []
+				data: [
+					{
+						text: "课程",
+						value: 0
+					}
+				]
 			},
 			matchOptions3: {
 				multiple: false,
@@ -581,7 +606,12 @@ export default {
 				filter: false,
 				disabled: true,
 				style: "width:90px;",
-				data: []
+				data: [
+					{
+						text: "模块",
+						value: 0
+					}
+				]
 			},
 			typeOptions: {
 				multiple: false,
@@ -599,7 +629,7 @@ export default {
 				]
 			},
 			options: {
-				top: 100,
+				top: "15%",
 				title: "",
 				maskClose: false
 			},
@@ -709,7 +739,7 @@ export default {
 			height: 0px;
 			border-top: 10px solid transparent;
 			border-right: 10px solid transparent;
-			border-bottom: 10px solid #bbd2ff;
+			border-bottom: 10px solid #f2f6fa;
 			border-left: 10px solid transparent;
 			top: -20px;
 		}

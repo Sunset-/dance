@@ -722,6 +722,7 @@ export default {
 			.sectionInput {
 				position: relative;
 				width: 96px;
+				height: 100%;
 				color: #999999;
 				box-shadow: 0px 0px 0px;
 				background: #f6f7fb;
