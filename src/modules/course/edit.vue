@@ -10,7 +10,7 @@
 				<div v-for="item in sectionList" :key="item.id">
 					<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
 					<span class="sectionEditspan" v-show="activeSection.id === item.id && activeSection.edit ">
-						<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="blurHandle" autofocus maxlength="6" />
+						<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -34,7 +34,7 @@
 				<span style="width:10%"></span>
 			</div>
 			<!-- 步骤内容 -->
-			<div class="table-content">
+			<div v-show="activeSection.id" class="table-content">
 				<div class="step" v-for="(item,index) in stepList" :key="index">
 					<span style="width:5%">{{index+1}}</span>
 					<span class="xui-pop" style="width:20%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
@@ -119,7 +119,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="table-bottom">
+			<div class="table-bottom" v-show="activeSection.id">
 				<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
 			</div>
 		</div>
@@ -181,6 +181,7 @@ export default {
 			currentData: {},
 			sectionList: [],
 			activeSection: {},
+			lastActiveRecord: null,
 			stepList: [],
 			activeStepEdit: "",
 			editSteps: {
@@ -310,6 +311,7 @@ export default {
 					curriculum: this.currentData.couserid,
 					edit: true
 				};
+				this.lastActiveRecord = this.activeSection;
 				this.sectionList.push(tempSection);
 				this.activeSection = tempSection;
 				this.activeOperation = "add";
@@ -340,26 +342,12 @@ export default {
 		triggerBlurHandle(ev) {
 			ev.target.blur();
 		},
-		blurHandle() {
-			if (this.activeSection.name === "") {
-				switch (this.activeOperation) {
-					case "add":
-						this.sectionList.pop();
-						break;
-					case "edit":
-						break;
-					default:
-						break;
-				}
-			} else {
-				this.saveRecord();
-			}
-		},
 		saveRecord() {
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
 						this.sectionList.pop();
+						this.chooseSection(this.lastActiveRecord);
 						break;
 					case "edit":
 						store.delSection(this.activeSection.id).then(() => {
