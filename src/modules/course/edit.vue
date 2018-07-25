@@ -8,9 +8,9 @@
 		<div class="content">
 			<div class="module" :class="{'module-left':sectionList.length > 6}">
 				<div v-for="item in sectionList" :key="item.id">
-					<span :class="{'active': activeSection.name === item.name}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
-					<span class="sectionEditspan" v-show="activeSection.name === item.name && activeSection.edit ">
-						<input :class="['sectionInput','edit-input',activeSection.name === item.name && activeSection.edit?'editing':'']" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
+					<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
+					<span class="sectionEditspan" v-show="activeSection.id === item.id && activeSection.edit ">
+						<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="blurHandle" autofocus maxlength="6" />
 					</span>
 
 				</div>
@@ -124,7 +124,7 @@
 			</div>
 		</div>
 		<!-- 删除组件 -->
-		<delSection ref="delsection" @closed="overloadSection"></delSection>
+		<delSection ref="delsection" @ensure="removeSection"></delSection>
 	</div>
 </template>
 
@@ -266,8 +266,10 @@ export default {
 	filters: {},
 	methods: {
 		chooseSection(item) {
-			this.activeSection = item;
-			this.getStepBySectionId();
+			this.activeSection = item || {};
+			if (item) {
+				this.getStepBySectionId();
+			}
 		},
 		//获取小节
 		getSection() {
@@ -278,7 +280,7 @@ export default {
 					curriculum_name: ""
 				})
 				.then(res => {
-					if(res && res.length >0){
+					if (res && res.length > 0) {
 						this.sectionList = res.map(val => {
 							val.edit = false;
 							if (JSON.stringify(this.activeSection) !== "{}" && val.id === this.activeSection.id) {
@@ -326,18 +328,19 @@ export default {
 		},
 		//删除小节
 		delSection() {
-			let param = {
-				id: this.activeSection.id,
-				message: "小节",
-				opType: "section"
-			};
-			this.$refs.delsection.open(param);
+			this.$refs.delsection.open(this.activeSection);
 		},
-		overloadSection() {
-			this.activeSection = {};
-			this.getSection();
+		removeSection(record) {
+			store.delSection(record.id).then(() => {
+				var index = this.sectionList.indexOf(record);
+				this.sectionList.splice(index, 1);
+				this.chooseSection(this.sectionList[index > 0 ? index - 1 : 0]);
+			});
 		},
-		blurHandle(){
+		triggerBlurHandle(ev) {
+			ev.target.blur();
+		},
+		blurHandle() {
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
@@ -348,10 +351,11 @@ export default {
 					default:
 						break;
 				}
+			} else {
+				this.saveRecord();
 			}
 		},
-		addEvent() {
-			debugger
+		saveRecord() {
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
@@ -379,18 +383,6 @@ export default {
 						break;
 				}
 			}
-		},
-		/**
-		 * 加载页面事件
-		 */
-		loadPageEvent() {
-			let self = this;
-			document.onkeydown = function(event) {
-				let e = event || window.event || arguments.callee.caller.arguments[0];
-				if (e && e.keyCode == 13) {
-					self.addEvent();
-				}
-			};
 		},
 		/**
 		 * 添加小节
@@ -669,10 +661,6 @@ export default {
 	mounted() {
 		this.currentData = this.$route.params;
 		this.getSection();
-		this.$nextTick(() => {
-			this.loadPageEvent();
-		});
-		
 	},
 	beforeDestory() {}
 };

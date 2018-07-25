@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @keydown.enter="saveRecord" @blur="blurHandle" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -25,7 +25,7 @@
 				<div class="content">
 					<div v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @blur="blurHandle" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @keydown.enter="saveRecord" @blur="blurHandle" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -38,10 +38,10 @@
 				<i></i>
 			</div>
 			<!-- 删除组件 -->
-			<delCourse ref="delmodal" @closed="delAfter"></delCourse>
+			<delCourse ref="delmodal" @ensure="removeItem"></delCourse>
 		</div>
 		<!-- 课程编辑组件 -->
-		<editCourse re="editCourse" v-if="isShowEditCourse"  @goback="goback"></editCourse>
+		<editCourse re="editCourse" v-if="isShowEditCourse" @goback="goback"></editCourse>
 	</div>
 </template>
 
@@ -99,7 +99,88 @@ export default {
 					this.courseMenu = [];
 				}
 			});
-			this.loadPageEvent();
+			// this.loadPageEvent();
+		},
+		/**
+		 * 课程选择
+		 */
+		chooseCourse(key, item) {
+			if (key === "level") {
+				this.activeLevel = item || {};
+				this.activeCourse = {};
+				if (this.activeLevel.id) {
+					this.getCourseList(this.activeLevel.id);
+				}
+			} else {
+				this.activeCourse = item || {};
+			}
+		},
+		/**
+		 * 保存
+		 */
+		saveRecord() {
+			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
+				//编辑名称为空的情况，直接删除
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
+						break;
+					case "edit":
+						if (this.activeOperation.key === "level") {
+							store.delLevelById(this.activeLevel.id).then(() => {
+								this.init();
+							});
+						} else {
+							store.delCourseById(this.activeCourse.id).then(() => {
+								this.init();
+							});
+						}
+						break;
+					default:
+						break;
+				}
+			} else {
+				this.$set(this.activeLevel, "edit", false);
+				this.$set(this.activeCourse, "edit", false);
+				switch (this.activeOperation.type) {
+					case "add":
+						this.activeOperation.key === "level"
+							? this.addLevel(this.activeLevel)
+							: this.addCourse(this.activeCourse);
+						break;
+					case "edit":
+						this.activeOperation.key === "level"
+							? this.updateLevel(this.activeLevel)
+							: this.updateCourse(this.activeCourse);
+						break;
+					default:
+						break;
+				}
+			}
+		},
+		/**
+		 * 删除
+		 */
+		removeItem(record) {
+			var method = null;
+			if (record.opType === "level") {
+				method = "delLevelById";
+			} else if (record.opType === "course") {
+				method = "delCourseById";
+			} else {
+				method = "delSection";
+			}
+			store[method](record.id).then(res => {
+				if (record.opType == "level") {
+					var index = this.levelMenu.indexOf(record);
+					this.levelMenu.splice(index, 1);
+					this.chooseCourse("level", this.levelMenu[index > 0 ? index - 1 : 0]);
+				} else if (record.opType == "course") {
+					var index = this.courseMenu.indexOf(record);
+					this.courseMenu.splice(index, 1);
+					this.chooseCourse("course", this.courseMenu[index > 0 ? index - 1 : 0]);
+				}
+			});
 		},
 		delAfter(type) {
 			store.getLevelList().then(res => {
@@ -143,18 +224,6 @@ export default {
 					this.activeCourse = {};
 				}
 			});
-		},
-		/**
-		 * 课程选择
-		 */
-		chooseCourse(key, item) {
-			if (key === "level") {
-				this.activeLevel = item;
-				this.activeCourse = {};
-				this.getCourseList(this.activeLevel.id);
-			} else {
-				this.activeCourse = item;
-			}
 		},
 		/**
 		 * 添加开始
@@ -236,24 +305,7 @@ export default {
 				$router.push(`/course/${this.activeCourse.id}/${this.activeLevel.name}/${this.activeCourse.name}`);
 			}
 		},
-		blurHandle(){
-			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
-			//编辑名称为空的情况，直接删除
-				switch (this.activeOperation.type) {
-					case "add":
-						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
-						break;
-					case "edit":
-						break;
-					default:
-						break;
-				}
-			}
-		},
-		/**
-		 * 加载页面事件
-		 */
-		addEvent() {
+		blurHandle() {
 			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
 				//编辑名称为空的情况，直接删除
 				switch (this.activeOperation.type) {
@@ -261,32 +313,6 @@ export default {
 						this.activeOperation.key === "level" ? this.levelMenu.pop() : this.courseMenu.pop();
 						break;
 					case "edit":
-						if (this.activeOperation.key === "level") {
-							store.delLevelById(this.activeLevel.id).then(() => {
-								this.init();
-							});
-						} else {
-							store.delCourseById(this.activeCourse.id).then(() => {
-								this.init();
-							});
-						}
-						break;
-					default:
-						break;
-				}
-			} else {
-				this.$set(this.activeLevel, "edit", false);
-				this.$set(this.activeCourse, "edit", false);
-				switch (this.activeOperation.type) {
-					case "add":
-						this.activeOperation.key === "level"
-							? this.addLevel(this.activeLevel)
-							: this.addCourse(this.activeCourse);
-						break;
-					case "edit":
-						this.activeOperation.key === "level"
-							? this.updateLevel(this.activeLevel)
-							: this.updateCourse(this.activeCourse);
 						break;
 					default:
 						break;

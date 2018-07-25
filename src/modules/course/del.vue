@@ -4,7 +4,7 @@
 		<xui-modal ref="modal" title="" @closed="closed">
 			<template slot-scope="props">
 				<div class="modal-content">
-					<h3>是否确认删除该{{currentData.message}}</h3>
+					<h3>是否确认删除该{{currentData.message||'小节'}}</h3>
 					<h6 v-show="currentData.opType === 'level'">删除后该{{currentData.message}}内所有数据也会删除</h6>
 					<i></i>
 				</div>
@@ -42,15 +42,8 @@ export default {
 			this.$refs.modal.close();
 		},
 		confirm() {
-			if (this.currentData.opType === "level") {
-				store.delLevelById(this.currentData.id);
-			} else if (this.currentData.opType === "course") {
-				store.delCourseById(this.currentData.id);
-			} else {
-				store.delSection(this.currentData.id);
-			}
+			this.$emit("ensure", this.currentData);
 			this.$refs.modal.close();
-			this.$emit("closed", true);
 		},
 		closed() {}
 	},
