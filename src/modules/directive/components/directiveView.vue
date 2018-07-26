@@ -57,6 +57,9 @@
 										<xui-input v-model="item.item4.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item4.placeholder" @change="input4Change(item.item4,$event)"></xui-input>
 										<span class="err-tips">{{item.item4.error}}</span>
 									</div>
+									<div class="step-item" v-if="item.name=='人物方向'">
+										<xui-toolbar :options="toolbarParamsOptions"></xui-toolbar>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -142,11 +145,13 @@ export default {
 				section_id: parmas.section_id || 0
 			};
 			this.showParams = false;
+			this.parmasSet = false;
 			console.log("课程Id", parmas.curriculum_id);
 			console.log("等级Id", parmas.level_id);
 			console.log("模块Id", parmas.section_id);
 			this.modelDirective.tips = parmas.step_item.text;
 			this.triggleData = parmas.trigger_words;
+			this.parmasStepItem = parmas.step_item;
 			//触发提示设置参数复制--运动
 			if (parmas.step_item.motion) {
 				this.parameterData[0].item1.value = parmas.step_item.motion.id;
@@ -245,6 +250,12 @@ export default {
 		//保存指令
 		saveDirctive() {
 			var step_item = this.formatStepItem();
+			if (!this.parmasSet) {
+				this.parmasStepItem.id = this.modelDirective.id;
+				this.parmasStepItem.section_id = this.modelDirective.tips;
+				this.parmasStepItem.text = this.modelDirective.section_id;
+				step_item = this.parmasStepItem;
+			}
 			var params = {
 				id: this.modelDirective.id,
 				name: this.modelDirective.name,
@@ -258,6 +269,7 @@ export default {
 			if (this.modelDirective.name == "") {
 				this.modelDirectiveError.error = true;
 				this.modelDirectiveError.tips = "指令名称不能为空";
+				return;
 			} else {
 				this.modelDirectiveError.error = false;
 			}
@@ -315,7 +327,7 @@ export default {
 		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
-			if (!this.showParams && this.type == "add") {
+			if (!this.showParams && !this.parmasSet) {
 				return {
 					id: this.modelDirective.id,
 					section_id: this.modelDirective.section_id,
@@ -370,6 +382,7 @@ export default {
 		//新增时重置弹框
 		reset() {
 			this.showParams = false;
+			this.parmasSet = false;
 			this.triggleData = [];
 			this.modelDirective = {
 				id: "",
@@ -379,6 +392,18 @@ export default {
 				curriculum_id: 0,
 				section_id: 0,
 				tips: ""
+			};
+			//重置step-item
+			this.parmasStepItem={
+				camera: null,
+				compare: null,
+				effect: null,
+				expression: null,
+				hint: null,
+				id: 0,
+				motion: null,
+				person_dir: 0,
+				section_id: 0
 			};
 			this.parameterData = [
 				{
@@ -509,6 +534,18 @@ export default {
 			type: "",
 			triggleData: [],
 			showParams: false,
+			parmasSet: false, //判断是不是设置参数,
+			parmasStepItem: {
+				camera: null,
+				compare: null,
+				effect: null,
+				expression: null,
+				hint: null,
+				id: 0,
+				motion: null,
+				person_dir: 0,
+				section_id: 0
+			}, //
 			commandMatchLevel: null,
 			commandMatchSection: null,
 			modelDirectiveError: {
@@ -656,6 +693,29 @@ export default {
 						}
 					}
 				]
+			},
+			toolbarParamsOptions: {
+				size: "medium",
+				tools: [
+					{
+						label: "保存",
+						style:
+							"background:#4081FF;color:#fff;border-radius:20px;text-align:center;margin-right:10px;padding:5px 10px;line-height:0px",
+						operate: () => {
+							this.parmasSet = true;
+							this.showParams = false;
+						}
+					},
+					{
+						label: "取消",
+						style:
+							"background:#CCCCCC;color:#fff;border-radius:20px;text-align:center;padding:5px 10px;line-height:0px",
+						operate: () => {
+							this.showParams = false;
+							this.parmasSet = false;
+						}
+					}
+				]
 			}
 		};
 	}
@@ -710,7 +770,7 @@ export default {
 			display: inline-block;
 			position: relative;
 		}
-		span {
+		div > span {
 			width: 60px;
 			text-align: right;
 			display: inline-block;
