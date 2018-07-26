@@ -395,11 +395,12 @@ export default {
 	left: 0px;
 	background-color: #f6f7fb;
 	.item {
-		height: 123px;
+		min-height: 123px;
 		background: rgba(255, 255, 255, 1);
 		border-radius: 6px;
 		margin: 23px;
 		cursor: pointer;
+		position: relative;
 		&:hover {
 			& > .operate {
 				& > span {
@@ -408,8 +409,10 @@ export default {
 			}
 		}
 		.title {
-			display: inline-block;
-			margin: 10px 20px 20px 44px;
+			display: block;
+			float: left;
+			margin-left: 20px;
+			margin-right: 20px;
 			line-height: 123px;
 		}
 		i {
@@ -442,16 +445,19 @@ export default {
 		.line {
 			width: 1px;
 			height: 50px;
-			display: inline-block;
-			background: rgba(204, 204, 204, 1);
+			display: block;
+			float: left;
+			background: #cccccc;
 			position: relative;
-			top: 10px;
+			top: 35px;
 		}
 		.content {
 			display: inline-block;
 			margin-left: 50px;
 			font-size: 16px;
 			vertical-align: text-bottom;
+			width: calc(100% - 497px);
+			margin-top: 30px;
 			& > div {
 				display: inline-block;
 			}
@@ -467,6 +473,8 @@ export default {
 				user-select: none;
 				cursor: pointer;
 				margin-right: 20px;
+				margin-bottom: 10px;
+				margin-top: 10px;
 				&:hover {
 					color: #fff;
 					background: #84aeff;
@@ -495,7 +503,7 @@ export default {
 		.operate {
 			float: right;
 			margin-top: 30px;
-			width: 280px;
+			width: 300px;
 			span {
 				width: 56px;
 				height: 56px;
