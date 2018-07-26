@@ -185,7 +185,7 @@ export default {
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 20%;
+					width: 19%;
 					height: 80px;
 					float: left;
 				}
@@ -211,7 +211,7 @@ export default {
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 20%;
+					width: 19%;
 					height: 80px;
 					float: left;
 				}
