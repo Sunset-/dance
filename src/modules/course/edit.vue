@@ -75,7 +75,7 @@
 							</ul>
 							<ul>
 								<li style="margin-right: 35px;">
-									<span class="step-btn confirm" @click="confirmStep"></span>
+									<span class="step-btn confirm" @click="confirmStep()"></span>
 								</li>
 								<li>
 									<span class="step-btn cancel" @click="cancelStep(item)"></span>
@@ -160,7 +160,6 @@ function numberMinus(a) {
 	}
 	return false;
 }
-
 function timeOffset(a) {
 	var pattern = new RegExp("^[0-9]*$"),
 		pattern2 = new RegExp("^[-|0-9][0-9]* ");
@@ -261,7 +260,8 @@ export default {
 				}
 			},
 			isShowfirstSteps: false,
-			activeOperation: ""
+			activeOperation: "",
+			statusSetpEdit: false
 		};
 	},
 	computed: {},
@@ -269,6 +269,10 @@ export default {
 	filters: {},
 	methods: {
 		chooseSection(item) {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			this.activeSection = item || {};
 			if (item) {
 				this.getStepBySectionId();
@@ -300,6 +304,10 @@ export default {
 		},
 		//新增小节
 		addSection() {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			let flag = true;
 			this.sectionList.forEach(section => {
 				if (section.name === "") {
@@ -324,6 +332,10 @@ export default {
 		},
 		//编辑小节
 		editSection() {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			this.activeSection.edit = true;
 			this.activeOperation = "edit";
 			this.$nextTick(() => {
@@ -332,6 +344,10 @@ export default {
 		},
 		//删除小节
 		delSection() {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			this.$refs.delsection.open(this.activeSection);
 		},
 		removeSection(record) {
@@ -345,6 +361,10 @@ export default {
 			ev.target.blur();
 		},
 		saveRecord() {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
@@ -411,6 +431,10 @@ export default {
 		},
 		//添加步骤
 		addStep() {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			let newStep = {};
 			if (this.sectionList.length === 0) {
 				return;
@@ -426,14 +450,20 @@ export default {
 			} else {
 				this.isShowfirstSteps = true;
 			}
+			this.statusSetpEdit = true;
 		},
 		//步骤编辑开始
 		editStep(index, item) {
 			this.activeStepEdit = index;
+			this.statusSetpEdit = true;
 			this.filterEditSteps(item);
 		},
 		//步骤删除
 		delStep(item) {
+			if (this.statusSetpEdit) {
+				$tip("当前正在编辑中", "warning");
+				return;
+			}
 			store.delSteps(item.id).then(res => {
 				this.getSection();
 			});
@@ -630,17 +660,20 @@ export default {
 					this.isShowfirstSteps = false;
 					this.activeStepEdit = "";
 					this.getSection();
+					this.statusSetpEdit = false;
 				});
 			} else {
 				store.addSteps(newStep).then(res => {
 					this.isShowfirstSteps = false;
 					this.getSection();
+					this.statusSetpEdit = false;
 				});
 			}
 		},
 		//取消步骤
 		cancelStep(item) {
 			this.activeStepEdit = "";
+			this.statusSetpEdit = false;
 			this.isShowfirstSteps = false;
 		},
 		goback() {
