@@ -47,19 +47,19 @@
 				</div>
 				<div>
 					<img src="/assets/img/login/login-password.png" alt="">
-					<input type="password" class="edit-password" placeholder="请输入当前密码" v-model="currentPwd">
+					<input @keydown="hideTip" type="password" class="edit-password" placeholder="请输入当前密码" v-model="currentPwd">
 					<div class="empty-pwd" v-if="!currentPwd&&passwordEmpty">输入不能为空</div>
 					<div class="empty-pwd" v-if="currentNoExist">当前密码输入错误</div>
 				</div>
 				<div>
 					<img src="/assets/img/login/login-password.png" alt="">
-					<input type="password" class="edit-password" placeholder="请输入新密码" v-model="newPwd">
+					<input @keydown="hideTip" type="password" class="edit-password" placeholder="请输入新密码" v-model="newPwd">
 					<div class="empty-pwd" v-if="!newPwd&&passwordEmpty">新密码不能为空</div>
 					<div class="empty-pwd" v-if="passwordRule">最少8个字符，最多20个字符</div>
 				</div>
 				<div>
 					<img src="/assets/img/login/login-confim-password.png" alt="">
-					<input type="password" class="edit-password" placeholder="请再次输入新密码" v-model="confirmNewPwd">
+					<input @keydown="hideTip" type="password" class="edit-password" placeholder="请再次输入新密码" v-model="confirmNewPwd">
 					<div class="empty-pwd" v-if="!confirmNewPwd&&passwordEmpty">确认密码不能为空</div>
 					<div class="empty-pwd" v-if="passwordSome">两次输入密码不一致</div>
 					<div class="empty-pwd" v-if="oldPasswordSome">新密码和旧密码一致</div>
@@ -144,6 +144,21 @@ export default {
 			this.currentPwd = "";
 			this.newPwd = "";
 			this.confirmNewPwd = "";
+			//清空提示
+			this.passwordEmpty = false;
+			this.passwordSome = false;
+			this.oldPasswordSome = false;
+			this.passwordRule = false;
+			this.currentNoExist = false;
+
+		},
+		//隐藏提示
+        hideTip(){
+            this.passwordEmpty = false;
+		    this.passwordSome = false;
+            this.oldPasswordSome =  false;
+            this.passwordRule = false;
+            this.currentNoExist = false;
 		},
 		//确认修改密码
 		confirm() {
