@@ -234,7 +234,7 @@ export default {
 			.login-confirm-user-error{
 				font-size: 20px;
 				color: #DC3030;
-				width: 580px;
+				width: 100%;
 			}
 			.login-confirm-password-error{
 				font-size: 20px;
