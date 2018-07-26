@@ -29,7 +29,7 @@
 					</div>
 				</div>
 				<div class="operate">
-					<span class="add" :style="courseMenu.length==0?'display:inline-block !important;':''" v-show="activeLevel.id" @click="add('course')"></span>
+					<span class="add" :style="activeLevel.id && courseMenu.length==0?'display:inline-block !important;':''" v-show="activeLevel.id" @click="add('course')"></span>
 					<span class="edit" v-show="activeLevel.id && activeCourse.id" @click="edit('course')"></span>
 					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
@@ -466,6 +466,7 @@ export default {
 				vertical-align: middle;
 				user-select: none;
 				cursor: pointer;
+				margin-right: 20px;
 				&:hover {
 					color: #fff;
 					background: #84aeff;
@@ -488,6 +489,7 @@ export default {
 				padding-left: 20px;
 				border: 0px;
 				outline: none;
+				margin-right: 20px;
 			}
 		}
 		.operate {
