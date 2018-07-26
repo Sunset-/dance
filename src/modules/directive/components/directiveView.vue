@@ -252,8 +252,8 @@ export default {
 			var step_item = this.formatStepItem();
 			if (!this.parmasSet) {
 				this.parmasStepItem.id = this.modelDirective.id;
-				this.parmasStepItem.section_id = this.modelDirective.tips;
-				this.parmasStepItem.text = this.modelDirective.section_id;
+				this.parmasStepItem.section_id = this.modelDirective.section_id;
+				this.parmasStepItem.text = this.modelDirective.tips;
 				step_item = this.parmasStepItem;
 			}
 			var params = {
