@@ -251,7 +251,7 @@ export default {
 		saveDirctive() {
 			var step_item = this.formatStepItem();
 			if (!this.parmasSet) {
-				this.parmasStepItem.id = this.modelDirective.id;
+				this.parmasStepItem.id = this.parmasStepItem.id;
 				this.parmasStepItem.section_id = this.modelDirective.section_id;
 				this.parmasStepItem.text = this.modelDirective.tips;
 				step_item = this.parmasStepItem;
@@ -329,7 +329,7 @@ export default {
 			var step = {};
 			if (!this.showParams && !this.parmasSet) {
 				return {
-					id: this.modelDirective.id,
+					id: this.parmasStepItem.id,
 					section_id: this.modelDirective.section_id,
 					text: this.modelDirective.tips,
 					motion: null,
@@ -342,7 +342,7 @@ export default {
 				};
 			}
 			step = {
-				id: this.modelDirective.id,
+				id: this.parmasStepItem.id,
 				section_id: this.modelDirective.section_id,
 				text: this.modelDirective.tips,
 				motion: {
@@ -400,7 +400,7 @@ export default {
 				effect: null,
 				expression: null,
 				hint: null,
-				id: 0,
+				id: "",
 				motion: null,
 				person_dir: 0,
 				section_id: 0
