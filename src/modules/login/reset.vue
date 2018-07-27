@@ -185,7 +185,7 @@ export default {
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 19%;
+					width: 18.6%;
 					height: 80px;
 					float: left;
 				}
@@ -211,7 +211,7 @@ export default {
 				margin: 0px auto;
 				padding: 20px 0;
 				img{
-					width: 19%;
+					width: 18.6%;
 					height: 80px;
 					float: left;
 				}
@@ -234,7 +234,7 @@ export default {
 			.login-confirm-user-error{
 				font-size: 20px;
 				color: #DC3030;
-				width: 580px;
+				width: 100%;
 			}
 			.login-confirm-password-error{
 				font-size: 20px;
