@@ -505,7 +505,7 @@ $sidebar-mini-width: 74px;
 			text-align: left;
 			&:hover,
 			&.active {
-				background: rgba(#fff, 0.3);
+				background: #adcaff;
 				i {
 					&.icon-course {
 						background-image: url("/assets/img/menu/class-active.png");
