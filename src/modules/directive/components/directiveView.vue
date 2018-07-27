@@ -70,7 +70,7 @@
 								<div class="triggle-list" :class="{'error-parameter':modelDirectiveContextError.error}">
 									<xui-scroll style="height:100%;">
 										<p v-for="(item,index)  in triggleData" :key="index" class="triggle-item">
-											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" :class="{'triggle-has-class':item.word}"></xui-input>
+											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" @blur="triggleBlur" :class="{'triggle-has-class':item.word}"></xui-input>
 											<i class="icon-delete-item" @click="deletList(index)"></i>
 										</p>
 									</xui-scroll>
@@ -127,10 +127,9 @@ export default {
 	methods: {
 		open: function(type, parmas) {
 			this.type = type;
-			if (type == "add") {
-				this.reset();
-			} else {
-				this.initDirective(parmas);
+			this.reset();
+			if (type != "add") { 
+				this.initDirective(JSON.parse(JSON.stringify(parmas)));
 			}
 			this.$refs.modal.open();
 		},
@@ -154,7 +153,7 @@ export default {
 			this.parmasStepItem = parmas.step_item;
 			//触发提示设置参数复制--运动
 			if (parmas.step_item.motion) {
-				this.parameterData[0].item2.value = parmas.step_item.motion.id;
+				this.parameterData[0].item2.value = parmas.step_item.motion.action;
 				this.parameterData[0].item1.value = parmas.step_item.motion.name;
 				this.parameterData[0].item3.value = parmas.step_item.motion.begin;
 				this.parameterData[0].item4.value = parmas.step_item.motion.offset;
@@ -167,7 +166,7 @@ export default {
 
 			//表情
 			if (parmas.step_item.expression) {
-				this.parameterData[1].item2.value = parmas.step_item.expression.id;
+				this.parameterData[1].item2.value = parmas.step_item.expression.action;
 				this.parameterData[1].item1.value = parmas.step_item.expression.name;
 				this.parameterData[1].item3.value = parmas.step_item.expression.begin;
 				this.parameterData[1].item4.value = parmas.step_item.expression.offset;
@@ -180,7 +179,7 @@ export default {
 
 			//镜头
 			if (parmas.step_item.camera) {
-				this.parameterData[2].item2.value = parmas.step_item.camera.id;
+				this.parameterData[2].item2.value = parmas.step_item.camera.action;
 				this.parameterData[2].item1.value = parmas.step_item.camera.name;
 				this.parameterData[2].item3.value = parmas.step_item.camera.begin;
 				this.parameterData[2].item4.value = parmas.step_item.camera.offset;
@@ -193,7 +192,7 @@ export default {
 
 			//特效
 			if (parmas.step_item.effect) {
-				this.parameterData[3].item2.value = parmas.step_item.effect.id;
+				this.parameterData[3].item2.value = parmas.step_item.effect.action;
 				this.parameterData[3].item1.value = parmas.step_item.effect.name;
 				this.parameterData[3].item3.value = parmas.step_item.effect.begin;
 				this.parameterData[3].item4.value = parmas.step_item.effect.offset;
@@ -256,7 +255,7 @@ export default {
 		//触发词校验
 		triggleTest(val) {
 			if (val) {
-				if (specilWorldTest(val)) {
+				if (specilWorldTest(val) || $.trim(val)=="") {
 					this.modelDirectiveContextError.error = true;
 				} else {
 					this.modelDirectiveContextError.error = false;
@@ -285,6 +284,10 @@ export default {
 			} else {
 				this.modelDirectiveError.error = false;
 			}
+			if(this.modelDirectiveError.error || this.modelDirectiveContextError.error || this.modelDirectiveTipsError.error){
+				return false;
+			}
+
 			STORE.postCommandsSave(this.modelDirective.id ? "put" : "post", params).then(res => {
 				if (res.cmd_type_id) {
 					var tips = "新增成功";
@@ -343,51 +346,56 @@ export default {
 			var step = {};
 			var motion, expression, camera, effect, hint;
 			motion = {
-				id: parseInt(this.parameterData[0].item2.value) || 0,
+				id:this.parmasStepItem.motion?this.parmasStepItem.motion.id:0,
+				action: parseInt(this.parameterData[0].item2.value) || 0,
 				name: this.parameterData[0].item1.value,
 				begin: parseInt(this.parameterData[0].item3.value) || 0,
 				offset: parseInt(this.parameterData[0].item4.value) || 0
 			};
 			expression = {
-				id: parseInt(this.parameterData[1].item2.value) || 0,
+				id:this.parmasStepItem.expression?this.parmasStepItem.expression.id:0,
+				action: parseInt(this.parameterData[1].item2.value) || 0,
 				name: this.parameterData[1].item1.value,
 				begin: parseInt(this.parameterData[1].item3.value) || 0,
 				offset: parseInt(this.parameterData[1].item4.value) || 0
 			};
 			camera = {
-				id: parseInt(this.parameterData[2].item2.value) || 0,
+				id:this.parmasStepItem.camera?this.parmasStepItem.camera.id:0,
+				action: parseInt(this.parameterData[2].item2.value) || 0,
 				name: this.parameterData[2].item1.value,
 				begin: parseInt(this.parameterData[2].item3.value) || 0,
 				offset: parseInt(this.parameterData[2].item4.value) || 0
 			};
 			effect = {
-				id: parseInt(this.parameterData[3].item2.value) || 0,
+				id:this.parmasStepItem.effect?this.parmasStepItem.effect.id:0,
+				action: parseInt(this.parameterData[3].item2.value) || 0,
 				name: this.parameterData[3].item1.value,
 				begin: parseInt(this.parameterData[3].item3.value) || 0,
 				offset: parseInt(this.parameterData[3].item4.value) || 0
 			};
 			hint = {
+				id:this.parmasStepItem.hint?this.parmasStepItem.hint.id:0,
 				text: this.parameterData[4].item1.value,
 				begin: parseInt(this.parameterData[4].item3.value) || 0,
 				offset: parseInt(this.parameterData[4].item4.value) || 0
 			};
-			if (!motion.id && !motion.name && !motion.begin && !motion.offset) {
+			if (!motion.action && !motion.name && !motion.begin && !motion.offset) {
 				motion = null;
 			}
-			if (!expression.id && !expression.name && !expression.begin && !expression.offset) {
+			if (!expression.action && !expression.name && !expression.begin && !expression.offset) {
 				expression = null;
 			}
-			if (!camera.id && !camera.name && !camera.begin && !camera.offset) {
+			if (!camera.action && !camera.name && !camera.begin && !camera.offset) {
 				camera = null;
 			}
-			if (!effect.id && !effect.name && !effect.begin && !effect.offset) {
+			if (!effect.action && !effect.name && !effect.begin && !effect.offset) {
 				effect = null;
 			}
 			if (!hint.text && !hint.begin && !hint.offset) {
 				hint = null;
 			}
 			step = {
-				id: this.parmasStepItem.id,
+				id: this.parmasStepItem.id||0,
 				section_id: this.modelDirective.section_id||0,
 				text: this.modelDirective.tips,
 				motion: motion,
@@ -414,17 +422,18 @@ export default {
 				section_id: "",
 				tips: ""
 			};
-			//重置step-item
-			this.parmasStepItem = {
-				camera: null,
-				compare: null,
-				effect: null,
-				expression: null,
-				hint: null,
-				id: "",
-				motion: null,
-				person_dir: 0,
-				section_id: 0
+			this.parmasStepItem={};
+			this.modelDirectiveError={
+				error: false,
+				tips: "指令出现特殊字符"
+			};
+			this.modelDirectiveContextError={
+				error: false,
+				tips: "指令出现特殊字符"
+			};
+			this.modelDirectiveTipsError={
+				error: false,
+				tips: "指令出现特殊字符"
 			};
 			this.parameterData = [
 				{
@@ -495,7 +504,7 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-				if (!this.commandMatchLevel || this.commandMatchLevel[val]&&this.commandMatchLevel[val].length==0) {
+				if (!this.commandMatchLevel || this.commandMatchLevel[val] && this.commandMatchLevel[val].length==0) {
 					this.modelDirective.level_id="";
 					return
 				}
@@ -516,7 +525,10 @@ export default {
 		},
 		//监听等级
 		"modelDirective.level_id": function(val) {
+				if(!val){return};
+
 				if (!this.commandMatchSection || this.commandMatchSection[val] && this.commandMatchSection[val].length==0) {
+					this.modelDirective.level_id="";
 					return;
 				}
 				this.matchOptions3.data = [];
@@ -539,17 +551,7 @@ export default {
 			triggleData: [],
 			showParams: false,
 			parmasSet: false, //判断是不是设置参数,
-			parmasStepItem: {
-				camera: null,
-				compare: null,
-				effect: null,
-				expression: null,
-				hint: null,
-				id: 0,
-				motion: null,
-				person_dir: 0,
-				section_id: 0
-			}, //
+			parmasStepItem:{}, //
 			commandMatchLevel: null,
 			commandMatchSection: null,
 			modelDirectiveError: {
