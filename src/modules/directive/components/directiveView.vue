@@ -57,9 +57,9 @@
 										<xui-input v-model="item.item4.value" :options="inputOnptions" class="parameter-input" :placeholder="item.item4.placeholder" @change="input4Change(item.item4,$event)"></xui-input>
 										<span class="err-tips">{{item.item4.error}}</span>
 									</div>
-									<div class="step-item" v-if="item.name=='人物方向'">
+									<!-- <div class="step-item" v-if="item.name=='人物方向'">
 										<xui-toolbar :options="toolbarParamsOptions"></xui-toolbar>
-									</div>
+									</div> -->
 								</div>
 							</div>
 						</div>
@@ -250,12 +250,12 @@ export default {
 		//保存指令
 		saveDirctive() {
 			var step_item = this.formatStepItem();
-			if (!this.parmasSet) {
-				this.parmasStepItem.id = this.parmasStepItem.id;
-				this.parmasStepItem.section_id = this.modelDirective.section_id;
-				this.parmasStepItem.text = this.modelDirective.tips;
-				step_item = this.parmasStepItem;
-			}
+			// if (!this.parmasSet) {
+			// 	this.parmasStepItem.id = this.parmasStepItem.id;
+			// 	this.parmasStepItem.section_id = this.modelDirective.section_id;
+			// 	this.parmasStepItem.text = this.modelDirective.tips;
+			// 	step_item = this.parmasStepItem;
+			// }
 			var params = {
 				id: this.modelDirective.id,
 				name: this.modelDirective.name,
@@ -327,53 +327,74 @@ export default {
 		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
-			if (!this.showParams && !this.parmasSet) {
-				return {
-					id: this.parmasStepItem.id,
-					section_id: this.modelDirective.section_id,
-					text: this.modelDirective.tips,
-					motion: null,
-					expression: null,
-					camera: null,
-					effect: null,
-					hint: null,
-					compare: null,
-					person_dir: 0
-				};
+			// if (!this.showParams && !this.parmasSet) {
+			// 	return {
+			// 		id: this.parmasStepItem.id,
+			// 		section_id: this.modelDirective.section_id,
+			// 		text: this.modelDirective.tips,
+			// 		motion: null,
+			// 		expression: null,
+			// 		camera: null,
+			// 		effect: null,
+			// 		hint: null,
+			// 		compare: null,
+			// 		person_dir: 0
+			// 	};
+			// }
+			var motion, expression, camera, effect, hint;
+			motion = {
+				id: parseInt(this.parameterData[0].item2.value) || 0,
+				name: this.parameterData[0].item1.value,
+				action: parseInt(this.parameterData[0].item3.value) || 0,
+				offset: parseInt(this.parameterData[0].item4.value) || 0
+			};
+			expression = {
+				id: parseInt(this.parameterData[1].item2.value) || 0,
+				name: this.parameterData[1].item1.value,
+				action: parseInt(this.parameterData[1].item3.value) || 0,
+				offset: parseInt(this.parameterData[1].item4.value) || 0
+			};
+			camera = {
+				id: parseInt(this.parameterData[2].item2.value) || 0,
+				name: this.parameterData[2].item1.value,
+				action: parseInt(this.parameterData[2].item3.value) || 0,
+				offset: parseInt(this.parameterData[2].item4.value) || 0
+			};
+			effect = {
+				id: parseInt(this.parameterData[3].item2.value) || 0,
+				name: this.parameterData[3].item1.value,
+				action: parseInt(this.parameterData[3].item3.value) || 0,
+				offset: parseInt(this.parameterData[3].item4.value) || 0
+			};
+			hint = {
+				text: this.parameterData[4].item1.value,
+				action: parseInt(this.parameterData[4].item3.value) || 0,
+				offset: parseInt(this.parameterData[4].item4.value) || 0
+			};
+			if (!motion.id && !motion.name && !motion.action && !motion.offset) {
+				motion = null;
+			}
+			if (!expression.id && !expression.name && !expression.action && !expression.offset) {
+				expression = null;
+			}
+			if (!camera.id && !camera.name && !camera.action && !camera.offset) {
+				camera = null;
+			}
+			if (!effect.id && !effect.name && !effect.action && !effect.offset) {
+				effect = null;
+			}
+			if (!hint.text && !hint.action && !hint.offset) {
+				hint = null;
 			}
 			step = {
 				id: this.parmasStepItem.id,
 				section_id: this.modelDirective.section_id,
 				text: this.modelDirective.tips,
-				motion: {
-					id: parseInt(this.parameterData[0].item2.value) || 0,
-					name: this.parameterData[0].item1.value || 0,
-					action: parseInt(this.parameterData[0].item3.value) || 0,
-					offset: parseInt(this.parameterData[0].item4.value) || 0
-				},
-				expression: {
-					id: parseInt(this.parameterData[1].item2.value) || 0,
-					name: this.parameterData[1].item1.value,
-					action: parseInt(this.parameterData[1].item3.value) || 0,
-					offset: parseInt(this.parameterData[1].item4.value) || 0
-				},
-				camera: {
-					id: parseInt(this.parameterData[2].item2.value) || 0,
-					name: this.parameterData[2].item1.value,
-					action: parseInt(this.parameterData[2].item3.value) || 0,
-					offset: parseInt(this.parameterData[2].item4.value) || 0
-				},
-				effect: {
-					id: parseInt(this.parameterData[3].item2.value) || 0,
-					name: this.parameterData[3].item1.value,
-					action: parseInt(this.parameterData[3].item3.value) || 0,
-					offset: parseInt(this.parameterData[3].item4.value) || 0
-				},
-				hint: {
-					text: this.parameterData[4].item1.value,
-					action: parseInt(this.parameterData[4].item3.value) || 0,
-					offset: parseInt(this.parameterData[4].item4.value) || 0
-				},
+				motion: motion,
+				expression: expression,
+				camera: camera,
+				effect: effect,
+				hint: hint,
 				compare: null,
 				person_dir: parseInt(this.parameterData[5].item1.value) || 0
 			};
@@ -394,7 +415,7 @@ export default {
 				tips: ""
 			};
 			//重置step-item
-			this.parmasStepItem={
+			this.parmasStepItem = {
 				camera: null,
 				compare: null,
 				effect: null,
