@@ -445,6 +445,7 @@ export default {
 				newStep.section_id = this.activeSection.id;
 				store.addSteps(newStep).then(res => {
 					this.getSection();
+					this.statusSetpEdit = false;
 				});
 				this.isShowfirstSteps = false;
 			} else {
@@ -758,6 +759,11 @@ export default {
 				font-weight: bold;
 				cursor: pointer;
 				user-select: none;
+				&:hover {
+					color: #fff;
+					background: #84aeff;
+					box-shadow: 0px 0px 24px #84aeff;
+				}
 			}
 			.sectionEditspan {
 				background: #f6f7fb;
