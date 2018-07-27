@@ -69,7 +69,7 @@
 								<i class="icon-add-item" @click="addList"></i>
 								<div class="triggle-list" :class="{'error-parameter':modelDirectiveContextError.error}">
 									<xui-scroll style="height:100%;">
-										<p v-for="(item,index)  in triggleData" :key="index">
+										<p v-for="(item,index)  in triggleData" :key="index" class="triggle-item">
 											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" :class="{'triggle-has-class':item.word}"></xui-input>
 											<i class="icon-delete-item" @click="deletList(index)"></i>
 										</p>
@@ -268,12 +268,6 @@ export default {
 		//保存指令
 		saveDirctive() {
 			var step_item = this.formatStepItem();
-			// if (!this.parmasSet) {
-			// 	this.parmasStepItem.id = this.parmasStepItem.id;
-			// 	this.parmasStepItem.section_id = this.modelDirective.section_id;
-			// 	this.parmasStepItem.text = this.modelDirective.tips;
-			// 	step_item = this.parmasStepItem;
-			// }
 			var params = {
 				id: this.modelDirective.id||0,
 				name: this.modelDirective.name,
@@ -292,7 +286,7 @@ export default {
 				this.modelDirectiveError.error = false;
 			}
 			STORE.postCommandsSave(this.modelDirective.id ? "put" : "post", params).then(res => {
-				if (res) {
+				if (res.cmd_type_id) {
 					var tips = "新增成功";
 					if (this.type == "edit") {
 						tips = "编辑成功";
@@ -300,6 +294,8 @@ export default {
 					$tip(tips, "success");
 					this.$emit("refresh", true);
 					this.$refs.modal.close();
+				}else{
+					$tip(res, "success");
 				}
 			});
 		},
@@ -345,20 +341,6 @@ export default {
 		//格式化指令触发提示
 		formatStepItem() {
 			var step = {};
-			// if (!this.showParams && !this.parmasSet) {
-			// 	return {
-			// 		id: this.parmasStepItem.id,
-			// 		section_id: this.modelDirective.section_id,
-			// 		text: this.modelDirective.tips,
-			// 		motion: null,
-			// 		expression: null,
-			// 		camera: null,
-			// 		effect: null,
-			// 		hint: null,
-			// 		compare: null,
-			// 		person_dir: 0
-			// 	};
-			// }
 			var motion, expression, camera, effect, hint;
 			motion = {
 				id: parseInt(this.parameterData[0].item2.value) || 0,
@@ -892,6 +874,9 @@ export default {
 			left: 2px;
 		}
 	}
+	.triggle-item:hover .icon-delete-item{
+		display: inline-block;
+	}
 	.icon-delete-item {
 		width: 20px;
 		height: 20px;
@@ -899,6 +884,7 @@ export default {
 		position: absolute;
 		right: 30px;
 		top: 0px;
+		display: none;
 		&:after {
 			content: url("/assets/directive/icon/icon-delete16.png");
 			position: absolute;

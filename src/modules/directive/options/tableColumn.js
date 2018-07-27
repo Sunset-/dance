@@ -8,7 +8,7 @@ module.exports = [{
     },
     {
         title: "指令类型",
-        name: "type",
+        name: "cmd_type_id",
         align: "center",
         format(v) {
             if (v == 1) {

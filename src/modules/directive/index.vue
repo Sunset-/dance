@@ -122,7 +122,7 @@ export default {
 			if (id) {
 				STORE.getCommandsDelete(id).then(res => {
 					if (res.msg == "ok") {
-						$tip(res.msg, "success");
+						$tip("删除成功", "success");
 						this.$refs.delRef.cancel();
 						this.refresh(true);
 						return;
