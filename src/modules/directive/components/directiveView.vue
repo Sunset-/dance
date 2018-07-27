@@ -186,7 +186,7 @@ export default {
 
 			//标题
 			if (parmas.step_item.hint) {
-				this.parameterData[4].item2.value = parmas.step_item.hint.name;
+				this.parameterData[4].item2.value = parmas.step_item.hint.text;
 				this.parameterData[4].item3.value = parmas.step_item.hint.action;
 				this.parameterData[4].item4.value = parmas.step_item.hint.offset;
 			}
@@ -370,7 +370,7 @@ export default {
 					offset: parseInt(this.parameterData[3].item4.value) || 0
 				},
 				hint: {
-					name: this.parameterData[4].item1.value,
+					text: this.parameterData[4].item1.value,
 					action: parseInt(this.parameterData[4].item3.value) || 0,
 					offset: parseInt(this.parameterData[4].item4.value) || 0
 				},
