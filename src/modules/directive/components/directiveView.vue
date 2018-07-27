@@ -156,39 +156,62 @@ export default {
 			if (parmas.step_item.motion) {
 				this.parameterData[0].item1.value = parmas.step_item.motion.id;
 				this.parameterData[0].item2.value = parmas.step_item.motion.name;
-				this.parameterData[0].item3.value = parmas.step_item.motion.action;
+				this.parameterData[0].item3.value = parmas.step_item.motion.begin;
 				this.parameterData[0].item4.value = parmas.step_item.motion.offset;
+			}else{
+				this.parameterData[0].item1.value = "";
+				this.parameterData[0].item2.value =  "";
+				this.parameterData[0].item3.value =  "";
+				this.parameterData[0].item4.value =  "";
 			}
 
 			//表情
 			if (parmas.step_item.expression) {
 				this.parameterData[1].item1.value = parmas.step_item.expression.id;
 				this.parameterData[1].item2.value = parmas.step_item.expression.name;
-				this.parameterData[1].item3.value = parmas.step_item.expression.action;
+				this.parameterData[1].item3.value = parmas.step_item.expression.begin;
 				this.parameterData[1].item4.value = parmas.step_item.expression.offset;
+			}else{
+				this.parameterData[1].item1.value = "";
+				this.parameterData[1].item2.value = "";
+				this.parameterData[1].item3.value = "";
+				this.parameterData[1].item4.value = "";
 			}
 
 			//镜头
 			if (parmas.step_item.camera) {
 				this.parameterData[2].item1.value = parmas.step_item.camera.id;
 				this.parameterData[2].item2.value = parmas.step_item.camera.name;
-				this.parameterData[2].item3.value = parmas.step_item.camera.action;
+				this.parameterData[2].item3.value = parmas.step_item.camera.begin;
 				this.parameterData[2].item4.value = parmas.step_item.camera.offset;
+			}else{
+				this.parameterData[2].item1.value = "";
+				this.parameterData[2].item2.value = "";
+				this.parameterData[2].item3.value = "";
+				this.parameterData[2].item4.value = "";
 			}
 
 			//特效
 			if (parmas.step_item.effect) {
 				this.parameterData[3].item1.value = parmas.step_item.effect.id;
 				this.parameterData[3].item2.value = parmas.step_item.effect.name;
-				this.parameterData[3].item3.value = parmas.step_item.effect.action;
+				this.parameterData[3].item3.value = parmas.step_item.effect.begin;
 				this.parameterData[3].item4.value = parmas.step_item.effect.offset;
+			}else{
+				this.parameterData[3].item1.value = "";
+				this.parameterData[3].item2.value = "";
+				this.parameterData[3].item3.value = "";
+				this.parameterData[3].item4.value = "";
 			}
-
 			//标题
 			if (parmas.step_item.hint) {
-				this.parameterData[4].item2.value = parmas.step_item.hint.text;
-				this.parameterData[4].item3.value = parmas.step_item.hint.action;
+				this.parameterData[4].item1.value = parmas.step_item.hint.text|| parmas.step_item.hint.name;
+				this.parameterData[4].item3.value = parmas.step_item.hint.begin;
 				this.parameterData[4].item4.value = parmas.step_item.hint.offset;
+			}else{
+				this.parameterData[4].item1.value = "";
+				this.parameterData[4].item3.value = "";
+				this.parameterData[4].item4.value ="";
 			}
 
 			//人物方向
@@ -345,45 +368,45 @@ export default {
 			motion = {
 				id: parseInt(this.parameterData[0].item2.value) || 0,
 				name: this.parameterData[0].item1.value,
-				action: parseInt(this.parameterData[0].item3.value) || 0,
+				begin: parseInt(this.parameterData[0].item3.value) || 0,
 				offset: parseInt(this.parameterData[0].item4.value) || 0
 			};
 			expression = {
 				id: parseInt(this.parameterData[1].item2.value) || 0,
 				name: this.parameterData[1].item1.value,
-				action: parseInt(this.parameterData[1].item3.value) || 0,
+				begin: parseInt(this.parameterData[1].item3.value) || 0,
 				offset: parseInt(this.parameterData[1].item4.value) || 0
 			};
 			camera = {
 				id: parseInt(this.parameterData[2].item2.value) || 0,
 				name: this.parameterData[2].item1.value,
-				action: parseInt(this.parameterData[2].item3.value) || 0,
+				begin: parseInt(this.parameterData[2].item3.value) || 0,
 				offset: parseInt(this.parameterData[2].item4.value) || 0
 			};
 			effect = {
 				id: parseInt(this.parameterData[3].item2.value) || 0,
 				name: this.parameterData[3].item1.value,
-				action: parseInt(this.parameterData[3].item3.value) || 0,
+				begin: parseInt(this.parameterData[3].item3.value) || 0,
 				offset: parseInt(this.parameterData[3].item4.value) || 0
 			};
 			hint = {
 				text: this.parameterData[4].item1.value,
-				action: parseInt(this.parameterData[4].item3.value) || 0,
+				begin: parseInt(this.parameterData[4].item3.value) || 0,
 				offset: parseInt(this.parameterData[4].item4.value) || 0
 			};
-			if (!motion.id && !motion.name && !motion.action && !motion.offset) {
+			if (!motion.id && !motion.name && !motion.begin && !motion.offset) {
 				motion = null;
 			}
-			if (!expression.id && !expression.name && !expression.action && !expression.offset) {
+			if (!expression.id && !expression.name && !expression.begin && !expression.offset) {
 				expression = null;
 			}
-			if (!camera.id && !camera.name && !camera.action && !camera.offset) {
+			if (!camera.id && !camera.name && !camera.begin && !camera.offset) {
 				camera = null;
 			}
-			if (!effect.id && !effect.name && !effect.action && !effect.offset) {
+			if (!effect.id && !effect.name && !effect.begin && !effect.offset) {
 				effect = null;
 			}
-			if (!hint.text && !hint.action && !hint.offset) {
+			if (!hint.text && !hint.begin && !hint.offset) {
 				hint = null;
 			}
 			step = {
