@@ -513,7 +513,7 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-				if (!this.commandMatchLevel ||this.commandMatchLevel[val].length==0) {
+				if (!this.commandMatchLevel || this.commandMatchLevel[val]&&this.commandMatchLevel[val].length==0) {
 					this.modelDirective.level_id="";
 					return
 				}
@@ -534,7 +534,7 @@ export default {
 		},
 		//监听等级
 		"modelDirective.level_id": function(val) {
-				if (!this.commandMatchSection|| this.commandMatchSection[val].length==0) {
+				if (!this.commandMatchSection || this.commandMatchSection[val] && this.commandMatchSection[val].length==0) {
 					return;
 				}
 				this.matchOptions3.data = [];
