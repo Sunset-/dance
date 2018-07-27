@@ -140,9 +140,9 @@ export default {
 				id: parmas.id,
 				name: parmas.name,
 				type: parmas.cmd_type_id,
-				level_id: parmas.level_id || 0,
-				curriculum_id: parmas.curriculum_id || 0,
-				section_id: parmas.section_id || 0
+				level_id: parmas.level_id || "",
+				curriculum_id: parmas.curriculum_id || "",
+				section_id: parmas.section_id || ""
 			};
 			this.showParams = false;
 			this.parmasSet = false;
@@ -154,8 +154,8 @@ export default {
 			this.parmasStepItem = parmas.step_item;
 			//触发提示设置参数复制--运动
 			if (parmas.step_item.motion) {
-				this.parameterData[0].item1.value = parmas.step_item.motion.id;
-				this.parameterData[0].item2.value = parmas.step_item.motion.name;
+				this.parameterData[0].item2.value = parmas.step_item.motion.id;
+				this.parameterData[0].item1.value = parmas.step_item.motion.name;
 				this.parameterData[0].item3.value = parmas.step_item.motion.begin;
 				this.parameterData[0].item4.value = parmas.step_item.motion.offset;
 			}else{
@@ -167,8 +167,8 @@ export default {
 
 			//表情
 			if (parmas.step_item.expression) {
-				this.parameterData[1].item1.value = parmas.step_item.expression.id;
-				this.parameterData[1].item2.value = parmas.step_item.expression.name;
+				this.parameterData[1].item2.value = parmas.step_item.expression.id;
+				this.parameterData[1].item1.value = parmas.step_item.expression.name;
 				this.parameterData[1].item3.value = parmas.step_item.expression.begin;
 				this.parameterData[1].item4.value = parmas.step_item.expression.offset;
 			}else{
@@ -180,8 +180,8 @@ export default {
 
 			//镜头
 			if (parmas.step_item.camera) {
-				this.parameterData[2].item1.value = parmas.step_item.camera.id;
-				this.parameterData[2].item2.value = parmas.step_item.camera.name;
+				this.parameterData[2].item2.value = parmas.step_item.camera.id;
+				this.parameterData[2].item1.value = parmas.step_item.camera.name;
 				this.parameterData[2].item3.value = parmas.step_item.camera.begin;
 				this.parameterData[2].item4.value = parmas.step_item.camera.offset;
 			}else{
@@ -193,8 +193,8 @@ export default {
 
 			//特效
 			if (parmas.step_item.effect) {
-				this.parameterData[3].item1.value = parmas.step_item.effect.id;
-				this.parameterData[3].item2.value = parmas.step_item.effect.name;
+				this.parameterData[3].item2.value = parmas.step_item.effect.id;
+				this.parameterData[3].item1.value = parmas.step_item.effect.name;
 				this.parameterData[3].item3.value = parmas.step_item.effect.begin;
 				this.parameterData[3].item4.value = parmas.step_item.effect.offset;
 			}else{
@@ -221,7 +221,6 @@ export default {
 		initDirectiveMatch() {
 			STORE.getCommandsMatch().then(res => {
 				if (res.length == 0) {
-					this.modelDirective.curriculum_id = 0;
 					return;
 				}
 				this.commandMatchLevel = {};
@@ -238,10 +237,6 @@ export default {
 						return cc;
 					})
 				);
-				this.matchOptions1.data.unshift({
-					text: "课程",
-					value: 0
-				});
 			});
 		},
 		addList() {
@@ -280,12 +275,12 @@ export default {
 			// 	step_item = this.parmasStepItem;
 			// }
 			var params = {
-				id: this.modelDirective.id,
+				id: this.modelDirective.id||0,
 				name: this.modelDirective.name,
 				cmd_type_id: this.modelDirective.type,
-				curriculum_id: this.modelDirective.curriculum_id,
-				level_id: this.modelDirective.level_id,
-				section_id: this.modelDirective.section_id,
+				curriculum_id: this.modelDirective.curriculum_id||0,
+				level_id: this.modelDirective.level_id||0,
+				section_id: this.modelDirective.section_id||0,
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
@@ -411,7 +406,7 @@ export default {
 			}
 			step = {
 				id: this.parmasStepItem.id,
-				section_id: this.modelDirective.section_id,
+				section_id: this.modelDirective.section_id||0,
 				text: this.modelDirective.tips,
 				motion: motion,
 				expression: expression,
@@ -432,9 +427,9 @@ export default {
 				id: "",
 				name: "",
 				type: 1,
-				level_id: 0,
-				curriculum_id: 0,
-				section_id: 0,
+				level_id: "",
+				curriculum_id: "",
+				section_id: "",
 				tips: ""
 			};
 			//重置step-item
@@ -518,12 +513,9 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-			if (val == "0") {
-				this.modelDirective.section_id = "0";
-				this.modelDirective.level_id = "0";
-			} else {
-				if (!this.commandMatchLevel) {
-					this.modelDirective.curriculum_id = 0;
+				if (!this.commandMatchLevel ||this.commandMatchLevel[val].length==0) {
+					this.modelDirective.level_id="";
+					return
 				}
 				this.commandMatchSection = {};
 				this.matchOptions2.data = [];
@@ -539,19 +531,10 @@ export default {
 						return cc;
 					})
 				);
-				this.matchOptions2.data.unshift({
-					text: "等级",
-					value: 0
-				});
-			}
 		},
 		//监听等级
 		"modelDirective.level_id": function(val) {
-			if (val == "0") {
-				this.modelDirective.section_id = "0";
-			} else {
-				if (!this.commandMatchSection) {
-					this.modelDirective.level_id = 0;
+				if (!this.commandMatchSection|| this.commandMatchSection[val].length==0) {
 					return;
 				}
 				this.matchOptions3.data = [];
@@ -566,11 +549,6 @@ export default {
 						return cc;
 					})
 				);
-				this.matchOptions3.data.unshift({
-					text: "模块",
-					value: 0
-				});
-			}
 		}
 	},
 	data() {
@@ -608,9 +586,9 @@ export default {
 				id: "",
 				name: "",
 				type: 1,
-				level_id: 0,
-				curriculum_id: 0,
-				section_id: 0,
+				level_id: "",
+				curriculum_id: "",
+				section_id: "",
 				tips: ""
 			},
 			parameterData: [
@@ -656,41 +634,34 @@ export default {
 			],
 			matchOptions2: {
 				multiple: false,
-				clearable: true,
+				clearable: false,
 				filter: false,
 				disabled: true,
+				placeholder:"等级",
+				enumUnmatch:"等级",
 				style: "width:90px;",
-				data: [
-					{
-						text: "等级",
-						value: 0
-					}
-				]
+				data: []
 			},
 			matchOptions1: {
 				multiple: false,
-				clearable: true,
+				clearable: false,
 				filter: false,
 				disabled: true,
+				placeholder:"课程",
+				enumUnmatch:"课程",
 				style: "width:90px;",
 				data: [
-					{
-						text: "课程",
-						value: 0
-					}
 				]
 			},
 			matchOptions3: {
 				multiple: false,
-				clearable: true,
+				clearable: false,
 				filter: false,
 				disabled: true,
+				placeholder:"模块",
 				style: "width:90px;",
+				enumUnmatch:"模块",
 				data: [
-					{
-						text: "模块",
-						value: 0
-					}
 				]
 			},
 			typeOptions: {
