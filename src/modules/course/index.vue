@@ -34,7 +34,7 @@
 					<span class="del" v-show="activeLevel.id && activeCourse.id" @click="del('course')"></span>
 				</div>
 			</div>
-			<div class="btn" :class="{'allow': activeLevel.id && activeCourse.id}" @click="enterEdit">
+			<div class="btn" :class="{'allow': allowEdit}" @click="enterEdit">
 				<i></i>
 			</div>
 			<!-- 删除组件 -->
@@ -67,7 +67,8 @@ export default {
 				type: ""
 			},
 			isShowCourseAdd: false,
-			lastActiveRecord: null
+			lastActiveRecord: null,
+			allowEdit:false
 		};
 	},
 	computed: {
@@ -226,9 +227,11 @@ export default {
 					if (JSON.stringify(this.activeCourse) === "{}") {
 						this.activeCourse = this.courseMenu[0];
 					}
+					this.allowEdit = true;
 				} else {
 					this.courseMenu = [];
 					this.activeCourse = {};
+					this.allowEdit = false;
 				}
 			});
 		},
