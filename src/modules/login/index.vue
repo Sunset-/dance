@@ -25,7 +25,7 @@
 					</div>
 				</div>
 				<div class="login-confirm-user-error" v-if="!unserName&&loginValueEmpty&&!loginError ||!unserName&&forgetValueEmpty">邮箱地址不能为空</div>
-				<div class="login-confirm-user-error" v-if="loginError||forgetUser">工作邮箱地址错误</div>
+				<div class="login-confirm-user-error" v-if="forgetUser">工作邮箱地址错误</div>
 				<div class="login-password">
 					<div :class="{'login-error': loginError}">
 						<img src="/assets/img/login/login-password.png" v-if="!loginError"/>
@@ -34,7 +34,7 @@
 					</div>
 				</div>
 				<div class="login-confirm-password-error" v-if="!pwd&&loginValueEmpty&&!loginError&&!forgetUser">密码不能为空</div>
-				<div class="login-confirm-password-error" v-if="loginError">密码输入错误</div>
+				<div class="login-confirm-password-error" v-if="loginError">邮箱或密码输入错误</div>
 				<div class="login-forget-password">
 					<span @click="handleStatus">忘记密码</span>
 				</div>
