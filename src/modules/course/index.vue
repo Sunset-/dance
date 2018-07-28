@@ -465,7 +465,7 @@ export default {
 				display: inline-block;
 			}
 			span {
-				width: 107px;
+				width: 120px;
 				height: 40px;
 				color: #333333;
 				border-radius: 20px;

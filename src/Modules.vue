@@ -99,7 +99,7 @@ export default {
 			confirmNewPwd: "", //确认新密码
 			passwordEmpty: false, //点击确认检验密码是否填值了
 			passwordSome: false, //校验新密码是否一致
-			oldPasswordSome: false,	//检验新密码和旧密码是否一致
+			oldPasswordSome: false, //检验新密码和旧密码是否一致
 			passwordRule: false, //密码规则校验
 			currentNoExist: false, //当前密码是否不存在
 			changeSuccess: false, //修改密码成功
@@ -150,15 +150,14 @@ export default {
 			this.oldPasswordSome = false;
 			this.passwordRule = false;
 			this.currentNoExist = false;
-
 		},
 		//隐藏提示
-        hideTip(){
-            this.passwordEmpty = false;
-		    this.passwordSome = false;
-            this.oldPasswordSome =  false;
-            this.passwordRule = false;
-            this.currentNoExist = false;
+		hideTip() {
+			this.passwordEmpty = false;
+			this.passwordSome = false;
+			this.oldPasswordSome = false;
+			this.passwordRule = false;
+			this.currentNoExist = false;
 		},
 		//确认修改密码
 		confirm() {
@@ -183,8 +182,8 @@ export default {
 				this.passwordSome = false;
 			}
 			//新密码不能和老密码相同
-			if(this.newPwd == this.currentPwd && this.confirmNewPwd == this.currentPwd){
-			    this.oldPasswordSome = true;
+			if (this.newPwd == this.currentPwd && this.confirmNewPwd == this.currentPwd) {
+				this.oldPasswordSome = true;
 				return;
 			}
 			$http({
@@ -229,7 +228,7 @@ $sidebar-width: 227px;
 $sidebar-mini-width: 74px;
 
 .app-container {
-	width: 1920px;
+	width: 100%;
 	margin: 0px auto;
 	height: 100%;
 	position: relative;
@@ -503,9 +502,22 @@ $sidebar-mini-width: 74px;
 			cursor: pointer;
 			color: #fff;
 			text-align: left;
-			&:hover,
-			&.active {
+			&:hover {
 				background: #adcaff;
+				i {
+					&.icon-course {
+						background-image: url("/assets/img/menu/class-active.png");
+					}
+					&.icon-directive {
+						background-image: url("/assets/img/menu/audio-active.png");
+					}
+				}
+				span {
+					color: #fff;
+				}
+			}
+			&.active {
+				background: #7facff;
 				i {
 					&.icon-course {
 						background-image: url("/assets/img/menu/class-active.png");

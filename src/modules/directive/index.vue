@@ -1,6 +1,6 @@
 <template>
 	<div style="margin: 35px;padding-bottom: 35px;background: #fff">
-		<xui-table :options="directiveOptionsTable" class="xui-style-table" ref="dTableRef"></xui-table>
+		<xui-table :options="directiveOptionsTable" class="xui-style-table" style="min-width:1000px;" ref="dTableRef"></xui-table>
 		<div class="add-directive">
 			<xui-button @click="openModal('add','')" color="white" icon="el-icon-add" label="123" class="directive-addbtn">添加指令</xui-button>
 		</div>

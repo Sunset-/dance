@@ -745,14 +745,14 @@ export default {
 				outline: none;
 			}
 			span {
-				width: 98px;
-				height: 98px;
+				width: 105px;
+				height: 105px;
 				background: #c7c7c7;
 				border-radius: 10px;
 				color: #fff;
 				font-size: 14px;
 				text-align: center;
-				line-height: 98px;
+				line-height: 105px;
 				display: inline-block;
 				margin-right: 89px;
 				margin-top: 12px;
@@ -828,6 +828,7 @@ export default {
 					overflow: hidden;
 					text-overflow: ellipsis;
 					white-space: nowrap;
+					color: #666;
 					i {
 						width: 52px;
 						height: 29px;
@@ -882,7 +883,7 @@ export default {
 					li {
 						display: inline-block;
 						label {
-							font-size: 16px;
+							font-size: 14px;
 							color: #333333;
 							font-weight: 500;
 							display: inline-block;

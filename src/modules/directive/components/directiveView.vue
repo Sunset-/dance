@@ -2,7 +2,7 @@
 	<div style="transform:translate(0,0)">
 		<xui-modal ref="modal" :options="options">
 			<template slot-scope="props" slot="content">
-				<div v-if="props.opened" style="width:530px;min-height: 330px;">
+				<div v-if="props.opened" style="width:580px;min-height: 330px;">
 					<div class="directive-form">
 						<div class="form-item" v-if="type=='edit'">
 							<div class="user-lable">指令ID</div>
@@ -83,7 +83,7 @@
 					</div>
 				</div>
 			</template>
-			<div slot="footer" style="padding:10px;text-align:center;">
+			<div slot="footer" style="padding:10px;text-align:center;padding-bottom:44px;">
 				<xui-toolbar :options="toolbarOptions"></xui-toolbar>
 			</div>
 		</xui-modal>
@@ -128,7 +128,7 @@ export default {
 		open: function(type, parmas) {
 			this.type = type;
 			this.reset();
-			if (type != "add") { 
+			if (type != "add") {
 				this.initDirective(JSON.parse(JSON.stringify(parmas)));
 			}
 			this.$refs.modal.open();
@@ -157,11 +157,11 @@ export default {
 				this.parameterData[0].item1.value = parmas.step_item.motion.name;
 				this.parameterData[0].item3.value = parmas.step_item.motion.begin;
 				this.parameterData[0].item4.value = parmas.step_item.motion.offset;
-			}else{
+			} else {
 				this.parameterData[0].item1.value = "";
-				this.parameterData[0].item2.value =  "";
-				this.parameterData[0].item3.value =  "";
-				this.parameterData[0].item4.value =  "";
+				this.parameterData[0].item2.value = "";
+				this.parameterData[0].item3.value = "";
+				this.parameterData[0].item4.value = "";
 			}
 
 			//表情
@@ -170,7 +170,7 @@ export default {
 				this.parameterData[1].item1.value = parmas.step_item.expression.name;
 				this.parameterData[1].item3.value = parmas.step_item.expression.begin;
 				this.parameterData[1].item4.value = parmas.step_item.expression.offset;
-			}else{
+			} else {
 				this.parameterData[1].item1.value = "";
 				this.parameterData[1].item2.value = "";
 				this.parameterData[1].item3.value = "";
@@ -183,7 +183,7 @@ export default {
 				this.parameterData[2].item1.value = parmas.step_item.camera.name;
 				this.parameterData[2].item3.value = parmas.step_item.camera.begin;
 				this.parameterData[2].item4.value = parmas.step_item.camera.offset;
-			}else{
+			} else {
 				this.parameterData[2].item1.value = "";
 				this.parameterData[2].item2.value = "";
 				this.parameterData[2].item3.value = "";
@@ -196,7 +196,7 @@ export default {
 				this.parameterData[3].item1.value = parmas.step_item.effect.name;
 				this.parameterData[3].item3.value = parmas.step_item.effect.begin;
 				this.parameterData[3].item4.value = parmas.step_item.effect.offset;
-			}else{
+			} else {
 				this.parameterData[3].item1.value = "";
 				this.parameterData[3].item2.value = "";
 				this.parameterData[3].item3.value = "";
@@ -204,13 +204,13 @@ export default {
 			}
 			//标题
 			if (parmas.step_item.hint) {
-				this.parameterData[4].item1.value = parmas.step_item.hint.text|| parmas.step_item.hint.name;
+				this.parameterData[4].item1.value = parmas.step_item.hint.text || parmas.step_item.hint.name;
 				this.parameterData[4].item3.value = parmas.step_item.hint.begin;
 				this.parameterData[4].item4.value = parmas.step_item.hint.offset;
-			}else{
+			} else {
 				this.parameterData[4].item1.value = "";
 				this.parameterData[4].item3.value = "";
-				this.parameterData[4].item4.value ="";
+				this.parameterData[4].item4.value = "";
 			}
 
 			//人物方向
@@ -255,7 +255,7 @@ export default {
 		//触发词校验
 		triggleTest(val) {
 			if (val) {
-				if (specilWorldTest(val) || $.trim(val)=="") {
+				if (specilWorldTest(val) || $.trim(val) == "") {
 					this.modelDirectiveContextError.error = true;
 				} else {
 					this.modelDirectiveContextError.error = false;
@@ -268,12 +268,12 @@ export default {
 		saveDirctive() {
 			var step_item = this.formatStepItem();
 			var params = {
-				id: this.modelDirective.id||0,
+				id: this.modelDirective.id || 0,
 				name: this.modelDirective.name,
 				cmd_type_id: this.modelDirective.type,
-				curriculum_id: this.modelDirective.curriculum_id||0,
-				level_id: this.modelDirective.level_id||0,
-				section_id: this.modelDirective.section_id||0,
+				curriculum_id: this.modelDirective.curriculum_id || 0,
+				level_id: this.modelDirective.level_id || 0,
+				section_id: this.modelDirective.section_id || 0,
 				step_item: step_item,
 				trigger_words: this.triggleData
 			};
@@ -284,7 +284,11 @@ export default {
 			} else {
 				this.modelDirectiveError.error = false;
 			}
-			if(this.modelDirectiveError.error || this.modelDirectiveContextError.error || this.modelDirectiveTipsError.error){
+			if (
+				this.modelDirectiveError.error ||
+				this.modelDirectiveContextError.error ||
+				this.modelDirectiveTipsError.error
+			) {
 				return false;
 			}
 
@@ -297,7 +301,7 @@ export default {
 					$tip(tips, "success");
 					this.$emit("refresh", true);
 					this.$refs.modal.close();
-				}else{
+				} else {
 					$tip(res, "success");
 				}
 			});
@@ -346,35 +350,35 @@ export default {
 			var step = {};
 			var motion, expression, camera, effect, hint;
 			motion = {
-				id:this.parmasStepItem.motion?this.parmasStepItem.motion.id:0,
+				id: this.parmasStepItem.motion ? this.parmasStepItem.motion.id : 0,
 				action: parseInt(this.parameterData[0].item2.value) || 0,
 				name: this.parameterData[0].item1.value,
 				begin: parseInt(this.parameterData[0].item3.value) || 0,
 				offset: parseInt(this.parameterData[0].item4.value) || 0
 			};
 			expression = {
-				id:this.parmasStepItem.expression?this.parmasStepItem.expression.id:0,
+				id: this.parmasStepItem.expression ? this.parmasStepItem.expression.id : 0,
 				action: parseInt(this.parameterData[1].item2.value) || 0,
 				name: this.parameterData[1].item1.value,
 				begin: parseInt(this.parameterData[1].item3.value) || 0,
 				offset: parseInt(this.parameterData[1].item4.value) || 0
 			};
 			camera = {
-				id:this.parmasStepItem.camera?this.parmasStepItem.camera.id:0,
+				id: this.parmasStepItem.camera ? this.parmasStepItem.camera.id : 0,
 				action: parseInt(this.parameterData[2].item2.value) || 0,
 				name: this.parameterData[2].item1.value,
 				begin: parseInt(this.parameterData[2].item3.value) || 0,
 				offset: parseInt(this.parameterData[2].item4.value) || 0
 			};
 			effect = {
-				id:this.parmasStepItem.effect?this.parmasStepItem.effect.id:0,
+				id: this.parmasStepItem.effect ? this.parmasStepItem.effect.id : 0,
 				action: parseInt(this.parameterData[3].item2.value) || 0,
 				name: this.parameterData[3].item1.value,
 				begin: parseInt(this.parameterData[3].item3.value) || 0,
 				offset: parseInt(this.parameterData[3].item4.value) || 0
 			};
 			hint = {
-				id:this.parmasStepItem.hint?this.parmasStepItem.hint.id:0,
+				id: this.parmasStepItem.hint ? this.parmasStepItem.hint.id : 0,
 				text: this.parameterData[4].item1.value,
 				begin: parseInt(this.parameterData[4].item3.value) || 0,
 				offset: parseInt(this.parameterData[4].item4.value) || 0
@@ -395,8 +399,8 @@ export default {
 				hint = null;
 			}
 			step = {
-				id: this.parmasStepItem.id||0,
-				section_id: this.modelDirective.section_id||0,
+				id: this.parmasStepItem.id || 0,
+				section_id: this.modelDirective.section_id || 0,
 				text: this.modelDirective.tips,
 				motion: motion,
 				expression: expression,
@@ -422,16 +426,16 @@ export default {
 				section_id: "",
 				tips: ""
 			};
-			this.parmasStepItem={};
-			this.modelDirectiveError={
+			this.parmasStepItem = {};
+			this.modelDirectiveError = {
 				error: false,
 				tips: "指令出现特殊字符"
 			};
-			this.modelDirectiveContextError={
+			this.modelDirectiveContextError = {
 				error: false,
 				tips: "指令出现特殊字符"
 			};
-			this.modelDirectiveTipsError={
+			this.modelDirectiveTipsError = {
 				error: false,
 				tips: "指令出现特殊字符"
 			};
@@ -504,45 +508,50 @@ export default {
 		},
 		//监听课程
 		"modelDirective.curriculum_id": function(val) {
-				if (!this.commandMatchLevel || this.commandMatchLevel[val] && this.commandMatchLevel[val].length==0) {
-					this.modelDirective.level_id="";
-					return
-				}
-				this.commandMatchSection = {};
-				this.matchOptions2.data = [];
-				this.matchOptions2.data.push(
-					...this.commandMatchLevel[val].map(item => {
-						var cc = {};
-						this.commandMatchSection[item.id] = item.section;
-						cc.text = item.name;
-						cc.value = item.id;
-						console.log("等级接口============s==");
-						console.log("等级Id", item.id);
-						console.log("等级接口=============e=");
-						return cc;
-					})
-				);
+			if (!this.commandMatchLevel || (this.commandMatchLevel[val] && this.commandMatchLevel[val].length == 0)) {
+				this.modelDirective.level_id = "";
+				return;
+			}
+			this.commandMatchSection = {};
+			this.matchOptions2.data = [];
+			this.matchOptions2.data.push(
+				...this.commandMatchLevel[val].map(item => {
+					var cc = {};
+					this.commandMatchSection[item.id] = item.section;
+					cc.text = item.name;
+					cc.value = item.id;
+					console.log("等级接口============s==");
+					console.log("等级Id", item.id);
+					console.log("等级接口=============e=");
+					return cc;
+				})
+			);
 		},
 		//监听等级
 		"modelDirective.level_id": function(val) {
-				if(!val){return};
+			if (!val) {
+				return;
+			}
 
-				if (!this.commandMatchSection || this.commandMatchSection[val] && this.commandMatchSection[val].length==0) {
-					this.modelDirective.level_id="";
-					return;
-				}
-				this.matchOptions3.data = [];
-				this.matchOptions3.data.push(
-					...this.commandMatchSection[val].map(item => {
-						var cc = {};
-						cc.text = item.name;
-						cc.value = item.id;
-						console.log("模型接口============s==");
-						console.log("等级Id", item.id);
-						console.log("模型接口=============e");
-						return cc;
-					})
-				);
+			if (
+				!this.commandMatchSection ||
+				(this.commandMatchSection[val] && this.commandMatchSection[val].length == 0)
+			) {
+				this.modelDirective.level_id = "";
+				return;
+			}
+			this.matchOptions3.data = [];
+			this.matchOptions3.data.push(
+				...this.commandMatchSection[val].map(item => {
+					var cc = {};
+					cc.text = item.name;
+					cc.value = item.id;
+					console.log("模型接口============s==");
+					console.log("等级Id", item.id);
+					console.log("模型接口=============e");
+					return cc;
+				})
+			);
 		}
 	},
 	data() {
@@ -551,7 +560,7 @@ export default {
 			triggleData: [],
 			showParams: false,
 			parmasSet: false, //判断是不是设置参数,
-			parmasStepItem:{}, //
+			parmasStepItem: {}, //
 			commandMatchLevel: null,
 			commandMatchSection: null,
 			modelDirectiveError: {
@@ -621,8 +630,8 @@ export default {
 				clearable: false,
 				filter: false,
 				disabled: true,
-				placeholder:"等级",
-				enumUnmatch:"等级",
+				placeholder: "等级",
+				enumUnmatch: "等级",
 				style: "width:90px;",
 				data: []
 			},
@@ -631,22 +640,20 @@ export default {
 				clearable: false,
 				filter: false,
 				disabled: true,
-				placeholder:"课程",
-				enumUnmatch:"课程",
+				placeholder: "课程",
+				enumUnmatch: "课程",
 				style: "width:90px;",
-				data: [
-				]
+				data: []
 			},
 			matchOptions3: {
 				multiple: false,
 				clearable: false,
 				filter: false,
 				disabled: true,
-				placeholder:"模块",
+				placeholder: "模块",
 				style: "width:90px;",
-				enumUnmatch:"模块",
-				data: [
-				]
+				enumUnmatch: "模块",
+				data: []
 			},
 			typeOptions: {
 				multiple: false,
@@ -664,7 +671,7 @@ export default {
 				]
 			},
 			options: {
-				top: "15%",
+				top: "50%",
 				title: "",
 				maskClose: false
 			},
@@ -732,10 +739,14 @@ export default {
 .directive-form {
 	overflow: hidden;
 	padding: 20px 30px;
+	padding-left:55px;
 	.form-item {
 		display: block;
 		margin: 20px 0px;
 		min-height: 30px;
+	}
+	.el-input__inner {
+		color: #333;
 	}
 	.form-item > div {
 		position: relative;
@@ -754,6 +765,7 @@ export default {
 		width: 90px;
 		text-align: center;
 		line-height: 30px;
+		color: #333;
 	}
 	.parameter-list {
 		position: relative;
@@ -773,6 +785,7 @@ export default {
 			width: 60px;
 			text-align: right;
 			display: inline-block;
+			color:#333;
 		}
 		.err-tips {
 			position: absolute;
@@ -831,7 +844,7 @@ export default {
 		width: 185px;
 	}
 	.triggle-list {
-		width: 220px;
+		width: 286px;
 		height: 160px;
 		overflow: hidden;
 		float: none;
@@ -842,7 +855,7 @@ export default {
 			border: 1px solid #4081ff;
 		}
 		.triggle-input {
-			width: 150px;
+			width: 220px;
 			border-radius: 0px;
 			height: 30px;
 			margin: 5px;
@@ -876,7 +889,7 @@ export default {
 			left: 2px;
 		}
 	}
-	.triggle-item:hover .icon-delete-item{
+	.triggle-item:hover .icon-delete-item {
 		display: inline-block;
 	}
 	.icon-delete-item {
