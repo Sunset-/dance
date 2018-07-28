@@ -738,8 +738,8 @@ export default {
 }
 .directive-form {
 	overflow: hidden;
-	padding: 20px 30px;
-	padding-left:55px;
+	padding: 20px 30px 10px 30px;
+	padding-left: 55px;
 	.form-item {
 		display: block;
 		margin: 20px 0px;
@@ -770,14 +770,15 @@ export default {
 	.parameter-list {
 		position: relative;
 		text-align: left;
-		margin: 20px 0px 10px 0px;
+		margin: 10px 0px 10px 0px;
 		padding-left: 15px;
 		// border-left: 1px solid #ccc;
+		border: 1px solid #bbd2ff;
 		background: #f2f6fa;
 		border-radius: 4px;
-		padding: 20px;
+		padding: 10px;
 		.step-item {
-			margin: 5px 0px;
+			margin: 2px 0px;
 			display: inline-block;
 			position: relative;
 		}
@@ -785,7 +786,7 @@ export default {
 			width: 60px;
 			text-align: right;
 			display: inline-block;
-			color:#333;
+			color: #333;
 		}
 		.err-tips {
 			position: absolute;

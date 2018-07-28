@@ -68,7 +68,7 @@ export default {
 			},
 			isShowCourseAdd: false,
 			lastActiveRecord: null,
-			allowEdit:false
+			allowEdit: false
 		};
 	},
 	computed: {
@@ -465,8 +465,9 @@ export default {
 				display: inline-block;
 			}
 			span {
-				width: 120px;
+				width: 140px;
 				height: 40px;
+				font-size: 14px;
 				color: #333333;
 				border-radius: 20px;
 				display: inline-block;
@@ -566,7 +567,7 @@ export default {
 				content: "进入编辑";
 				width: 150px;
 				color: #fff;
-				font-size: 18px;
+				font-size: 16px;
 				display: inline-block;
 				margin-left: 30px;
 			}

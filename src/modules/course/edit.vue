@@ -745,14 +745,14 @@ export default {
 				outline: none;
 			}
 			span {
-				width: 105px;
-				height: 105px;
+				width: 120px;
+				height: 120px;
 				background: #c7c7c7;
 				border-radius: 10px;
 				color: #fff;
 				font-size: 14px;
 				text-align: center;
-				line-height: 105px;
+				line-height: 120px;
 				display: inline-block;
 				margin-right: 89px;
 				margin-top: 12px;
@@ -777,7 +777,7 @@ export default {
 					display: block;
 					background-image: url(/assets/img/course/module.png);
 					background-repeat: no-repeat;
-					margin-left: -10px;
+					margin-left: 4px;
 					margin-top: -2px;
 				}
 			}
