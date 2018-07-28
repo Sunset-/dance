@@ -232,6 +232,7 @@ $sidebar-mini-width: 74px;
 	margin: 0px auto;
 	height: 100%;
 	position: relative;
+	min-width: 1200px;
 	.app-header {
 		height: $header-height;
 		line-height: $header-height;
