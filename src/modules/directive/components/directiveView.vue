@@ -305,7 +305,7 @@ export default {
 		//校验
 		input1Change(record) {
 			if (record.placeholder === "0/180") {
-				if (number(record.value) && parseInt(record.value) <= 100) {
+				if (number(record.value) && parseInt(record.value) <= 180) {
 					record.error = "";
 				} else {
 					record.error = "数字不能大于180";
