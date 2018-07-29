@@ -70,7 +70,7 @@
 								<div class="triggle-list" :class="{'error-parameter':modelDirectiveContextError.error}">
 									<xui-scroll style="height:100%;">
 										<p v-for="(item,index)  in triggleData" :key="index" class="triggle-item">
-											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" @blur="triggleBlur" :class="{'triggle-has-class':item.word}"></xui-input>
+											<xui-input v-model="item.word" :options="inputOnptions" class="triggle-input" @change="triggleTest" :class="{'triggle-has-class':item.word}"></xui-input>
 											<i class="icon-delete-item" @click="deletList(index)"></i>
 										</p>
 									</xui-scroll>
@@ -112,8 +112,8 @@ function number(a) {
 }
 function timeOffset(a) {
 	var pattern = new RegExp("^[0-9]*$"),
-		pattern2 = new RegExp("^[-|0-9][0-9]* ");
-	if ((pattern.test(a) || pattern2.test(a)) && a <= 10) {
+		pattern2 = new RegExp("^[-|0-9][0-9]*");
+	if ((pattern.test(a) || pattern2.test(a))) {
 		return true;
 	}
 	return false;
@@ -287,7 +287,8 @@ export default {
 			if (
 				this.modelDirectiveError.error ||
 				this.modelDirectiveContextError.error ||
-				this.modelDirectiveTipsError.error
+				this.modelDirectiveTipsError.error ||
+				$(".parameter-list").find(".error-class").length>0
 			) {
 				return false;
 			}
@@ -309,7 +310,7 @@ export default {
 		//校验
 		input1Change(record) {
 			if (record.placeholder === "0/180") {
-				if (number(record.value) && parseInt(record.value) <= 180) {
+				if (number(record.value) && record.value*1 <= 180) {
 					record.error = "";
 				} else {
 					record.error = "数字不能大于180";
@@ -328,7 +329,7 @@ export default {
 			}
 		},
 		input3Change(record) {
-			if (number(record.value) && parseInt(record.value) <= 100) {
+			if (number(record.value) && record.value*1 <= 100) {
 				record.error = "";
 			} else if (parseInt(record.value) > 100) {
 				record.error = "数字不能大于100";
@@ -338,10 +339,12 @@ export default {
 		},
 		input4Change(record) {
 			if (timeOffset(record.value)) {
-				record.error = "";
-			} else if (parseInt(record.value) > 10) {
-				record.error = "数字不能大于10";
-			} else {
+				if (number(record.value.replace("-","")) && record.value.replace("-","")*1> 10) {
+					record.error = "数字不能大于10";
+				}else{
+					record.error = "";
+				} 
+			}else {
 				record.error = "不能含特殊字符";
 			}
 		},
