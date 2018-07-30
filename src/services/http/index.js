@@ -1,5 +1,12 @@
 import axios from "axios";
 
+const UN_CHECK_URL = {
+	"/dance/forget_pwd": true,
+	"/dance/modify_pwd": true,
+	"/dance/reset_pwd": true,
+	"/dance/verify_code_is_valid": true
+};
+
 export default (window.$http = function(options) {
 	var method = (options.type || options.method || "get").toLowerCase();
 	var data = options.data;
@@ -38,7 +45,9 @@ export default (window.$http = function(options) {
 	} else {
 		headers["Content-Type"] = "application/json;charset=UTF-8";
 	}
-	headers["Authorization"] = $tools.getCookie("Authorization");
+	if (!UN_CHECK_URL[config.url]) {
+		headers["Authorization"] = $tools.getCookie("Authorization");
+	}
 	config.headers = headers;
 
 	return axios(config)

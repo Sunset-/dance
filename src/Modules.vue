@@ -365,6 +365,7 @@ $sidebar-mini-width: 74px;
 			left: $sidebar-width;
 			right: 0px;
 			background: #f6f7fb;
+     		overflow-y: auto;
 		}
 	}
 	.pwd-dialog-layer {

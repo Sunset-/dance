@@ -1,132 +1,146 @@
 <!-- 课程编辑 -->
 <template>
-	<div class="edit-Course">
-		<div class="nav">
-			<i/>
-			<h3 @click="goback">{{currentData.levelname}} > {{currentData.soursename}}</h3>
+	<div>
+		<div class="course-table-header fixed" style="display: none;" ref="fixedtableheader">
+			<span style="width:5%">序号</span>
+			<span style="width:20%">话术</span>
+			<span style="width:8%">动作ID</span>
+			<span style="width:8%">表情ID</span>
+			<span style="width:8%">镜头ID</span>
+			<span style="width:8%">比对ID</span>
+			<span style="width:8%">动效ID</span>
+			<span style="width:10%">标题</span>
+			<span style="width:10%">人物方向</span>
+			<span style="width:10%"></span>
 		</div>
-		<div class="content">
-			<div class="module" :class="{'module-left':sectionList.length > 6}">
-				<div v-for="item in sectionList" :key="item.id">
-					<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
-					<span class="sectionEditspan" v-show="activeSection.id === item.id && activeSection.edit ">
-						<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
-					</span>
+		<div class="edit-Course" ref="container">
+			<div class="nav">
+				<i/>
+				<h3 @click="goback">{{currentData.levelname}} > {{currentData.soursename}}</h3>
+			</div>
+			<div class="content" ref="content">
+				<div class="module" :class="{'module-left':sectionList.length > 6}">
+					<div v-for="item in sectionList" :key="item.id">
+						<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
+						<span class="sectionEditspan" v-show="activeSection.id === item.id && activeSection.edit ">
+							<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
+						</span>
 
+					</div>
 				</div>
-			</div>
-			<!-- 模块操作 -->
-			<div class="module-operation">
-				<span class="add" @click="addSection"></span>
-				<span class="edit" @click="editSection"></span>
-				<span class="del" @click="delSection"></span>
-			</div>
-			<div class="table-header">
-				<span style="width:5%">序号</span>
-				<span style="width:20%">话术</span>
-				<span style="width:8%">动作ID</span>
-				<span style="width:8%">表情ID</span>
-				<span style="width:8%">镜头ID</span>
-				<span style="width:8%">比对ID</span>
-				<span style="width:8%">动效ID</span>
-				<span style="width:10%">标题</span>
-				<span style="width:10%">人物方向</span>
-				<span style="width:10%"></span>
-			</div>
-			<!-- 步骤内容 -->
-			<!-- <xui-scroll style="height:600px"> -->
-			<div v-show="activeSection.id" class="table-content">
-				<div class="step" v-for="(item,index) in stepList" :key="index">
-					<span style="width:5%">{{index+1}}</span>
-					<span class="xui-pop" style="width:20%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
-					<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'>${item.motion.name}</span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.action}}</span>
-					<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'>${item.expression.name}</span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.action}}</span>
-					<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'>${item.camera.name}</span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.action}}</span>
-					<span class="xui-pop" style="width:8%" :data-content="item.compare && `<div class='pop-content'><span class='title'>${item.compare.name}</span><span>触发时机 <em>${item.compare.begin}</em></span><span>偏移时间 <em>${item.compare.offset}</em></span></div>`">{{item.compare && item.compare.action}}</span>
-					<span class="xui-pop" style="width:8%" :data-content="item.effect && `<div class='pop-content'><span class='title'>${item.effect.name}</span><span>触发时机 <em>${item.effect.begin}</em></span><span>偏移时间 <em>${item.effect.offset}</em></span></div>`">{{item.effect && item.effect.action}}</span>
-					<span class="xui-pop" style="width:10%" :data-content="item.hint && `<div class='pop-content text'>${item.hint.text}</div>`">{{item.hint && item.hint.text}}</span>
-					<span class="xui-pop" style="width:10%" :data-content="item.person_dir && `<div class='pop-content text'>${item.person_dir}</div>`">{{item.person_dir && item.person_dir}}</span>
-					<span style="width:10%" class="content-operation">
-						<i class="edit" @click="editStep(index,item)"></i>
-						<i class="del" @click="delStep(item)"></i>
-					</span>
-					<div class="module-edit" v-show="activeStepEdit === index">
-						<div class="edit-content">
-							<ul v-for="(val,key) in editSteps">
-								<div v-if="key !== 'special'">
-									<li>
-										<label>{{val.name}}</label>
-									</li>
-									<li v-for="step in val.item">
-										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
-										<p class="error-tips">{{step.error}}</p>
-									</li>
-								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
-									<li>
-										<label style="top:0px;">{{s.name}}</label>
-									</li>
-									<li v-for="i in s.item">
-										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
-										<p class="error-tips">{{i.error}}</p>
-									</li>
-								</div>
+				<!-- 模块操作 -->
+				<div class="module-operation">
+					<span class="add" @click="addSection"></span>
+					<span class="edit" @click="editSection"></span>
+					<span class="del" @click="delSection"></span>
+				</div>
+				<div class="course-table-header" ref="tableheader">
+					<span style="width:5%">序号</span>
+					<span style="width:20%">话术</span>
+					<span style="width:8%">动作ID</span>
+					<span style="width:8%">表情ID</span>
+					<span style="width:8%">镜头ID</span>
+					<span style="width:8%">比对ID</span>
+					<span style="width:8%">动效ID</span>
+					<span style="width:10%">标题</span>
+					<span style="width:10%">人物方向</span>
+					<span style="width:10%"></span>
+				</div>
+				<!-- 步骤内容 -->
+				<!-- <xui-scroll style="height:600px"> -->
+				<div v-show="activeSection.id" class="table-content" ref="tablecontent">
+					<div class="step" v-for="(item,index) in stepList" :key="index">
+						<span style="width:5%">{{index+1}}</span>
+						<span class="xui-pop" style="width:20%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'>${item.motion.name}</span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'>${item.expression.name}</span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'>${item.camera.name}</span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.compare && `<div class='pop-content'><span class='title'>${item.compare.name}</span><span>触发时机 <em>${item.compare.begin}</em></span><span>偏移时间 <em>${item.compare.offset}</em></span></div>`">{{item.compare && item.compare.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.effect && `<div class='pop-content'><span class='title'>${item.effect.name}</span><span>触发时机 <em>${item.effect.begin}</em></span><span>偏移时间 <em>${item.effect.offset}</em></span></div>`">{{item.effect && item.effect.action}}</span>
+						<span class="xui-pop" style="width:10%" :data-content="item.hint && `<div class='pop-content text'>${item.hint.text}</div>`">{{item.hint && item.hint.text}}</span>
+						<span class="xui-pop" style="width:10%" :data-content="item.person_dir && `<div class='pop-content text'>${item.person_dir}</div>`">{{item.person_dir && item.person_dir}}</span>
+						<span style="width:10%" class="content-operation">
+							<i class="edit" @click="editStep(index,item)"></i>
+							<i class="del" @click="delStep(item)"></i>
+						</span>
+						<div class="module-edit" v-show="activeStepEdit === index">
+							<div class="edit-content">
+								<ul v-for="(val,key) in editSteps">
+									<div v-if="key !== 'special'">
+										<li>
+											<label>{{val.name}}</label>
+										</li>
+										<li v-for="step in val.item">
+											<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
+											<p class="error-tips">{{step.error}}</p>
+										</li>
+									</div>
+									<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
+										<li>
+											<label style="top:0px;">{{s.name}}</label>
+										</li>
+										<li v-for="i in s.item">
+											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+											<p class="error-tips">{{i.error}}</p>
+										</li>
+									</div>
 
-							</ul>
-							<ul>
-								<li style="margin-right: 35px;">
-									<span class="step-btn confirm" @click="confirmStep()"></span>
-								</li>
-								<li>
-									<span class="step-btn cancel" @click="cancelStep(item)"></span>
-								</li>
-							</ul>
+								</ul>
+								<ul>
+									<li style="margin-right: 35px;">
+										<span class="step-btn confirm" @click="confirmStep()"></span>
+									</li>
+									<li>
+										<span class="step-btn cancel" @click="cancelStep(item)"></span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<!-- 当小节为空时,添加第一条步骤 -->
+					<div class="step">
+						<div class="module-edit" v-show="isShowfirstSteps">
+							<div class="edit-content">
+								<ul v-for="(val,key) in editSteps">
+									<div v-if="key !== 'special'">
+										<li>
+											<label>{{val.name}}</label>
+										</li>
+										<li v-for="step in val.item">
+											<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
+											<p class="error-tips">{{step.error}}</p>
+										</li>
+									</div>
+									<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
+										<li>
+											<label>{{s.name}}</label>
+										</li>
+										<li v-for="i in s.item">
+											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+											<p class="error-tips">{{i.error}}</p>
+										</li>
+									</div>
+								</ul>
+								<ul>
+									<li style="margin-right: 35px;">
+										<span class="step-btn confirm" @click="confirmStep()"></span>
+									</li>
+									<li>
+										<span class="step-btn cancel" @click="cancelStep()"></span>
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 				</div>
-				<!-- 当小节为空时,添加第一条步骤 -->
-				<div class="step">
-					<div class="module-edit" v-show="isShowfirstSteps">
-						<div class="edit-content">
-							<ul v-for="(val,key) in editSteps">
-								<div v-if="key !== 'special'">
-									<li>
-										<label>{{val.name}}</label>
-									</li>
-									<li v-for="step in val.item">
-										<xui-input :class="step.class" v-model="step.value" :placeholder="step.placeholder" :style="step.style" @change="changeHandle(step)"></xui-input>
-										<p class="error-tips">{{step.error}}</p>
-									</li>
-								</div>
-								<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
-									<li>
-										<label>{{s.name}}</label>
-									</li>
-									<li v-for="i in s.item">
-										<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
-										<p class="error-tips">{{i.error}}</p>
-									</li>
-								</div>
-							</ul>
-							<ul>
-								<li style="margin-right: 35px;">
-									<span class="step-btn confirm" @click="confirmStep()"></span>
-								</li>
-								<li>
-									<span class="step-btn cancel" @click="cancelStep()"></span>
-								</li>
-							</ul>
-						</div>
-					</div>
+				<div class="table-bottom" v-show="activeSection.id">
+					<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
 				</div>
+				<!-- </xui-scroll> -->
 			</div>
-			<div class="table-bottom" v-show="activeSection.id">
-				<span class="submit" :class="{'submit-none':sectionList.length === 0 }" @click="addStep"></span>
-			</div>
-			<!-- </xui-scroll> -->
+			<!-- 删除组件 -->
+			<delSection ref="delsection" @ensure="removeSection"></delSection>
 		</div>
-		<!-- 删除组件 -->
-		<delSection ref="delsection" @ensure="removeSection"></delSection>
 	</div>
 </template>
 
@@ -679,12 +693,25 @@ export default {
 		},
 		goback() {
 			this.$emit("goback", true);
+		},
+		initScroll() {
+			var $container = $(this.$refs.container);
+			var $tableheader = $(this.$refs.tableheader);
+			var $fixedtableheader = $(this.$refs.fixedtableheader);
+			this.$refs.container.addEventListener("scroll", () => {
+				if ($tableheader.offset().top - $container.offset().top <= 0) {
+					$fixedtableheader.show();
+				} else {
+					$fixedtableheader.hide();
+				}
+			});
 		}
 	},
 	created() {},
 	mounted() {
 		this.currentData = this.$route.params;
 		this.getSection();
+		this.initScroll();
 	},
 	beforeDestory() {}
 };
@@ -697,6 +724,7 @@ export default {
 	right: 0px;
 	left: 0px;
 	background-color: #f6f7fb;
+	overflow-y: auto;
 	.nav {
 		margin: 30px 0px 30px 30px;
 		i {
@@ -804,17 +832,6 @@ export default {
 			}
 			.del {
 				background-image: url("/assets/img/course/module-del.png");
-			}
-		}
-		.table-header {
-			width: 100%;
-			height: 58px;
-			background: linear-gradient(#ffffff, #eeeeee);
-			border-top: 1px solid #e9e9e9;
-			span {
-				line-height: 58px;
-				display: inline-block;
-				text-align: center;
 			}
 		}
 		.table-content {
@@ -980,6 +997,26 @@ export default {
 				box-shadow: 0px 0px 24px #999;
 			}
 		}
+	}
+}
+
+.course-table-header {
+	width: 100%;
+	height: 58px;
+	background: linear-gradient(#ffffff, #eeeeee);
+	border-top: 1px solid #e9e9e9;
+	&.fixed {
+		position: absolute;
+		top: 0px;
+		z-index: 10;
+		left: 30px;
+		right: 45px;
+		width: auto;
+	}
+	span {
+		line-height: 58px;
+		display: inline-block;
+		text-align: center;
 	}
 }
 .xui-pop-wrap {
