@@ -54,12 +54,12 @@
 					<div class="step" v-for="(item,index) in stepList" :key="index">
 						<span style="width:10%">{{item.index}}</span>
 						<span class="xui-pop" style="width:15%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
-						<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'>${item.motion.name}</span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.action}}</span>
-						<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'>${item.expression.name}</span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.action}}</span>
-						<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'>${item.camera.name}</span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.action}}</span>
-						<span class="xui-pop" style="width:8%" :data-content="item.compare && `<div class='pop-content'><span class='title'>${item.compare.name}</span><span>触发时机 <em>${item.compare.begin}</em></span><span>偏移时间 <em>${item.compare.offset}</em></span></div>`">{{item.compare && item.compare.action}}</span>
-						<span class="xui-pop" style="width:8%" :data-content="item.effect && `<div class='pop-content'><span class='title'>${item.effect.name}</span><span>触发时机 <em>${item.effect.begin}</em></span><span>偏移时间 <em>${item.effect.offset}</em></span></div>`">{{item.effect && item.effect.action}}</span>
-						<span class="xui-pop" style="width:10%" :data-content="item.hint && `<div class='pop-content text'>${item.hint.text}</div>`">{{item.hint && item.hint.text}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.compare && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.compare.begin}</em></span><span>偏移时间 <em>${item.compare.offset}</em></span></div>`">{{item.compare && item.compare.action}}</span>
+						<span class="xui-pop" style="width:8%" :data-content="item.effect && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.effect.begin}</em></span><span>偏移时间 <em>${item.effect.offset}</em></span></div>`">{{item.effect && item.effect.action}}</span>
+						<span class="xui-pop" style="width:10%" :data-content="item.hint && `<div class='pop-content'><span class='title'></span><span>触发时机 <em>${item.hint.begin}</em></span><span>偏移时间 <em>${item.hint.offset}</em></span></div>`">{{item.hint && item.hint.text}}</span>
 						<span class="xui-pop" style="width:10%" :data-content="item.person_dir && `<div class='pop-content text'>${item.person_dir}</div>`">{{item.person_dir && item.person_dir}}</span>
 						<span style="width:10%" class="content-operation">
 							<i class="edit" @click="editStep(index,item)"></i>
@@ -283,7 +283,7 @@ export default {
 			isShowfirstSteps: false,
 			activeOperation: "",
 			statusSetpEdit: false,
-			tempEdit:false
+			tempEdit: false
 		};
 	},
 	computed: {},
@@ -692,7 +692,11 @@ export default {
 						case "text":
 							if (element.item[0].value === "" || element.item[0].error !== "") {
 								isCheck = false;
-								this.editSteps.text.item[0].error = "内容不能为空";
+								if (element.item[0].value === "") {
+									item.error = "内容不能为空";
+								} else if (element.item[0].value.length > 40) {
+									item.error = "最长40个汉字";
+								}
 								break;
 							}
 							newStep["text"] = element.item[0].value;
@@ -727,7 +731,7 @@ export default {
 			this.activeStepEdit = "";
 			this.statusSetpEdit = false;
 			this.isShowfirstSteps = false;
-			if(this.tempEdit){
+			if (this.tempEdit) {
 				this.stepList.pop();
 			}
 			this.tempEdit = false;
