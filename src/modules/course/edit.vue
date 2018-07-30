@@ -21,9 +21,11 @@
 			<div class="content" ref="content">
 				<div class="module" :class="{'module-left':sectionList.length > 6}">
 					<div v-for="item in sectionList" :key="item.id">
-						<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">{{item.name}}</span>
+						<span :class="{'active': activeSection.id === item.id}" v-show="!item.edit" @click="chooseSection(item)">
+							<i>{{item.name}}</i>
+						</span>
 						<span class="sectionEditspan" v-show="activeSection.id === item.id && activeSection.edit ">
-							<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
+							<input :class="['sectionInput','edit-input',activeSection.id === item.id && activeSection.edit?'editing':'']" v-model="item.name" @keydown.enter="triggerBlurHandle($event)" @blur="saveRecord($event,item)" autofocus maxlength="6" />
 						</span>
 
 					</div>
@@ -374,11 +376,22 @@ export default {
 		triggerBlurHandle(ev) {
 			ev.target.blur();
 		},
-		saveRecord() {
+		saveRecord(ev, item) {
 			if (this.statusSetpEdit) {
 				$tip("当前正在编辑中", "warning");
 				return;
 			}
+
+			var v = ev.target.value + "";
+			if (v.length > 6) {
+				$tip("不能多于6个字");
+				this.$nextTick(() => {
+					item.name = v.substring(0, 6);
+					ev.target.focus();
+				});
+				return;
+			}
+
 			if (this.activeSection.name === "") {
 				switch (this.activeOperation) {
 					case "add":
@@ -773,24 +786,31 @@ export default {
 				outline: none;
 			}
 			span {
-				width: 120px;
-				height: 120px;
+				width: 98px;
+				height: 98px;
 				background: #c7c7c7;
 				border-radius: 10px;
 				color: #fff;
 				font-size: 14px;
 				text-align: center;
-				line-height: 120px;
 				display: inline-block;
 				margin-right: 89px;
 				margin-top: 12px;
 				font-weight: bold;
 				cursor: pointer;
 				user-select: none;
+				position: relative;
 				&:hover {
 					color: #fff;
 					background: #84aeff;
 					box-shadow: 0px 0px 24px #84aeff;
+				}
+				i {
+					position: absolute;
+					top: 50%;
+					left: 5px;
+					right: 5px;
+					transform: translate(0, -50%);
 				}
 			}
 			.sectionEditspan {
@@ -799,14 +819,17 @@ export default {
 			& > div > .active {
 				background: linear-gradient(#2f7cef, #5baffd);
 				&:after {
+					position: absolute;
 					content: "";
 					width: 111px;
 					height: 22px;
 					display: block;
 					background-image: url(/assets/img/course/module.png);
 					background-repeat: no-repeat;
-					margin-left: 4px;
+					top: 100%;
 					margin-top: -2px;
+					left: 50%;
+					margin-left: -55px;
 				}
 			}
 		}

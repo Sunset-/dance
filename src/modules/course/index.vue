@@ -9,7 +9,7 @@
 				<div class="content">
 					<div v-for="item in levelMenu" :key="item.id">
 						<span :class="[{'active': activeLevel.id === item.id }]" v-show="!item.edit" @click="chooseCourse('level',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeLevel.id === item.id && activeLevel.edit?'editing':'']" v-show="activeLevel.id === item.id && activeLevel.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord($event,item)" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -25,7 +25,7 @@
 				<div class="content">
 					<div v-if="activeLevel.id" v-for="item in courseMenu" :key="item.id">
 						<span :class="[{'active': activeCourse.id === item.id}]" v-show="!item.edit" @click="chooseCourse('course',item)">{{item.name}}</span>
-						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord" autofocus maxlength="6" />
+						<input :class="['input','edit-input',activeCourse.id === item.id && activeCourse.edit?'editing':'']" v-show="activeCourse.id === item.id && activeCourse.edit" v-model="item.name" @keydown.enter="blurHandle($event)" @blur="saveRecord($event,item)" autofocus maxlength="6" />
 					</div>
 				</div>
 				<div class="operate">
@@ -120,7 +120,17 @@ export default {
 		/**
 		 * 保存
 		 */
-		saveRecord() {
+		saveRecord(ev, item) {
+			var v = ev.target.value + "";
+			if (v.length > 4) {
+				$tip("不能多于4个字");
+				this.$nextTick(() => {
+					item.name = v.substring(0, 4);
+					ev.target.focus();
+				});
+				return;
+			}
+
 			if (this.activeLevel.name === "" || this.activeCourse.name === "") {
 				//编辑名称为空的情况，直接删除
 				switch (this.activeOperation.type) {
@@ -465,7 +475,7 @@ export default {
 				display: inline-block;
 			}
 			span {
-				width: 140px;
+				width: 107px;
 				height: 40px;
 				font-size: 14px;
 				color: #333333;
