@@ -37,8 +37,8 @@
 					<span class="del" @click="delSection"></span>
 				</div>
 				<div class="course-table-header" ref="tableheader">
-					<span style="width:5%">序号</span>
-					<span style="width:20%">话术</span>
+					<span style="width:10%">序号</span>
+					<span style="width:15%">话术</span>
 					<span style="width:8%">动作ID</span>
 					<span style="width:8%">表情ID</span>
 					<span style="width:8%">镜头ID</span>
@@ -52,8 +52,8 @@
 				<!-- <xui-scroll style="height:600px"> -->
 				<div v-show="activeSection.id" class="table-content" ref="tablecontent">
 					<div class="step" v-for="(item,index) in stepList" :key="index">
-						<span style="width:5%">{{index+1}}</span>
-						<span class="xui-pop" style="width:20%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
+						<span style="width:10%">{{item.index}}</span>
+						<span class="xui-pop" style="width:15%;text-align: center;" :data-content="`<div class='pop-content text'>${item.text}</div>`">{{item.text}}</span>
 						<span class="xui-pop" style="width:8%" :data-content="item.motion && `<div class='pop-content'><span class='title'>${item.motion.name}</span><span>触发时机 <em>${item.motion.begin}</em></span><span>偏移时间 <em>${item.motion.offset}</em></span></div>`">{{item.motion && item.motion.action}}</span>
 						<span class="xui-pop" style="width:8%" :data-content="item.expression && `<div class='pop-content'><span class='title'>${item.expression.name}</span><span>触发时机 <em>${item.expression.begin}</em></span><span>偏移时间 <em>${item.expression.offset}</em></span></div>`">{{item.expression && item.expression.action}}</span>
 						<span class="xui-pop" style="width:8%" :data-content="item.camera && `<div class='pop-content'><span class='title'>${item.camera.name}</span><span>触发时机 <em>${item.camera.begin}</em></span><span>偏移时间 <em>${item.camera.offset}</em></span></div>`">{{item.camera && item.camera.action}}</span>
@@ -68,6 +68,15 @@
 						<div class="module-edit" v-show="activeStepEdit === index">
 							<div class="edit-content">
 								<ul v-for="(val,key) in editSteps">
+									<div v-if="key === 'special'" v-for="(s,k) in val" style="display: inline-block;" :class="{'offsetDiv':k === 'person_dir'}">
+										<li>
+											<label style="top:0px;">{{s.name}}</label>
+										</li>
+										<li v-for="i in s.item">
+											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+											<p class="error-tips">{{i.error}}</p>
+										</li>
+									</div>
 									<div v-if="key !== 'special'">
 										<li>
 											<label>{{val.name}}</label>
@@ -77,16 +86,6 @@
 											<p class="error-tips">{{step.error}}</p>
 										</li>
 									</div>
-									<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
-										<li>
-											<label style="top:0px;">{{s.name}}</label>
-										</li>
-										<li v-for="i in s.item">
-											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
-											<p class="error-tips">{{i.error}}</p>
-										</li>
-									</div>
-
 								</ul>
 								<ul>
 									<li style="margin-right: 35px;">
@@ -104,6 +103,15 @@
 						<div class="module-edit" v-show="isShowfirstSteps">
 							<div class="edit-content">
 								<ul v-for="(val,key) in editSteps">
+									<div v-if="key === 'special'" v-for="(s,k) in val" style="display: inline-block;" :class="{'offsetDiv':k === 'person_dir'}">
+										<li>
+											<label>{{s.name}}</label>
+										</li>
+										<li v-for="i in s.item">
+											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
+											<p class="error-tips">{{i.error}}</p>
+										</li>
+									</div>
 									<div v-if="key !== 'special'">
 										<li>
 											<label>{{val.name}}</label>
@@ -113,15 +121,7 @@
 											<p class="error-tips">{{step.error}}</p>
 										</li>
 									</div>
-									<div v-if="key === 'special'" v-for="s in val" style="display: inline-block; margin-left: -325px;">
-										<li>
-											<label>{{s.name}}</label>
-										</li>
-										<li v-for="i in s.item">
-											<xui-input :class="i.class" v-model="i.value" :placeholder="i.placeholder" :style="i.style" @change="changeHandle(i)"></xui-input>
-											<p class="error-tips">{{i.error}}</p>
-										</li>
-									</div>
+
 								</ul>
 								<ul>
 									<li style="margin-right: 35px;">
@@ -202,6 +202,18 @@ export default {
 			stepList: [],
 			activeStepEdit: "",
 			editSteps: {
+				special: {
+					index: {
+						name: "序号",
+						id: 0,
+						item: [{ value: "", placeholder: "序号", class: "default-input", error: "" }]
+					},
+					person_dir: {
+						name: "人物方向",
+						id: 0,
+						item: [{ value: "", placeholder: "人物方向", style: "width:300px", error: "" }]
+					}
+				},
 				text: {
 					name: "话术",
 					key: "text",
@@ -266,18 +278,12 @@ export default {
 						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
 						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
 					]
-				},
-				special: {
-					person_dir: {
-						name: "人物方向",
-						id: 0,
-						item: [{ value: "", placeholder: "人物方向", style: "width:382px", error: "" }]
-					}
 				}
 			},
 			isShowfirstSteps: false,
 			activeOperation: "",
-			statusSetpEdit: false
+			statusSetpEdit: false,
+			tempEdit:false
 		};
 	},
 	computed: {},
@@ -470,10 +476,10 @@ export default {
 			if (this.stepList.length > 0) {
 				newStep = this.stepList[this.stepList.length - 1];
 				newStep.section_id = this.activeSection.id;
-				store.addSteps(newStep).then(res => {
-					this.getSection();
-					this.statusSetpEdit = false;
-				});
+				newStep.id = "";
+				this.stepList.push(newStep);
+				this.editStep(this.stepList.length - 1, this.stepList[this.stepList.length - 1]);
+				this.tempEdit = true;
 				this.isShowfirstSteps = false;
 			} else {
 				this.isShowfirstSteps = true;
@@ -527,6 +533,11 @@ export default {
 								this.editSteps["special"][key].item[0].value = element;
 							}
 							break;
+						case "index":
+							if (element !== null) {
+								this.editSteps["special"][key].item[0].value = element;
+							}
+							break;
 						case "text":
 							this.editSteps[key].item[0].value = element;
 							break;
@@ -560,6 +571,13 @@ export default {
 						item.error = "仅可填入数字";
 					} else if (item.value > 180) {
 						item.error = "角度大小不超过180";
+					} else {
+						item.error = "";
+					}
+					break;
+				case "序号":
+					if (!number(item.value)) {
+						item.error = "仅可填入数字";
 					} else {
 						item.error = "";
 					}
@@ -665,6 +683,11 @@ export default {
 							} else {
 								newStep["person_dir"] = 0;
 							}
+							if (element.index.item[0].value !== "") {
+								newStep["index"] = parseInt(element.index.item[0].value);
+							} else {
+								newStep["index"] = 0;
+							}
 							break;
 						case "text":
 							if (element.item[0].value === "" || element.item[0].error !== "") {
@@ -692,6 +715,7 @@ export default {
 				});
 			} else {
 				store.addSteps(newStep).then(res => {
+					this.activeStepEdit = "";
 					this.isShowfirstSteps = false;
 					this.getSection();
 					this.statusSetpEdit = false;
@@ -703,6 +727,10 @@ export default {
 			this.activeStepEdit = "";
 			this.statusSetpEdit = false;
 			this.isShowfirstSteps = false;
+			if(this.tempEdit){
+				this.stepList.pop();
+			}
+			this.tempEdit = false;
 		},
 		goback() {
 			this.$emit("goback", true);
@@ -918,6 +946,9 @@ export default {
 				background: rgba(242, 246, 250, 1);
 				box-shadow: 0px 0px 84px rgba(139, 149, 163, 0.2);
 				display: inline-block;
+				.offsetDiv {
+					margin-left: 52px;
+				}
 				ul {
 					margin: 20px 120px 0px 120px;
 					li {
