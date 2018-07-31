@@ -462,6 +462,87 @@ export default {
 					this.stepList = res;
 				});
 		},
+		resetStep() {
+			this.editSteps = {
+				special: {
+					index: {
+						name: "序号",
+						id: 0,
+						item: [{ value: "", placeholder: "序号", class: "default-input", error: "" }]
+					},
+					person_dir: {
+						name: "人物方向",
+						id: 0,
+						item: [{ value: "", placeholder: "人物方向", style: "width:300px", error: "" }]
+					}
+				},
+				text: {
+					name: "话术",
+					key: "text",
+					id: 0,
+					item: [{ value: "", placeholder: "话术", class: "", style: "width:675px", error: "" }]
+				},
+				motion: {
+					name: "动作",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
+				expression: {
+					name: "表情",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
+				camera: {
+					name: "镜头",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
+				compare: {
+					name: "比对",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
+				effect: {
+					name: "动效",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", error: "" },
+						{ value: "", placeholder: "ID", class: "id-input", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				},
+				hint: {
+					name: "标题",
+					id: 0,
+					item: [
+						{ value: "", placeholder: "名称", class: "default-input", style: "width:382px", error: "" },
+						{ value: "", placeholder: "触发时机", class: "timing-input", error: "" },
+						{ value: "", placeholder: "偏移时间", class: "offset-input", error: "" }
+					]
+				}
+			};
+		},
 		//添加步骤
 		addStep() {
 			if (this.statusSetpEdit) {
@@ -474,14 +555,16 @@ export default {
 			}
 			newStep.section_id = this.activeSection.id;
 			if (this.stepList.length > 0) {
-				newStep = this.stepList[this.stepList.length - 1];
+				newStep = Object.assign(newStep, this.stepList[this.stepList.length - 1]);
 				newStep.section_id = this.activeSection.id;
 				newStep.id = "";
+				newStep.index = "";
 				this.stepList.push(newStep);
 				this.editStep(this.stepList.length - 1, this.stepList[this.stepList.length - 1]);
 				this.tempEdit = true;
 				this.isShowfirstSteps = false;
 			} else {
+				this.resetStep();
 				this.isShowfirstSteps = true;
 			}
 			this.statusSetpEdit = true;
@@ -693,9 +776,9 @@ export default {
 							if (element.item[0].value === "" || element.item[0].error !== "") {
 								isCheck = false;
 								if (element.item[0].value === "") {
-									item.error = "内容不能为空";
+									element.item[0].error = "内容不能为空";
 								} else if (element.item[0].value.length > 40) {
-									item.error = "最长40个汉字";
+									element.item[0].error = "最长40个汉字";
 								}
 								break;
 							}
