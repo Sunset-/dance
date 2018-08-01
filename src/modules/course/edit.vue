@@ -789,10 +789,20 @@ export default {
 					}
 				}
 			}
+			//校验步骤序号是否重复
+			if (this.stepList && this.stepList.length > 0) {
+				this.stepList.forEach(s => {
+					if (s.index === newStep.index) {
+						$tip("该序号已存在", "warning");
+						return;
+					}
+				});
+			}
 			//如果存在校验错误，不执行任何操作
 			if (!isCheck) {
 				return;
 			}
+
 			if (this.editSteps.id) {
 				store.updateSteps(this.editSteps.id, newStep).then(res => {
 					this.isShowfirstSteps = false;
