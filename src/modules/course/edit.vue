@@ -296,6 +296,8 @@ export default {
 				return;
 			}
 			this.activeSection = item || {};
+			var params = this.$route.params;
+			$router.push(`/course/${params.couserid}/${params.levelname}/${params.soursename}/${item.id}`);
 			if (item) {
 				this.getStepBySectionId();
 			}
@@ -318,7 +320,13 @@ export default {
 							return val;
 						});
 						if (JSON.stringify(this.activeSection) === "{}") {
-							this.activeSection = this.sectionList[0];
+							var sectionId = this.$route.params.section;
+							if (sectionId) {
+								this.activeSection = this.sectionList.filter(item => item.id == sectionId)[0];
+							}
+							if (!this.activeSection) {
+								this.activeSection = this.sectionList[0];
+							}
 						}
 						this.getStepBySectionId();
 					}
@@ -790,13 +798,17 @@ export default {
 				}
 			}
 			//校验步骤序号是否重复
+			var isSameIndex = false;
 			if (this.stepList && this.stepList.length > 0) {
 				this.stepList.forEach(s => {
-					if (s.index === newStep.index) {
-						$tip("该序号已存在", "warning");
-						return;
+					if (s.index === newStep.index && s.id != newStep.id) {
+						isSameIndex = true;
 					}
 				});
+				if (isSameIndex) {
+					$tip("该序号已存在", "warning");
+					return;
+				}
 			}
 			//如果存在校验错误，不执行任何操作
 			if (!isCheck) {
@@ -816,6 +828,7 @@ export default {
 					this.isShowfirstSteps = false;
 					this.getSection();
 					this.statusSetpEdit = false;
+					this.tempEdit = false;
 				});
 			}
 		},

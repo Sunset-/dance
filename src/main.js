@@ -44,7 +44,13 @@ var router = new Router({
 					children: [
 						{
 							path: ":couserid/:levelname/:soursename",
-							component: Course
+							component: Course,
+							children: [
+								{
+									path: ":section",
+									component: Course
+								}
+							]
 						}
 					]
 				},
