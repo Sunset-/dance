@@ -30,7 +30,7 @@
 					<div :class="{'login-error': loginError}">
 						<img src="/assets/img/login/login-password.png" v-if="!loginError"/>
 						<img src="/assets/img/login/login-password-error.png" v-if="loginError"/>
-						<input type="password" v-model="pwd" class="login-password-name" placeholder="请输入登录密码" @keyup.13="loginHandle">
+						<input @keydown="hideTip" type="password" v-model="pwd" class="login-password-name" placeholder="请输入登录密码" @keyup.13="loginHandle">
 					</div>
 				</div>
 				<div class="login-confirm-password-error" v-if="!pwd&&loginValueEmpty&&!loginError&&!forgetUser">密码不能为空</div>
