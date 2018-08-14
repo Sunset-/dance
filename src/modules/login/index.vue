@@ -113,6 +113,9 @@ export default {
 					window.sessionStorage.setItem("username",this.unserName);
 					$tools.setCookie("Authorization",`JWT ${userInfo.token}`);
                     $router.push({path:"/course"});
+				}else{
+                    this.loginError = true;
+                    this.pwd = '';
 				}
             }).catch(error=>{
                 if(error){
