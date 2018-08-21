@@ -462,12 +462,15 @@ export default {
 		},
 		//获取步骤数据
 		getStepBySectionId() {
+			var requestSectionId = this.activeSection.id;
 			store
 				.getStepBySectionId({
-					section_id: this.activeSection.id
+					section_id: requestSectionId
 				})
 				.then(res => {
-					this.stepList = res;
+					if (this.activeSection && this.activeSection.id == requestSectionId) {
+						this.stepList = res;
+					}
 				});
 		},
 		resetStep() {
@@ -581,6 +584,7 @@ export default {
 		editStep(index, item) {
 			this.activeStepEdit = index;
 			this.statusSetpEdit = true;
+			this.resetStep();
 			this.filterEditSteps(item);
 		},
 		//步骤删除
@@ -645,8 +649,8 @@ export default {
 				case "话术":
 					if (item.value === "") {
 						item.error = "内容不能为空";
-					} else if (item.value.length > 40) {
-						item.error = "最长40个汉字";
+					} else if (item.value.length > 200) {
+						item.error = "最长200个汉字";
 					} else {
 						item.error = "";
 					}
@@ -686,11 +690,12 @@ export default {
 					}
 					break;
 				case "偏移时间":
-					if (!numberMinus(item.value)) {
+					if (isNaN(item.value)) {
 						item.error = "仅可填入数字";
-					} else if (item.value > 10) {
-						item.error = "超出话术时长,不超过10";
 					} else {
+						//  else if (item.value > 10) {
+						// 	item.error = "超出话术时长,不超过10";
+						// }
 						item.error = "";
 					}
 					break;
@@ -841,6 +846,7 @@ export default {
 				this.stepList.pop();
 			}
 			this.tempEdit = false;
+			this.resetStep();
 		},
 		goback() {
 			this.$emit("goback", true);
