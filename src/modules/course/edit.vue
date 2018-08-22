@@ -160,7 +160,7 @@ function specilWorldTest(a) {
 	return false;
 }
 function number(a) {
-	var pattern = new RegExp("^[0-9]*$");
+	var pattern = new RegExp("^[-+]?[0-9]*$");
 	if (pattern.test(a)) {
 		return true;
 	}
@@ -737,7 +737,7 @@ export default {
 									name: element.item[0].value,
 									action: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
 									begin: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
-									offset: parseInt(element.item[3].value === "" ? 0 : element.item[3].value),
+									offset: element.item[3].value === "" ? 0 : element.item[3].value,
 									end: 0
 								};
 								newStep[key] = obj;
@@ -761,7 +761,7 @@ export default {
 									id: element.id,
 									text: element.item[0].value,
 									begin: parseInt(element.item[1].value === "" ? 0 : element.item[1].value),
-									offset: parseInt(element.item[2].value === "" ? 0 : element.item[2].value),
+									offset: element.item[2].value === "" ? 0 : element.item[2].value,
 									end: 0
 								};
 								newStep[key] = obj;
